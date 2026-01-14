@@ -1,22 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0c0e13;
-  --foreground: #e4e4e7;
+  /* The Vanguard Palette */
+  --color-obsidian: #050505;
+  /* Primary Canvas */
+  --color-laser-red: #FF1A1A;
+  /* Action/Accent */
+  --color-stark-white: #FFFFFF;
+  /* Headlines */
+  --color-slate-grey: #121212;
+  /* Structural/Borders */
+  --color-blind-steel: #A1A1AA;
+  /* Secondary Text */
+
+  --background: var(--color-obsidian);
+  --foreground: var(--color-stark-white);
+
+  /* Fonts */
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-display: 'Space Grotesk', sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-space-grotesk);
+  --color-accent: var(--color-laser-red);
+  --color-border: var(--color-slate-grey);
+
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+/* CRT/Scanline Effect (Subtle) */
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 999;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  opacity: 0.15;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-display);
+  overflow-x: hidden;
 }
-.apply-strikeout{
+
+.apply-strikeout {
   text-decoration: line-through;
 }
 
@@ -25,6 +63,7 @@ body {
   font-size: 2.25rem;
   /* text-4xl */
   line-height: 1.2;
+  font-weight: 800;
 }
 
 @media (min-width: 768px) {
@@ -39,6 +78,7 @@ body {
   font-family: var(--font-space-grotesk);
   font-size: 1.5rem;
   /* text-2xl */
+  font-weight: 800;
 }
 
 @media (min-width: 768px) {

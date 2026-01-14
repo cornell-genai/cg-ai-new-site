@@ -1,199 +1,384 @@
 "use client";
-import Link from "next/link";
-import Container from "../components/Container";
-import Section from "../components/Section";
 
-import { Rocket, Briefcase, Wrench, BarChart3, Eye, Sparkles, Network, Smartphone, Leaf } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Marquee } from "@/components/magicui/marquee";
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import {
+  X,
+  Github,
+  Linkedin,
+  Twitter,
+  Layers,
+  Menu
+} from 'lucide-react';
+import Image from 'next/image';
 
-export default function Home() {
+/**
+ * GENAI AT CORNELL: THE STANFORD-INSPIRED EVOLUTION
+ * Vibe: Organic Digital, Diffused Visuals, Shared Layout Transitions.
+ */
+
+const PROJECTS = [
+  {
+    id: 'classgpt',
+    title: 'ClassGPT (SP25)',
+    category: 'Academic Infrastructure',
+    tagline: 'AI Tutors for Cornell',
+    description: 'Creating AI Tutors educated on course content for professors and students.',
+    details: 'ClassGPT allows professors to create AI Tutors educated on their course content. Students can join classes and instantly access an AI Tutor specifically educated on that class content, facilitating personalized learning at scale.',
+    image: '/classgpt.png',
+  },
+  {
+    id: 'quickfi',
+    title: 'QuickFi Agentic Mesh',
+    category: 'Enterprise Infrastructure',
+    tagline: 'Scaleable Underwriting',
+    description: 'Automating industrial underwriting through multi-agent verification.',
+    details: 'Our collaboration with QuickFi focuses on two main pillars: AI Insurance Verification to validate coverage details, and Automated Vendor Due Diligence to verify business legitimacy against risk databases. The system reduces manual processing time while increasing compliance accuracy.',
+    image: '/quickfi-logo-01-1.png',
+  },
+  {
+    id: 'swarm',
+    title: 'ComputeSwarm V4',
+    category: 'Distributed Computing',
+    tagline: 'Dynamic Resource Allocation',
+    description: 'A decentralized GPU orchestration layer designed for Cornell’s local compute nodes.',
+    details: 'ComputeSwarm V4 manages the allocation of distributed GPUs across campus. It provides a seamless API for researchers to submit training jobs that are automatically partitioned and executed across the most efficient available hardware nodes.',
+    image: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=1200',
+  }
+];
+
+const LEADERSHIP = [
+  { name: "Daniel Sachs", role: "Founding President", image: "/pfps/daniel.png" },
+  { name: "Erik Pedersen", role: "Vice-President", image: "/pfps/erik.png" },
+  { name: "Morgan Stuart", role: "Lead Engineer", image: "/pfps/morgan.png" },
+  { name: "Merek Soriano", role: "Head of Partnerships", image: "/pfps/merek.png" },
+  { name: "David Lee", role: "Head of Product", image: "/pfps/david.png" },
+];
+
+// --- Sub-components ---
+
+import { GrainOverlay } from '@/components/ui/GrainOverlay';
+import { DiffusedImage } from '@/components/ui/DiffusedImage';
+
+const App = () => {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <div className="min-h-screen bg-[#050505]" />;
+
+  const selectedProject = PROJECTS.find(p => p.id === selectedId);
+
   return (
-    <div>
-      <Section className="relative overflow-hidden min-h-[calc(100vh-4rem)] flex flex-col justify-between">
-        <div aria-hidden className="pointer-events-none absolute inset-0">
-          {/* Large blobs */}
-          <div className="absolute -top-24 -left-16 h-[400px] w-[400px] rounded-full blur-3xl opacity-20 bg-gradient-to-r from-[#5b9dff] via-[#7b5bff] to-[#c55bff]"></div>
-          <div className="absolute -bottom-24 -right-16 h-[400px] w-[400px] rounded-full blur-3xl opacity-20 bg-gradient-to-r from-[#c55bff] via-[#7b5bff] to-[#5b9dff]"></div>
-          
-          {/* Medium blobs */}
-          <div className="absolute top-1/4 right-1/4 h-[300px] w-[300px] rounded-full blur-3xl opacity-15 bg-gradient-to-r from-[#4a8eff] via-[#6a4aff] to-[#b44aff]"></div>
-          <div className="absolute bottom-1/3 left-1/3 h-[250px] w-[250px] rounded-full blur-3xl opacity-15 bg-gradient-to-r from-[#6cafff] via-[#8c6cff] to-[#d66cff]"></div>
-          
-          {/* Small blobs */}
-          <div className="absolute top-1/2 left-1/6 h-[200px] w-[200px] rounded-full blur-3xl opacity-10 bg-gradient-to-r from-[#3d7eff] via-[#5d3dff] to-[#a73dff]"></div>
-          <div className="absolute top-1/6 right-1/6 h-[180px] w-[180px] rounded-full blur-3xl opacity-10 bg-gradient-to-r from-[#7dbfff] via-[#9d7dff] to-[#e77dff]"></div>
-          <div className="absolute bottom-1/4 left-1/2 h-[150px] w-[150px] rounded-full blur-3xl opacity-10 bg-gradient-to-r from-[#5e9fff] via-[#7e5eff] to-[#c85eff]"></div>
-          
-          {/* Tiny accent blobs */}
-          <div className="absolute top-3/4 right-1/3 h-[120px] w-[120px] rounded-full blur-3xl opacity-8 bg-gradient-to-r from-[#4f8fff] via-[#6f4fff] to-[#b94fff]"></div>
-          <div className="absolute bottom-1/6 right-1/6 h-[100px] w-[100px] rounded-full blur-3xl opacity-8 bg-gradient-to-r from-[#6cafff] via-[#8c6cff] to-[#d66cff]"></div>
-          <div className="absolute top-1/3 left-1/4 h-[80px] w-[80px] rounded-full blur-3xl opacity-8 bg-gradient-to-r from-[#7dbfff] via-[#9d7dff] to-[#e77dff]"></div>
-        </div>
-        
-        {/* Hero content - top portion */}
-        <Container className="flex-1 flex items-center">
-          <div className="py-8 md:py-10 lg:py-12">
-            <h1 className="h1 font-semibold tracking-tight text-white flex items-center gap-4">
-              <img src="/cgaiweb.svg" alt="CGAI Logo" className="h-24 md:h-32 w-auto" />
-              Generative AI @ Cornell
-            </h1>
-            <p className="mt-4 md:mt-6 text-base md:text-lg leading-relaxed text-zinc-300 max-w-2xl text-center sm:text-left">
-              Bridging builders, researchers, and industry leaders to explore the frontier of intelligent systems. Join us to develop cutting-edge AI tooling and learn with a community that ships.
-            </p>
-            <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-4 items-center sm:items-start">
-              <Link href="/apply" className="inline-flex items-center justify-center rounded-2xl bg-red-600 px-8 py-3 text-white shadow-md shadow-red-500/20 hover:bg-red-500 hover:shadow-lg hover:shadow-red-500/40 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 min-w-[200px] sm:min-w-0">
-                Apply now
-              </Link>
-              <Link href="/portfolio" className="inline-flex items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm px-8 py-3 text-white border border-white/20 shadow-md shadow-black/20 hover:bg-white/20 hover:shadow-lg hover:shadow-black/40 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 min-w-[200px] sm:min-w-0">
-                Explore Initiatives
-              </Link>
-            </div>
-          </div>
-        </Container>
+    <div className="min-h-screen bg-[#050505] text-[#FFFFFF] font-sans selection:bg-[#E62E2E] selection:text-white overflow-x-hidden">
+      <GrainOverlay />
 
-                {/* Partners section - bottom portion */}
-        <div className="w-full">
-          <div className="text-center mb-6 px-6 md:px-8">
-            <p className="text-base text-zinc-300 font-medium">Our Partners</p>
-          </div>
-          <div className="py-7 relative flex flex-col items-center justify-center overflow-hidden w-full">
-            {/* Background blobs for marquee contrast */}
-            <div aria-hidden className="pointer-events-none absolute inset-0">
-              <div className="absolute top-1/2 left-1/4 h-[200px] w-[200px] rounded-full blur-3xl opacity-25 bg-gradient-to-r from-[#5b9dff] via-[#7b5bff] to-[#c55bff]"></div>
-              <div className="absolute top-1/3 right-1/3 h-[150px] w-[150px] rounded-full blur-3xl opacity-20 bg-gradient-to-r from-[#4a8eff] via-[#6a4aff] to-[#b44aff]"></div>
-              <div className="absolute bottom-1/4 left-1/2 h-[180px] w-[180px] rounded-full blur-3xl opacity-30 bg-gradient-to-r from-[#6cafff] via-[#8c6cff] to-[#d66cff]"></div>
-              <div className="absolute top-1/4 right-1/6 h-[120px] w-[120px] rounded-full blur-3xl opacity-15 bg-gradient-to-r from-[#7dbfff] via-[#9d7dff] to-[#e77dff]"></div>
+      {/* Background Decorative Gradients */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[-5%] w-[50%] h-[50%] bg-[#E62E2E]/5 blur-[160px] rounded-full" />
+        <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-[#E62E2E]/5 blur-[120px] rounded-full" />
+      </div>
+
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-[60] px-6 sm:px-12 py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="w-10 h-10 border border-white/10 flex items-center justify-center rounded-sm bg-white/5 backdrop-blur-md">
+              <span className="text-[#E62E2E] font-bold text-xl leading-none">C</span>
             </div>
-            <div
-              className="
-                md:w-3/4 mx-auto
-                sm:w-full
-                [mask-image:linear-gradient(to_right,transparent_0%,black_20%,black_80%,transparent_100%)]
-                [mask-repeat:no-repeat]
-                [mask-size:100%_100%]
-               
-              "
-            >
-      <Marquee pauseOnHover className="[--duration:15s] w-full">
-        {[
-          { src: "/chartercommunications.png", alt: "Charter Communications" },
-          { src: "/vero.webp", alt: "Vero" },
-          { src: "/quickfi-logo-01-1.png", alt: "QuickFi" },
-          { src: "/cisco.png", alt: "Cisco" },
-          { src: "/gradial.jpeg", alt: "Gradial" },
-        ].map((logo) => (
-          <div
-            key={logo.alt}
-            className="flex items-center justify-center mx-4 sm:mx-7 min-w-fit"
+            <div>
+              <h1 className="text-xs sm:text-sm font-bold tracking-tight uppercase">Generative AI at Cornell</h1>
+              <p className="text-[10px] text-white/30 font-medium uppercase tracking-[0.2em]">Research & Implementation</p>
+            </div>
+          </div>
+
+          <div className="hidden lg:flex items-center gap-12 text-[10px] font-bold tracking-[0.3em] uppercase text-white/40">
+            <a href="#" className="hover:text-white transition-colors">Lab</a>
+            <a href="#" className="hover:text-white transition-colors">Projects</a>
+            <a href="#" className="hover:text-white transition-colors">People</a>
+            <button className="flex items-center gap-2 group">
+              <span className="h-[1px] w-8 bg-white/10 group-hover:w-12 group-hover:bg-[#E62E2E] transition-all" />
+              <span className="text-white group-hover:text-[#E62E2E]">Inquiry</span>
+            </button>
+          </div>
+
+          <div className="lg:hidden">
+            <Menu size={20} className="text-white/40" />
+          </div>
+        </div>
+      </nav>
+
+      <main className="relative z-10 pt-48 sm:pt-64 px-6 sm:px-12 max-w-7xl mx-auto">
+
+        {/* Hero Section */}
+        <section className="mb-48">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <img
-              src={logo.src}
-              alt={logo.alt}
-              className="h-16 sm:h-20 w-auto object-contain rounded-lg"
-            />
-          </div>
-        ))}
-      </Marquee>
-    </div>
-  </div>
-</div>
-      </Section>
+            <div className="flex items-center gap-4 mb-8">
+              <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#E62E2E]">Vanguard MMXXVI</span>
+              <div className="h-[1px] flex-1 max-w-[40px] bg-white/10" />
+            </div>
 
-      <Section className="py-8 md:py-10 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <FlickeringGrid 
-            squareSize={20}
-            gridGap={16}
-            flickerChance={0.2}
-            color="rgb(91, 157, 255)"
-            maxOpacity={0.15}
-            className="opacity-50"
-          />
-        </div>
-        <Container className="relative z-10">
-          <div>
-            <h2 className="h2">Our Mission</h2>
-            <p className="mt-4 text-base md:text-lg leading-relaxed text-zinc-300 max-w-3xl">
-              Generative AI @ Cornell is a student-run club building startup-style, autonomous AI projects with real industry collaboration. 
-            </p>
-            <p className="mt-3 text-base md:text-lg leading-relaxed text-zinc-300 max-w-3xl">
-              Members work in small, autonomous teams with mentorship from experienced builders and partners, gaining hands-on experience that translates directly to impactful careers and ventures.
-            </p>
-          </div>
-        </Container>
-      </Section>
+            <h2 className="text-6xl md:text-[110px] font-bold leading-[0.92] tracking-tighter mb-16">
+              Engineering <br />
+              <span className="italic font-serif font-light text-white/80 pr-4">Autonomous</span> <br />
+              Agency.
+            </h2>
 
-      <Section className="py-8 md:py-10 relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-0 right-0 h-full bg-gradient-to-t from-purple-900/30 to-transparent"></div>
-        </div>
-        <Container className="relative z-10">
-          <div>
-            <h2 className="h2">What We Offer</h2>
-            <p className="mt-4 text-base md:text-lg leading-relaxed text-zinc-300 max-w-3xl">
-              Join Generative AI @ Cornell to access exclusive opportunities, cutting-edge technology, and a network of innovators.
-            </p>
-          </div>
-
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {[{
-              icon: <BarChart3 className="h-6 w-6" />,
-              title: "Innovative AI Projects",
-              desc: "Collaborate on impactful projects like AI-driven accessibility tools, educational assistants, and creative applications.",
-              color: "from-blue-600 via-blue-500 to-blue-400",
-              shadow: "shadow-blue-500/20"
-            }, {
-              icon: <Eye className="h-6 w-6" />,
-              title: "Exclusive Speaker Series",
-              desc: "Engage with AI startup founders, researchers, and tech leaders for insights into the latest opportunities in the field.",
-              color: "from-purple-600 via-purple-500 to-purple-400",
-              shadow: "shadow-purple-500/20"
-            }, {
-              icon: <Sparkles className="h-6 w-6" />,
-              title: "Real-World Applications",
-              desc: "Work on real-world challenges with industry partners, ensuring your projects have tangible outcomes and societal impact.",
-              color: "from-green-600 via-green-500 to-green-400",
-              shadow: "shadow-green-500/20"
-            }, {
-              icon: <Network className="h-6 w-6" />,
-              title: "Networking & Mentorship",
-              desc: "Build connections with industry professionals and like-minded peers through exclusive networking events and collaborative opportunities that foster long-term relationships.",
-              color: "from-orange-600 via-orange-500 to-orange-400",
-              shadow: "shadow-orange-500/20"
-            }, {
-              icon: <Smartphone className="h-6 w-6" />,
-              title: "Cutting-Edge Tech",
-              desc: "Gain hands-on experience with the latest AI tools and platforms to create innovative solutions. Explore how advanced technologies can be applied to solve real-world challenges.",
-              color: "from-pink-600 via-pink-500 to-pink-400",
-              shadow: "shadow-pink-500/20"
-            }, {
-              icon: <Leaf className="h-6 w-6" />,
-              title: "Career Development",
-              desc: "Prepare for the future of AI with personalized career guidance, impactful resume-building projects, access to networking events, and exposure to industry opportunities.",
-              color: "from-teal-600 via-teal-500 to-teal-400",
-              shadow: "shadow-teal-500/20"
-            }].map((item) => (
-              <div
-                key={item.title}
-                className="group relative rounded-2xl bg-white/5 backdrop-blur p-6 shadow-sm shadow-black/20 border border-white/10 hover:bg-white/10 transition-all duration-300 overflow-hidden"
-              >
-                {/* Shine effect */}
-                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-                
-                <div className="relative z-10">
-                  <div className={`h-14 w-14 rounded-xl bg-gradient-to-r ${item.color} text-white flex items-center justify-center shadow-md ${item.shadow} p-3`}>
-                    {item.icon}
-                  </div>
-                  <h3 className="mt-4 text-lg md:text-xl font-semibold text-zinc-100">{item.title}</h3>
-                  <p className="mt-2 text-sm md:text-base text-zinc-300 leading-relaxed">{item.desc}</p>
+            <div className="grid md:grid-cols-2 gap-16 items-end">
+              <p className="text-lg md:text-xl text-white/40 leading-relaxed font-light max-w-lg">
+                We operate as a high-fidelity implementation lab at Cornell, dedicated to architecting the next generation of scalable intelligence through rigorous hardware-software integration.
+              </p>
+              <div className="flex flex-col gap-6 font-mono text-[10px] text-white/20 uppercase tracking-[0.2em]">
+                <div className="flex justify-between border-b border-white/5 pb-4">
+                  <span>Current Focus</span>
+                  <span className="text-white/60">Multi-Agent Orchestration</span>
+                </div>
+                <div className="flex justify-between border-b border-white/5 pb-4">
+                  <span>Node Status</span>
+                  <span className="text-green-500/60 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-green-500 rounded-full animate-pulse" /> Operational
+                  </span>
                 </div>
               </div>
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Project Section */}
+        <section className="mb-64">
+          <div className="flex items-end justify-between mb-16 border-b border-white/5 pb-8">
+            <h3 className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/30">Active Initiatives</h3>
+            <span className="text-[9px] font-mono text-white/20">EXPLORE WORK [ 0{PROJECTS.length} ]</span>
+          </div>
+
+          <LayoutGroup>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {PROJECTS.map(project => (
+                <motion.div
+                  layoutId={project.id}
+                  key={project.id}
+                  onClick={() => setSelectedId(project.id)}
+                  className="group cursor-pointer"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true }}
+                >
+                  <motion.div className="aspect-[3/4] rounded-lg overflow-hidden mb-8 bg-[#121212] border border-white/5 relative">
+                    <DiffusedImage src={project.image} alt={project.title} />
+                  </motion.div>
+                  <motion.div layoutId={`content-${project.id}`}>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E62E2E] mb-3 block">{project.tagline}</span>
+                    <h4 className="text-2xl font-bold tracking-tight mb-3">{project.title}</h4>
+                    <p className="text-sm text-white/30 leading-relaxed font-light">{project.description}</p>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Expansion Overlay */}
+            <AnimatePresence>
+              {selectedId && selectedProject && (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setSelectedId(null)}
+                    className="fixed inset-0 bg-[#050505]/90 backdrop-blur-md z-[70] cursor-zoom-out"
+                  />
+                  <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-8 pointer-events-none">
+                    <motion.div
+                      layoutId={selectedId}
+                      className="bg-[#0A0A0A] w-full max-w-6xl rounded-2xl overflow-hidden pointer-events-auto shadow-2xl border border-white/10"
+                    >
+                      <div className="grid lg:grid-cols-2 h-full max-h-[90vh] overflow-y-auto lg:overflow-visible">
+                        <div className="h-[300px] lg:h-auto border-b lg:border-b-0 lg:border-r border-white/10 relative">
+                          <DiffusedImage src={selectedProject.image} alt={selectedProject.title} />
+                        </div>
+                        <div className="p-8 sm:p-16 flex flex-col justify-between">
+                          <div>
+                            <div className="flex justify-between items-start mb-12">
+                              <motion.div layoutId={`content-${selectedId}`}>
+                                <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#E62E2E] mb-2 block">
+                                  {selectedProject.category}
+                                </span>
+                                <h3 className="text-3xl sm:text-5xl font-bold tracking-tight">{selectedProject.title}</h3>
+                              </motion.div>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setSelectedId(null); }}
+                                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                              >
+                                <X size={18} />
+                              </button>
+                            </div>
+                            <div className="space-y-6 text-white/50 text-base sm:text-lg leading-relaxed font-light mb-12">
+                              <p>{selectedProject.details}</p>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col sm:flex-row gap-4">
+                            <button className="flex-1 py-4 bg-white text-black font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-[#E62E2E] hover:text-white transition-all">
+                              View Project
+                            </button>
+                            <button className="px-8 py-4 border border-white/10 hover:bg-white/5 transition-all">
+                              <Github size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                </>
+              )}
+            </AnimatePresence>
+          </LayoutGroup>
+        </section>
+
+        {/* Leadership Section - NEW */}
+        <section className="mb-64">
+          <div className="flex items-end justify-between mb-16 border-b border-white/5 pb-8">
+            <h3 className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/30">The Vanguard</h3>
+            <span className="text-[9px] font-mono text-white/20">LEADERSHIP [ 0{LEADERSHIP.length} ]</span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            {LEADERSHIP.map((leader) => (
+              <motion.div
+                key={leader.name}
+                className="group"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="aspect-[3/4] overflow-hidden mb-6 bg-[#121212] border border-white/5 rounded-sm relative grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
+                  <Image
+                    src={leader.image}
+                    alt={leader.name}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-60" />
+                </div>
+                <h4 className="text-sm font-bold tracking-tight text-white/90 group-hover:text-[#E62E2E] transition-colors">{leader.name}</h4>
+                <p className="text-[10px] text-white/40 uppercase tracking-[0.1em] mt-1">{leader.role}</p>
+              </motion.div>
             ))}
           </div>
-        </Container>
-      </Section>
+        </section>
+
+        {/* Values / Principles Section */}
+        <section className="mb-64">
+          <div className="grid lg:grid-cols-2 gap-32">
+            <div>
+              <h3 className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#E62E2E] mb-12">Core Principles</h3>
+              <p className="text-4xl sm:text-5xl font-bold leading-[1.1] tracking-tight text-white/90">
+                We believe that <span className="italic font-serif font-light">infrastructure</span> is the true product of the generative era.
+              </p>
+            </div>
+            <div className="space-y-16">
+              <div className="group">
+                <div className="flex items-center gap-6 mb-6">
+                  <span className="text-white/10 font-mono text-xs">01</span>
+                  <h4 className="text-lg font-bold uppercase tracking-widest group-hover:text-[#E62E2E] transition-colors">Implementation First</h4>
+                </div>
+                <p className="text-white/30 leading-relaxed font-light group-hover:text-white/60 transition-colors duration-500">
+                  Theoretical research finds its true value when validated through hardware-software co-design. We build the stacks that run the future.
+                </p>
+              </div>
+              <div className="group">
+                <div className="flex items-center gap-6 mb-6">
+                  <span className="text-white/10 font-mono text-xs">02</span>
+                  <h4 className="text-lg font-bold uppercase tracking-widest group-hover:text-[#E62E2E] transition-colors">Distributed Agency</h4>
+                </div>
+                <p className="text-white/30 leading-relaxed font-light group-hover:text-white/60 transition-colors duration-500">
+                  We specialize in systems where intelligence is decentralized, resilient, and capable of autonomous decision-making across high-latency networks.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA / Contact */}
+        <section className="mb-64 border-t border-white/5 pt-32 text-center">
+          <h3 className="text-xs font-bold tracking-[0.4em] uppercase text-white/20 mb-12">Initiate Collaboration</h3>
+          <h2 className="text-4xl sm:text-7xl font-bold tracking-tighter mb-16">Ready to <span className="italic font-serif font-light">Build?</span></h2>
+          <button className="px-12 py-5 bg-white text-black font-bold text-xs uppercase tracking-[0.3em] hover:bg-[#E62E2E] hover:text-white transition-all transform hover:scale-105 active:scale-95">
+            Contact the Lab
+          </button>
+        </section>
+
+        {/* Footer */}
+        <footer className="pb-20 pt-20 border-t border-white/5">
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-16 mb-24">
+            <div className="max-w-md">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-8 h-8 border border-[#E62E2E] flex items-center justify-center text-[#E62E2E] font-bold text-xs">C</div>
+                <h5 className="text-sm font-bold uppercase tracking-[0.2em]">GenAI Cornell</h5>
+              </div>
+              <p className="text-white/20 text-sm leading-relaxed font-light mb-8">
+                Architecting autonomous systems for a decentralized world. Operated by the Cornell Vanguard Collective.
+              </p>
+              <div className="flex gap-6 text-white/30">
+                <Twitter size={16} className="hover:text-white transition-colors" />
+                <Linkedin size={16} className="hover:text-white transition-colors" />
+                <Github size={16} className="hover:text-white transition-colors" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-16 sm:gap-24">
+              <div>
+                <h6 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-8">Nodes</h6>
+                <div className="flex flex-col gap-4 text-xs font-bold text-white/60">
+                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Lab Status</a>
+                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Archives</a>
+                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Register</a>
+                </div>
+              </div>
+              <div>
+                <h6 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-8">Protocols</h6>
+                <div className="flex flex-col gap-4 text-xs font-bold text-white/60">
+                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Whitepaper</a>
+                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Ethics</a>
+                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Compute</a>
+                </div>
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <h6 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-8">Contact</h6>
+                <div className="text-xs font-bold text-white/60 leading-relaxed uppercase tracking-tighter">
+                  Bill & Melinda Gates Hall<br />
+                  Ithaca, NY 14853
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-white/5 text-[9px] font-bold uppercase tracking-[0.4em] text-white/10">
+            <div>© 2026 CORNELL GENERATIVE AI // ALL SYSTEMS NOMINAL</div>
+            <div className="flex gap-12 mt-4 md:mt-0">
+              <span className="flex items-center gap-2"><span className="w-1 h-1 bg-green-500/40 rounded-full" /> Latency: 22ms</span>
+              <span className="flex items-center gap-2 text-[#E62E2E]/30"><Layers size={10} /> Implementation Lab</span>
+            </div>
+          </div>
+        </footer>
+
+      </main>
+
+      {/* Persistent Floating Command */}
+      <div className="fixed bottom-8 right-8 z-[60] hidden sm:block">
+        <button className="w-14 h-14 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center group hover:bg-[#E62E2E] transition-all duration-700">
+          <Layers size={18} className="text-white group-hover:rotate-12 transition-transform" />
+        </button>
+      </div>
     </div>
   );
-}
+};
+
+export default App;
