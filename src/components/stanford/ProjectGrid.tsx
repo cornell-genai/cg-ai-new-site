@@ -33,35 +33,30 @@ const itemVariants = {
 const PROJECTS = [
     {
         id: 1,
-        title: "ComputeSwarm",
-        description: "Decentralized training network allowing students to pool GPU resources for large-scale model training.",
-        tags: ["Python", "Pytorch", "Distributed Systems"],
+        title: "ClassGPT",
+        description: "A Cornell-exclusive platform enabling professors to create AI Tutors educated on their course content. Students can join supported classes and instantly access AI tutoring specifically tailored to that course's material.",
+        tags: ["AI Tutoring", "Education", "LLM", "RAG"],
         image: "/network.png",
-        links: { github: "#", demo: "#" }
+        links: { demo: "#" },
+        status: "In Development (SP25)"
     },
     {
         id: 2,
-        title: "Legal RAG Agent",
-        description: "Autonomous agent for navigating complex case law and generating legal briefs with citation breakdown.",
-        tags: ["LangChain", "Next.js", "OpenAI"],
+        title: "QuickFi: AI Insurance Verification",
+        description: "An AI agent that initiates outreach to insurance providers, requests commercial insurance certificates, validates contract-specific coverage details, handles follow-ups, and ensures documentation is stored and tagged correctly for compliance.",
+        tags: ["AI Agents", "Automation", "Compliance"],
         image: "/tower.png",
-        links: { github: "#", demo: "#" }
+        links: { blog: "https://drive.google.com/file/u/0/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view" },
+        status: "Completed (SP25)"
     },
     {
         id: 3,
-        title: "Generative Video",
-        description: "Research into temporal consistency in diffusion models for long-form video generation.",
-        tags: ["Research", "Computer Vision", "Diffusers"],
+        title: "QuickFi: Vendor Due Diligence",
+        description: "An intelligent system that verifies vendor legitimacy by cross-referencing public business records, risk databases, and online presence. It flags potential issues like high-risk scores, inactive registrations, or adverse news for internal review.",
+        tags: ["Risk Management", "Fraud Prevention", "AI Agents"],
         image: "/envelopes.png",
-        links: { github: "#" }
-    },
-    {
-        id: 4,
-        title: "Campus AI Assistant",
-        description: "Fine-tuned Llama 3 model serving as a comprehensive guide for campus life and course requirements.",
-        tags: ["Llama 3", "Fine-tuning", "RAG"],
-        image: "/network.png",
-        links: { github: "#", demo: "#" }
+        links: { blog: "https://drive.google.com/file/u/0/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view" },
+        status: "Completed (SP25)"
     }
 ];
 
@@ -84,9 +79,10 @@ export default function ProjectGrid() {
                             src={project.image}
                             alt={project.title}
                             fill
-                            className="object-cover opacity-60 group-hover:scale-105 group-hover:opacity-80 transition-all duration-500 grayscale"
+                            className="object-cover opacity-70 group-hover:scale-105 group-hover:opacity-90 transition-all duration-500"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90" />
+                        {/* Subtle gradient only at bottom for text readability */}
+                        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent" />
 
                         <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 duration-300">
                             <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest">
@@ -111,16 +107,23 @@ export default function ProjectGrid() {
                             {project.description}
                         </p>
 
-                        <div className="flex gap-4 pt-2">
-                            {project.links.github && (
-                                <a href={project.links.github} className="flex items-center gap-2 text-xs text-white/40 hover:text-white transition-colors uppercase tracking-widest font-medium">
-                                    <Github size={14} /> Code
-                                </a>
-                            )}
-                            {project.links.demo && (
-                                <a href={project.links.demo} className="flex items-center gap-2 text-xs text-white/40 hover:text-white transition-colors uppercase tracking-widest font-medium">
-                                    <ExternalLink size={14} /> Demo
-                                </a>
+                        <div className="flex items-center justify-between pt-2">
+                            <div className="flex gap-4">
+                                {'blog' in project.links && project.links.blog && (
+                                    <a href={project.links.blog} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-white/40 hover:text-white transition-colors uppercase tracking-widest font-medium">
+                                        <ExternalLink size={14} /> Blog
+                                    </a>
+                                )}
+                                {'demo' in project.links && project.links.demo && (
+                                    <a href={project.links.demo} className="flex items-center gap-2 text-xs text-white/40 hover:text-white transition-colors uppercase tracking-widest font-medium">
+                                        <ExternalLink size={14} /> Demo
+                                    </a>
+                                )}
+                            </div>
+                            {project.status && (
+                                <span className="text-[10px] uppercase tracking-wider px-2 py-1 bg-white/5 rounded-md border border-white/10 text-white/50">
+                                    {project.status}
+                                </span>
                             )}
                         </div>
                     </div>

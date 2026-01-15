@@ -66,7 +66,7 @@ export default function HUD() {
                 {/* Bottom Left: Generative Context */}
                 <div className="max-w-md pointer-events-auto">
                     <h2 className="text-xl font-bold font-display uppercase tracking-widest mb-2">
-                        Cornell Gen AI
+                        Generative AI @ Cornell
                     </h2>
                     <p className="text-xs font-mono text-zinc-400 leading-relaxed">
                         <ScrambleText speed={10} text="Exploration of latent space logic. We build the tools that build the future." />

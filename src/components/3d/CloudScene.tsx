@@ -6,7 +6,7 @@ import { Text, Float, Stars, Sparkles } from "@react-three/drei";
 import { EffectComposer, Bloom, Noise, Vignette } from "@react-three/postprocessing";
 import { VolumetricCloud } from "./VolumetricCloud";
 import * as THREE from "three";
-import { motion } from "framer-motion-3d";
+
 
 /**
  * CameraController

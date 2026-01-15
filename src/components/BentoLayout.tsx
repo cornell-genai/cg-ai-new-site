@@ -47,8 +47,8 @@ export default function BentoLayout() {
                     The Vanguard
                 </h1>
                 <p className="max-w-2xl mx-auto text-[var(--color-blind-steel)] font-mono text-sm leading-relaxed">
-                    Generative AI @ Cornell is the elitist node for applied machine intelligence.
-                    We do not just study the frontier; we engineer it.
+                    A student-run collective shipping real AI projects with industry partners.
+                    Small teams. Real mentorship. Hands-on experience that launches careers.
                 </p>
             </div>
 

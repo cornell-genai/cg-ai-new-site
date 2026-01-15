@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import { Twitter, Youtube, ArrowLeft } from 'lucide-react';
+import { Linkedin, Instagram, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 
 import './globals.css';
@@ -12,7 +12,7 @@ import RecruitmentTimeline from '@/components/stanford/RecruitmentTimeline';
 
 // Reusing the grain overlay component
 const GrainOverlay = () => (
-    <div className="fixed inset-0 pointer-events-none z-[99] opacity-[0.07] mix-blend-overlay"
+    <div className="fixed inset-0 pointer-events-none z-[99] opacity-[0.14] mix-blend-overlay"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
     />
 );
@@ -135,100 +135,112 @@ export default function StanfordPage() {
 
             {/* Organic Animated Background */}
             <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                {/* Base Gradient - Warmer, more visible maroon tones */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[#3A1212] via-[#1a0808] to-[#0a0505]" />
-
-                {/* Large ambient blob 1 - Upper left, slow drift */}
+                {/* Base Gradient - Animated breathing pulse */}
                 <motion.div
                     animate={{
-                        x: ['-5%', '10%', '-5%'],
-                        y: ['-5%', '8%', '-5%'],
-                        scale: [1, 1.1, 1],
+                        opacity: [0.85, 1, 0.85],
                     }}
                     transition={{
-                        duration: 30,
+                        duration: 6,
                         repeat: Infinity,
                         ease: "easeInOut"
                     }}
-                    className="absolute top-[-30%] left-[-20%] w-[90%] h-[90%] bg-[#D42020] blur-[200px] opacity-[0.35] rounded-full will-change-transform"
+                    className="absolute inset-0 bg-gradient-to-b from-[#5A1818] via-[#1a0505] to-[#050202]"
+                />
+
+                {/* Large ambient blob 1 - Upper left, visible drift */}
+                <motion.div
+                    animate={{
+                        x: ['-8%', '15%', '-8%'],
+                        y: ['-8%', '12%', '-8%'],
+                        scale: [1, 1.2, 1],
+                        opacity: [0.45, 0.55, 0.45],
+                    }}
+                    transition={{
+                        duration: 12,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                    className="absolute top-[-30%] left-[-20%] w-[90%] h-[90%] bg-[#FF3030] blur-[160px] rounded-full will-change-transform"
                 />
 
                 {/* Large ambient blob 2 - Bottom right, counter-drift */}
                 <motion.div
                     animate={{
-                        x: ['5%', '-8%', '5%'],
-                        y: ['5%', '-10%', '5%'],
-                        scale: [1.1, 1, 1.1],
+                        x: ['8%', '-12%', '8%'],
+                        y: ['8%', '-15%', '8%'],
+                        scale: [1.15, 0.95, 1.15],
+                        opacity: [0.4, 0.5, 0.4],
                     }}
                     transition={{
-                        duration: 35,
+                        duration: 15,
                         repeat: Infinity,
                         ease: "easeInOut",
-                        delay: 5
+                        delay: 2
                     }}
-                    className="absolute bottom-[-40%] right-[-30%] w-[100%] h-[100%] bg-[#8B1A1A] blur-[220px] opacity-[0.3] rounded-full will-change-transform"
+                    className="absolute bottom-[-40%] right-[-30%] w-[100%] h-[100%] bg-[#881515] blur-[180px] rounded-full will-change-transform"
                 />
 
-                {/* Center glow - subtle pulse */}
+                {/* Center glow - pronounced breathing pulse */}
                 <motion.div
                     animate={{
-                        scale: [1, 1.15, 1],
-                        opacity: [0.15, 0.25, 0.15],
+                        scale: [1, 1.25, 1],
+                        opacity: [0.25, 0.4, 0.25],
+                    }}
+                    transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 1
+                    }}
+                    className="absolute top-[20%] left-[30%] w-[60%] h-[60%] bg-[#FF5555] blur-[140px] rounded-full will-change-transform"
+                />
+
+                {/* White highlight 1 - Upper right, visible organic drift */}
+                <motion.div
+                    animate={{
+                        x: [0, 80, -50, 0],
+                        y: [0, -60, 30, 0],
+                        opacity: [0.12, 0.2, 0.08, 0.12],
+                    }}
+                    transition={{
+                        duration: 10,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                    }}
+                    className="absolute top-[-10%] right-[0%] w-[70%] h-[70%] bg-white blur-[180px] rounded-full mix-blend-soft-light will-change-transform"
+                />
+
+                {/* White highlight 2 - Lower area, breathing float */}
+                <motion.div
+                    animate={{
+                        x: [-30, 50, -30],
+                        y: [0, -40, 0],
+                        opacity: [0.08, 0.15, 0.08],
                     }}
                     transition={{
                         duration: 12,
                         repeat: Infinity,
                         ease: "easeInOut",
-                        delay: 2
+                        delay: 3
                     }}
-                    className="absolute top-[20%] left-[30%] w-[60%] h-[60%] bg-[#FF3333] blur-[180px] rounded-full will-change-transform"
-                />
-
-                {/* White highlight 1 - Upper right, organic drift */}
-                <motion.div
-                    animate={{
-                        x: [0, 50, -30, 0],
-                        y: [0, -40, 20, 0],
-                        opacity: [0.08, 0.14, 0.06, 0.08],
-                    }}
-                    transition={{
-                        duration: 25,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
-                    className="absolute top-[-10%] right-[0%] w-[70%] h-[70%] bg-white blur-[200px] rounded-full mix-blend-soft-light will-change-transform"
-                />
-
-                {/* White highlight 2 - Lower area, slow float */}
-                <motion.div
-                    animate={{
-                        x: [-20, 30, -20],
-                        y: [0, -25, 0],
-                        opacity: [0.05, 0.1, 0.05],
-                    }}
-                    transition={{
-                        duration: 28,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 8
-                    }}
-                    className="absolute bottom-[10%] left-[10%] w-[50%] h-[50%] bg-[#FFE8E8] blur-[180px] rounded-full mix-blend-soft-light will-change-transform"
+                    className="absolute bottom-[10%] left-[10%] w-[50%] h-[50%] bg-[#FFE8E8] blur-[160px] rounded-full mix-blend-soft-light will-change-transform"
                 />
 
                 {/* Accent color shift - pink/rose undertone */}
                 <motion.div
                     animate={{
-                        x: ['-10%', '5%', '-10%'],
-                        y: ['10%', '-5%', '10%'],
-                        opacity: [0.1, 0.18, 0.1],
+                        x: ['-15%', '10%', '-15%'],
+                        y: ['15%', '-10%', '15%'],
+                        opacity: [0.15, 0.25, 0.15],
                     }}
                     transition={{
-                        duration: 40,
+                        duration: 18,
                         repeat: Infinity,
                         ease: "easeInOut",
-                        delay: 3
+                        delay: 1
                     }}
-                    className="absolute top-[40%] right-[-10%] w-[60%] h-[80%] bg-[#CC3366] blur-[200px] rounded-full will-change-transform"
+                    className="absolute top-[40%] right-[-10%] w-[60%] h-[80%] bg-[#DD4477] blur-[180px] rounded-full will-change-transform"
                 />
             </div>
 
@@ -244,8 +256,8 @@ export default function StanfordPage() {
                     </a>
                 </div>
                 <div className="flex gap-6 text-white/70 pointer-events-auto">
-                    <a href="https://twitter.com" target="_blank" className="hover:text-white transition-colors"><Twitter size={18} /></a>
-                    <a href="https://youtube.com" target="_blank" className="hover:text-white transition-colors"><Youtube size={18} /></a>
+                    <a href="https://www.linkedin.com/company/generative-ai-at-cornell/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors"><Linkedin size={18} /></a>
+                    <a href="https://instagram.com/cornellgenai" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors"><Instagram size={18} /></a>
                 </div>
             </motion.nav>
 
@@ -335,14 +347,14 @@ export default function StanfordPage() {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     transition={{ duration: 0.3, ease: "easeOut" }}
-                                    className="absolute inset-0 bg-black/90 backdrop-blur-xl pointer-events-auto"
+                                    className="absolute inset-0 bg-black/40 backdrop-blur-md pointer-events-auto"
                                     onClick={() => setSelectedId(null)}
                                 />
 
                                 {/* Expanded Card Container */}
                                 <motion.div
                                     layoutId={`card-${selectedId}`}
-                                    className="relative z-10 w-full max-w-[1600px] h-full md:h-[90vh] bg-[#0a0a0a] md:rounded-2xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto border border-white/5 will-change-transform"
+                                    className="relative z-10 w-full max-w-[1600px] h-full md:h-[90vh] bg-black/30 backdrop-blur-lg md:rounded-2xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto border border-white/10 will-change-transform"
                                     transition={{
                                         layout: { duration: 0.4, ease: SNAPPY_EASE }
                                     }}
@@ -370,9 +382,9 @@ export default function StanfordPage() {
                                             animate={{ opacity: 1, scale: 1 }}
                                             exit={{ opacity: 0, scale: 0.9 }}
                                             transition={{ duration: 0.4, ease: SMOOTH_EASE, delay: 0.1 }}
-                                            className="fixed md:absolute top-0 right-0 w-full md:w-[400px] h-64 md:h-[400px] pointer-events-none opacity-20 md:opacity-100 mix-blend-screen md:mix-blend-normal z-0 grayscale will-change-transform"
+                                            className="fixed md:absolute top-0 right-0 w-full md:w-[400px] h-64 md:h-[400px] pointer-events-none opacity-20 md:opacity-100 mix-blend-screen md:mix-blend-normal z-0 will-change-transform"
                                         >
-                                            <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-l from-black via-transparent to-transparent z-10" />
+                                            {/* No overlay - full color image */}
                                             <Image
                                                 src={selectedSection.image}
                                                 alt={selectedSection.title}
