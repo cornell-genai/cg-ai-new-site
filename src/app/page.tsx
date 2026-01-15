@@ -9,6 +9,7 @@ import './globals.css';
 import ProjectGrid from '@/components/stanford/ProjectGrid';
 import TeamDirectory from '@/components/stanford/TeamDirectory';
 import RecruitmentTimeline from '@/components/stanford/RecruitmentTimeline';
+import PartnersGrid from '@/components/stanford/PartnersGrid';
 
 // Reusing the grain overlay component
 const GrainOverlay = () => (
@@ -333,6 +334,9 @@ export default function StanfordPage() {
                                         </motion.div>
                                     ))}
                                 </section>
+
+                                {/* Industry Partners Section */}
+                                <PartnersGrid />
                             </motion.div>
                         )}
                     </AnimatePresence>
