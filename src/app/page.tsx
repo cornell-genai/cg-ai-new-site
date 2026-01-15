@@ -300,63 +300,88 @@ export default function StanfordPage() {
                                 initial="hidden"
                                 animate="visible"
                                 exit="exit"
-                                className="flex flex-col h-full pt-24 pb-12"
+                                className={`flex flex-col h-full ${isMobile ? 'pt-16 pb-6' : 'pt-24 pb-12'}`}
                             >
-                                {/* Header Section */}
+                                {/* Header Section - Compact on mobile */}
                                 <motion.section
                                     variants={headerVariants}
-                                    className="max-w-4xl mb-16 px-2"
+                                    className={`max-w-4xl px-2 ${isMobile ? 'mb-6' : 'mb-16'}`}
                                 >
-                                    <h1 className="text-5xl md:text-8xl font-semibold tracking-tight leading-[0.95] mb-6 mix-blend-overlay opacity-90">
-                                        Cornell's home <br />
+                                    <h1 className={`font-semibold tracking-tight leading-[0.95] mb-4 md:mb-6 mix-blend-overlay opacity-90 ${isMobile ? 'text-3xl' : 'text-5xl md:text-8xl'}`}>
+                                        Cornell's home {!isMobile && <br />}
                                         for students in AI
                                     </h1>
 
-                                    <p className="text-lg md:text-xl text-white/60 font-normal leading-relaxed max-w-2xl">
+                                    <p className={`text-white/60 font-normal leading-relaxed max-w-2xl ${isMobile ? 'text-sm' : 'text-lg md:text-xl'}`}>
                                         Cornell GenAI is where the students that shape the future of AI at Cornell come together.
-                                        From research to industry, we offer opportunities to connect with titans of industry,
-                                        learn from the best in the field, and get started in the field.
+                                        {!isMobile && ' From research to industry, we offer opportunities to connect with titans of industry, learn from the best in the field, and get started in the field.'}
                                     </p>
                                 </motion.section>
 
-                                {/* 3 Columns Grid - Centered & Larger */}
-                                <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 items-center justify-items-center w-full max-w-[1800px] mx-auto flex-1">
+                                {/* Section Cards - Compact vertical layout on mobile, 3-column grid on desktop */}
+                                <section className={`w-full mx-auto ${isMobile ? 'flex flex-col gap-2 mt-4' : 'grid grid-cols-3 gap-8 mt-12 items-center justify-items-center max-w-[1800px] flex-1'}`}>
                                     {SECTIONS.map((section) => (
                                         <motion.div
                                             layoutId={`card-${section.id}`}
                                             key={section.id}
                                             variants={cardVariants}
                                             onClick={() => setSelectedId(section.id)}
-                                            whileHover={{ scale: 1.03 }}
-                                            whileTap={{ scale: 0.98 }}
+                                            whileHover={!isMobile ? { scale: 1.03 } : undefined}
+                                            whileTap={{ scale: 0.97 }}
                                             transition={{
                                                 layout: { duration: 0.4, ease: SNAPPY_EASE },
-                                                scale: { duration: 0.2 }
+                                                scale: { duration: 0.15 }
                                             }}
-                                            className="group relative flex flex-col items-center text-center cursor-pointer w-full h-full justify-center p-4 will-change-transform"
+                                            className={`group relative cursor-pointer will-change-transform ${isMobile
+                                                ? 'flex flex-col items-center text-center py-2 active:bg-white/5 rounded-xl transition-colors'
+                                                : 'flex flex-col items-center text-center w-full h-full justify-center p-4'
+                                                }`}
                                             style={{ transformOrigin: "center center" }}
                                         >
-                                            {/* Translucent overlay - covers full card, behind everything */}
+                                            {/* Translucent overlay */}
                                             <div className="absolute inset-0 bg-white/[0.03] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-                                            {/* Image Asset - No layoutId to prevent competing animations */}
-                                            <div className="relative h-64 w-full md:w-[90%] aspect-[4/5] mb-6 overflow-hidden rounded-sm bg-transparent z-10">
-                                                <Image
-                                                    src={section.image}
-                                                    alt={section.title}
-                                                    fill
-                                                    className="object-contain object-center transition-all duration-300"
-                                                />
-                                            </div>
+                                            {isMobile ? (
+                                                /* Mobile: Vertical layout - centered image above text */
+                                                <>
+                                                    {/* Centered image - larger size */}
+                                                    <div className="relative w-full h-[140px] overflow-hidden">
+                                                        <Image
+                                                            src={section.image}
+                                                            alt={section.title}
+                                                            fill
+                                                            className="object-contain object-center"
+                                                        />
+                                                    </div>
 
-                                            <div className="relative z-10 px-2 flex flex-col items-center">
-                                                <h3 className="text-4xl md:text-6xl font-semibold mb-4 tracking-tight group-hover:opacity-80 transition-opacity duration-200">
-                                                    {section.title}
-                                                </h3>
-                                                <p className="text-sm text-white/50 font-normal max-w-[80%] group-hover:text-white/70 transition-colors duration-200">
-                                                    {section.description}
-                                                </p>
-                                            </div>
+                                                    {/* Title below image */}
+                                                    <h3 className="text-2xl font-semibold tracking-tight text-white mt-2">
+                                                        {section.title}
+                                                    </h3>
+                                                </>
+                                            ) : (
+                                                /* Desktop: Original vertical layout */
+                                                <>
+                                                    {/* Image Asset */}
+                                                    <div className="relative h-64 w-[90%] aspect-[4/5] mb-6 overflow-hidden rounded-sm bg-transparent z-10">
+                                                        <Image
+                                                            src={section.image}
+                                                            alt={section.title}
+                                                            fill
+                                                            className="object-contain object-center transition-all duration-300"
+                                                        />
+                                                    </div>
+
+                                                    <div className="relative z-10 px-2 flex flex-col items-center">
+                                                        <h3 className="text-6xl font-semibold mb-4 tracking-tight group-hover:opacity-80 transition-opacity duration-200">
+                                                            {section.title}
+                                                        </h3>
+                                                        <p className="text-sm text-white/50 font-normal max-w-[80%] group-hover:text-white/70 transition-colors duration-200">
+                                                            {section.description}
+                                                        </p>
+                                                    </div>
+                                                </>
+                                            )}
                                         </motion.div>
                                     ))}
                                 </section>
