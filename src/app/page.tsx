@@ -338,8 +338,9 @@ export default function StanfordPage() {
                                                 }`}
                                             style={{ transformOrigin: "center center" }}
                                         >
-                                            {/* Translucent overlay */}
-                                            <div className="absolute inset-0 bg-white/[0.03] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                                            {/* Translucent overlay - always visible on mobile, hover-only on desktop */}
+                                            <div className={`absolute inset-0 bg-white/[0.05] rounded-2xl transition-opacity duration-300 pointer-events-none ${isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                                                }`} />
 
                                             {isMobile ? (
                                                 /* Mobile: Vertical layout - centered image above text */
