@@ -106,10 +106,27 @@ const SECTIONS = [
     }
 ];
 
+// Hook to detect mobile devices
+const useIsMobile = () => {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    return isMobile;
+};
+
 export default function StanfordPage() {
     const [mounted, setMounted] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [contentReady, setContentReady] = useState(false);
+    const isMobile = useIsMobile();
 
     useEffect(() => {
         setMounted(true);
@@ -132,117 +149,126 @@ export default function StanfordPage() {
 
     return (
         <div className="min-h-screen bg-[#050505] text-white font-[family-name:var(--font-inter)] selection:bg-white/20 selection:text-white overflow-x-hidden relative">
-            <GrainOverlay />
+            {/* Grain overlay - disabled on mobile for performance */}
+            {!isMobile && <GrainOverlay />}
 
-            {/* Organic Animated Background */}
+            {/* Background - Simplified for mobile, full animations for desktop */}
             <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-                {/* Base Gradient - Animated breathing pulse */}
-                <motion.div
-                    animate={{
-                        opacity: [0.85, 1, 0.85],
-                    }}
-                    transition={{
-                        duration: 6,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                    className="absolute inset-0 bg-gradient-to-b from-[#5A1818] via-[#1a0505] to-[#050202]"
-                />
+                {isMobile ? (
+                    /* Mobile: Simple static gradient - no blur, no animations */
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#5A1818] via-[#2a0808] to-[#0a0202]" />
+                ) : (
+                    /* Desktop: Full animated background */
+                    <>
+                        {/* Base Gradient - Animated breathing pulse */}
+                        <motion.div
+                            animate={{
+                                opacity: [0.85, 1, 0.85],
+                            }}
+                            transition={{
+                                duration: 6,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                            className="absolute inset-0 bg-gradient-to-b from-[#5A1818] via-[#1a0505] to-[#050202]"
+                        />
 
-                {/* Large ambient blob 1 - Upper left, visible drift */}
-                <motion.div
-                    animate={{
-                        x: ['-8%', '15%', '-8%'],
-                        y: ['-8%', '12%', '-8%'],
-                        scale: [1, 1.2, 1],
-                        opacity: [0.45, 0.55, 0.45],
-                    }}
-                    transition={{
-                        duration: 12,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                    }}
-                    className="absolute top-[-30%] left-[-20%] w-[90%] h-[90%] bg-[#FF3030] blur-[160px] rounded-full will-change-transform"
-                />
+                        {/* Large ambient blob 1 - Upper left, visible drift */}
+                        <motion.div
+                            animate={{
+                                x: ['-8%', '15%', '-8%'],
+                                y: ['-8%', '12%', '-8%'],
+                                scale: [1, 1.2, 1],
+                                opacity: [0.45, 0.55, 0.45],
+                            }}
+                            transition={{
+                                duration: 12,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }}
+                            className="absolute top-[-30%] left-[-20%] w-[90%] h-[90%] bg-[#FF3030] blur-[160px] rounded-full will-change-transform"
+                        />
 
-                {/* Large ambient blob 2 - Bottom right, counter-drift */}
-                <motion.div
-                    animate={{
-                        x: ['8%', '-12%', '8%'],
-                        y: ['8%', '-15%', '8%'],
-                        scale: [1.15, 0.95, 1.15],
-                        opacity: [0.4, 0.5, 0.4],
-                    }}
-                    transition={{
-                        duration: 15,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 2
-                    }}
-                    className="absolute bottom-[-40%] right-[-30%] w-[100%] h-[100%] bg-[#881515] blur-[180px] rounded-full will-change-transform"
-                />
+                        {/* Large ambient blob 2 - Bottom right, counter-drift */}
+                        <motion.div
+                            animate={{
+                                x: ['8%', '-12%', '8%'],
+                                y: ['8%', '-15%', '8%'],
+                                scale: [1.15, 0.95, 1.15],
+                                opacity: [0.4, 0.5, 0.4],
+                            }}
+                            transition={{
+                                duration: 15,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: 2
+                            }}
+                            className="absolute bottom-[-40%] right-[-30%] w-[100%] h-[100%] bg-[#881515] blur-[180px] rounded-full will-change-transform"
+                        />
 
-                {/* Center glow - pronounced breathing pulse */}
-                <motion.div
-                    animate={{
-                        scale: [1, 1.25, 1],
-                        opacity: [0.25, 0.4, 0.25],
-                    }}
-                    transition={{
-                        duration: 8,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 1
-                    }}
-                    className="absolute top-[20%] left-[30%] w-[60%] h-[60%] bg-[#FF5555] blur-[140px] rounded-full will-change-transform"
-                />
+                        {/* Center glow - pronounced breathing pulse */}
+                        <motion.div
+                            animate={{
+                                scale: [1, 1.25, 1],
+                                opacity: [0.25, 0.4, 0.25],
+                            }}
+                            transition={{
+                                duration: 8,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: 1
+                            }}
+                            className="absolute top-[20%] left-[30%] w-[60%] h-[60%] bg-[#FF5555] blur-[140px] rounded-full will-change-transform"
+                        />
 
-                {/* White highlight 1 - Upper right, visible organic drift */}
-                <motion.div
-                    animate={{
-                        x: [0, 80, -50, 0],
-                        y: [0, -60, 30, 0],
-                        opacity: [0.12, 0.2, 0.08, 0.12],
-                    }}
-                    transition={{
-                        duration: 10,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                    }}
-                    className="absolute top-[-10%] right-[0%] w-[70%] h-[70%] bg-white blur-[180px] rounded-full mix-blend-soft-light will-change-transform"
-                />
+                        {/* White highlight 1 - Upper right, visible organic drift */}
+                        <motion.div
+                            animate={{
+                                x: [0, 80, -50, 0],
+                                y: [0, -60, 30, 0],
+                                opacity: [0.12, 0.2, 0.08, 0.12],
+                            }}
+                            transition={{
+                                duration: 10,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                            }}
+                            className="absolute top-[-10%] right-[0%] w-[70%] h-[70%] bg-white blur-[180px] rounded-full mix-blend-soft-light will-change-transform"
+                        />
 
-                {/* White highlight 2 - Lower area, breathing float */}
-                <motion.div
-                    animate={{
-                        x: [-30, 50, -30],
-                        y: [0, -40, 0],
-                        opacity: [0.08, 0.15, 0.08],
-                    }}
-                    transition={{
-                        duration: 12,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 3
-                    }}
-                    className="absolute bottom-[10%] left-[10%] w-[50%] h-[50%] bg-[#FFE8E8] blur-[160px] rounded-full mix-blend-soft-light will-change-transform"
-                />
+                        {/* White highlight 2 - Lower area, breathing float */}
+                        <motion.div
+                            animate={{
+                                x: [-30, 50, -30],
+                                y: [0, -40, 0],
+                                opacity: [0.08, 0.15, 0.08],
+                            }}
+                            transition={{
+                                duration: 12,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: 3
+                            }}
+                            className="absolute bottom-[10%] left-[10%] w-[50%] h-[50%] bg-[#FFE8E8] blur-[160px] rounded-full mix-blend-soft-light will-change-transform"
+                        />
 
-                {/* Accent color shift - pink/rose undertone */}
-                <motion.div
-                    animate={{
-                        x: ['-15%', '10%', '-15%'],
-                        y: ['15%', '-10%', '15%'],
-                        opacity: [0.15, 0.25, 0.15],
-                    }}
-                    transition={{
-                        duration: 18,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: 1
-                    }}
-                    className="absolute top-[40%] right-[-10%] w-[60%] h-[80%] bg-[#DD4477] blur-[180px] rounded-full will-change-transform"
-                />
+                        {/* Accent color shift - pink/rose undertone */}
+                        <motion.div
+                            animate={{
+                                x: ['-15%', '10%', '-15%'],
+                                y: ['15%', '-10%', '15%'],
+                                opacity: [0.15, 0.25, 0.15],
+                            }}
+                            transition={{
+                                duration: 18,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                                delay: 1
+                            }}
+                            className="absolute top-[40%] right-[-10%] w-[60%] h-[80%] bg-[#DD4477] blur-[180px] rounded-full will-change-transform"
+                        />
+                    </>
+                )}
             </div>
 
             {/* Navigation */}
@@ -253,7 +279,7 @@ export default function StanfordPage() {
             >
                 <div className="pointer-events-auto">
                     <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs font-bold tracking-[0.3em] uppercase opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
-                        Cornell <span className="text-white">GenAI</span> Club
+                        Generative AI <span className="text-white">@ Cornell</span>
                     </a>
                 </div>
                 <div className="flex gap-6 text-white/70 pointer-events-auto">
