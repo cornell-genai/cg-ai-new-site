@@ -415,16 +415,17 @@ export default function StanfordPage() {
                                     }}
                                     style={{ transformOrigin: "center center" }}
                                 >
-                                    {/* Close Button - Floating */}
+                                    {/* Close Button - Floating with larger touch target on mobile */}
                                     <motion.button
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0 }}
                                         transition={{ duration: 0.25, delay: 0.2 }}
                                         onClick={(e) => { e.stopPropagation(); setSelectedId(null); }}
-                                        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-white/50 hover:text-white transition-colors group"
+                                        className="absolute top-4 left-4 z-[200] flex items-center gap-2 text-white/70 hover:text-white active:text-white transition-colors group p-3 -m-3 touch-manipulation"
+                                        style={{ WebkitTapHighlightColor: 'transparent' }}
                                     >
-                                        <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform duration-200" />
+                                        <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform duration-200" />
                                         <span className="text-sm font-medium uppercase tracking-widest">Back</span>
                                     </motion.button>
 
