@@ -2,383 +2,436 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
-import {
-  X,
-  Github,
-  Linkedin,
-  Twitter,
-  Layers,
-  Menu
-} from 'lucide-react';
+import { Twitter, Youtube, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 
-/**
- * GENAI AT CORNELL: THE STANFORD-INSPIRED EVOLUTION
- * Vibe: Organic Digital, Diffused Visuals, Shared Layout Transitions.
- */
+import './globals.css';
+import ProjectGrid from '@/components/stanford/ProjectGrid';
+import TeamDirectory from '@/components/stanford/TeamDirectory';
+import RecruitmentTimeline from '@/components/stanford/RecruitmentTimeline';
 
-const PROJECTS = [
-  {
-    id: 'classgpt',
-    title: 'ClassGPT (SP25)',
-    category: 'Academic Infrastructure',
-    tagline: 'AI Tutors for Cornell',
-    description: 'Creating AI Tutors educated on course content for professors and students.',
-    details: 'ClassGPT allows professors to create AI Tutors educated on their course content. Students can join classes and instantly access an AI Tutor specifically educated on that class content, facilitating personalized learning at scale.',
-    image: '/classgpt.png',
-  },
-  {
-    id: 'quickfi',
-    title: 'QuickFi Agentic Mesh',
-    category: 'Enterprise Infrastructure',
-    tagline: 'Scaleable Underwriting',
-    description: 'Automating industrial underwriting through multi-agent verification.',
-    details: 'Our collaboration with QuickFi focuses on two main pillars: AI Insurance Verification to validate coverage details, and Automated Vendor Due Diligence to verify business legitimacy against risk databases. The system reduces manual processing time while increasing compliance accuracy.',
-    image: '/quickfi-logo-01-1.png',
-  },
-  {
-    id: 'swarm',
-    title: 'ComputeSwarm V4',
-    category: 'Distributed Computing',
-    tagline: 'Dynamic Resource Allocation',
-    description: 'A decentralized GPU orchestration layer designed for Cornell’s local compute nodes.',
-    details: 'ComputeSwarm V4 manages the allocation of distributed GPUs across campus. It provides a seamless API for researchers to submit training jobs that are automatically partitioned and executed across the most efficient available hardware nodes.',
-    image: 'https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=1200',
-  }
-];
+// Reusing the grain overlay component
+const GrainOverlay = () => (
+    <div className="fixed inset-0 pointer-events-none z-[99] opacity-[0.07] mix-blend-overlay"
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+    />
+);
 
-const LEADERSHIP = [
-  { name: "Daniel Sachs", role: "Founding President", image: "/pfps/daniel.png" },
-  { name: "Erik Pedersen", role: "Vice-President", image: "/pfps/erik.png" },
-  { name: "Morgan Stuart", role: "Lead Engineer", image: "/pfps/morgan.png" },
-  { name: "Merek Soriano", role: "Head of Partnerships", image: "/pfps/merek.png" },
-  { name: "David Lee", role: "Head of Product", image: "/pfps/david.png" },
-];
+// Snappy ease curve - no bounce, professional feel
+const SNAPPY_EASE = [0.32, 0.72, 0, 1] as const;
+const SMOOTH_EASE = [0.22, 1, 0.36, 1] as const;
 
-// --- Sub-components ---
-
-import { GrainOverlay } from '@/components/ui/GrainOverlay';
-import { DiffusedImage } from '@/components/ui/DiffusedImage';
-
-const App = () => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return <div className="min-h-screen bg-[#050505]" />;
-
-  const selectedProject = PROJECTS.find(p => p.id === selectedId);
-
-  return (
-    <div className="min-h-screen bg-[#050505] text-[#FFFFFF] font-sans selection:bg-[#E62E2E] selection:text-white overflow-x-hidden">
-      <GrainOverlay />
-
-      {/* Background Decorative Gradients */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-10%] left-[-5%] w-[50%] h-[50%] bg-[#E62E2E]/5 blur-[160px] rounded-full" />
-        <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-[#E62E2E]/5 blur-[120px] rounded-full" />
-      </div>
-
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-[60] px-6 sm:px-12 py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4 sm:gap-6">
-            <div className="w-10 h-10 border border-white/10 flex items-center justify-center rounded-sm bg-white/5 backdrop-blur-md">
-              <span className="text-[#E62E2E] font-bold text-xl leading-none">C</span>
-            </div>
-            <div>
-              <h1 className="text-xs sm:text-sm font-bold tracking-tight uppercase">Generative AI at Cornell</h1>
-              <p className="text-[10px] text-white/30 font-medium uppercase tracking-[0.2em]">Research & Implementation</p>
-            </div>
-          </div>
-
-          <div className="hidden lg:flex items-center gap-12 text-[10px] font-bold tracking-[0.3em] uppercase text-white/40">
-            <a href="#" className="hover:text-white transition-colors">Lab</a>
-            <a href="#" className="hover:text-white transition-colors">Projects</a>
-            <a href="#" className="hover:text-white transition-colors">People</a>
-            <button className="flex items-center gap-2 group">
-              <span className="h-[1px] w-8 bg-white/10 group-hover:w-12 group-hover:bg-[#E62E2E] transition-all" />
-              <span className="text-white group-hover:text-[#E62E2E]">Inquiry</span>
-            </button>
-          </div>
-
-          <div className="lg:hidden">
-            <Menu size={20} className="text-white/40" />
-          </div>
-        </div>
-      </nav>
-
-      <main className="relative z-10 pt-48 sm:pt-64 px-6 sm:px-12 max-w-7xl mx-auto">
-
-        {/* Hero Section */}
-        <section className="mb-48">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="flex items-center gap-4 mb-8">
-              <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#E62E2E]">Vanguard MMXXVI</span>
-              <div className="h-[1px] flex-1 max-w-[40px] bg-white/10" />
-            </div>
-
-            <h2 className="text-6xl md:text-[110px] font-bold leading-[0.92] tracking-tighter mb-16">
-              Engineering <br />
-              <span className="italic font-serif font-light text-white/80 pr-4">Autonomous</span> <br />
-              Agency.
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-16 items-end">
-              <p className="text-lg md:text-xl text-white/40 leading-relaxed font-light max-w-lg">
-                We operate as a high-fidelity implementation lab at Cornell, dedicated to architecting the next generation of scalable intelligence through rigorous hardware-software integration.
-              </p>
-              <div className="flex flex-col gap-6 font-mono text-[10px] text-white/20 uppercase tracking-[0.2em]">
-                <div className="flex justify-between border-b border-white/5 pb-4">
-                  <span>Current Focus</span>
-                  <span className="text-white/60">Multi-Agent Orchestration</span>
-                </div>
-                <div className="flex justify-between border-b border-white/5 pb-4">
-                  <span>Node Status</span>
-                  <span className="text-green-500/60 flex items-center gap-2">
-                    <span className="w-1 h-1 bg-green-500 rounded-full animate-pulse" /> Operational
-                  </span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </section>
-
-        {/* Project Section */}
-        <section className="mb-64">
-          <div className="flex items-end justify-between mb-16 border-b border-white/5 pb-8">
-            <h3 className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/30">Active Initiatives</h3>
-            <span className="text-[9px] font-mono text-white/20">EXPLORE WORK [ 0{PROJECTS.length} ]</span>
-          </div>
-
-          <LayoutGroup>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-              {PROJECTS.map(project => (
-                <motion.div
-                  layoutId={project.id}
-                  key={project.id}
-                  onClick={() => setSelectedId(project.id)}
-                  className="group cursor-pointer"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                >
-                  <motion.div className="aspect-[3/4] rounded-lg overflow-hidden mb-8 bg-[#121212] border border-white/5 relative">
-                    <DiffusedImage src={project.image} alt={project.title} />
-                  </motion.div>
-                  <motion.div layoutId={`content-${project.id}`}>
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E62E2E] mb-3 block">{project.tagline}</span>
-                    <h4 className="text-2xl font-bold tracking-tight mb-3">{project.title}</h4>
-                    <p className="text-sm text-white/30 leading-relaxed font-light">{project.description}</p>
-                  </motion.div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Expansion Overlay */}
-            <AnimatePresence>
-              {selectedId && selectedProject && (
-                <>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setSelectedId(null)}
-                    className="fixed inset-0 bg-[#050505]/90 backdrop-blur-md z-[70] cursor-zoom-out"
-                  />
-                  <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-8 pointer-events-none">
-                    <motion.div
-                      layoutId={selectedId}
-                      className="bg-[#0A0A0A] w-full max-w-6xl rounded-2xl overflow-hidden pointer-events-auto shadow-2xl border border-white/10"
-                    >
-                      <div className="grid lg:grid-cols-2 h-full max-h-[90vh] overflow-y-auto lg:overflow-visible">
-                        <div className="h-[300px] lg:h-auto border-b lg:border-b-0 lg:border-r border-white/10 relative">
-                          <DiffusedImage src={selectedProject.image} alt={selectedProject.title} />
-                        </div>
-                        <div className="p-8 sm:p-16 flex flex-col justify-between">
-                          <div>
-                            <div className="flex justify-between items-start mb-12">
-                              <motion.div layoutId={`content-${selectedId}`}>
-                                <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#E62E2E] mb-2 block">
-                                  {selectedProject.category}
-                                </span>
-                                <h3 className="text-3xl sm:text-5xl font-bold tracking-tight">{selectedProject.title}</h3>
-                              </motion.div>
-                              <button
-                                onClick={(e) => { e.stopPropagation(); setSelectedId(null); }}
-                                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
-                              >
-                                <X size={18} />
-                              </button>
-                            </div>
-                            <div className="space-y-6 text-white/50 text-base sm:text-lg leading-relaxed font-light mb-12">
-                              <p>{selectedProject.details}</p>
-                            </div>
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row gap-4">
-                            <button className="flex-1 py-4 bg-white text-black font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-[#E62E2E] hover:text-white transition-all">
-                              View Project
-                            </button>
-                            <button className="px-8 py-4 border border-white/10 hover:bg-white/5 transition-all">
-                              <Github size={18} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </div>
-                </>
-              )}
-            </AnimatePresence>
-          </LayoutGroup>
-        </section>
-
-        {/* Leadership Section - NEW */}
-        <section className="mb-64">
-          <div className="flex items-end justify-between mb-16 border-b border-white/5 pb-8">
-            <h3 className="text-[10px] font-bold tracking-[0.4em] uppercase text-white/30">The Vanguard</h3>
-            <span className="text-[9px] font-mono text-white/20">LEADERSHIP [ 0{LEADERSHIP.length} ]</span>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
-            {LEADERSHIP.map((leader) => (
-              <motion.div
-                key={leader.name}
-                className="group"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-              >
-                <div className="aspect-[3/4] overflow-hidden mb-6 bg-[#121212] border border-white/5 rounded-sm relative grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700">
-                  <Image
-                    src={leader.image}
-                    alt={leader.name}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-60" />
-                </div>
-                <h4 className="text-sm font-bold tracking-tight text-white/90 group-hover:text-[#E62E2E] transition-colors">{leader.name}</h4>
-                <p className="text-[10px] text-white/40 uppercase tracking-[0.1em] mt-1">{leader.role}</p>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        {/* Values / Principles Section */}
-        <section className="mb-64">
-          <div className="grid lg:grid-cols-2 gap-32">
-            <div>
-              <h3 className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#E62E2E] mb-12">Core Principles</h3>
-              <p className="text-4xl sm:text-5xl font-bold leading-[1.1] tracking-tight text-white/90">
-                We believe that <span className="italic font-serif font-light">infrastructure</span> is the true product of the generative era.
-              </p>
-            </div>
-            <div className="space-y-16">
-              <div className="group">
-                <div className="flex items-center gap-6 mb-6">
-                  <span className="text-white/10 font-mono text-xs">01</span>
-                  <h4 className="text-lg font-bold uppercase tracking-widest group-hover:text-[#E62E2E] transition-colors">Implementation First</h4>
-                </div>
-                <p className="text-white/30 leading-relaxed font-light group-hover:text-white/60 transition-colors duration-500">
-                  Theoretical research finds its true value when validated through hardware-software co-design. We build the stacks that run the future.
-                </p>
-              </div>
-              <div className="group">
-                <div className="flex items-center gap-6 mb-6">
-                  <span className="text-white/10 font-mono text-xs">02</span>
-                  <h4 className="text-lg font-bold uppercase tracking-widest group-hover:text-[#E62E2E] transition-colors">Distributed Agency</h4>
-                </div>
-                <p className="text-white/30 leading-relaxed font-light group-hover:text-white/60 transition-colors duration-500">
-                  We specialize in systems where intelligence is decentralized, resilient, and capable of autonomous decision-making across high-latency networks.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA / Contact */}
-        <section className="mb-64 border-t border-white/5 pt-32 text-center">
-          <h3 className="text-xs font-bold tracking-[0.4em] uppercase text-white/20 mb-12">Initiate Collaboration</h3>
-          <h2 className="text-4xl sm:text-7xl font-bold tracking-tighter mb-16">Ready to <span className="italic font-serif font-light">Build?</span></h2>
-          <button className="px-12 py-5 bg-white text-black font-bold text-xs uppercase tracking-[0.3em] hover:bg-[#E62E2E] hover:text-white transition-all transform hover:scale-105 active:scale-95">
-            Contact the Lab
-          </button>
-        </section>
-
-        {/* Footer */}
-        <footer className="pb-20 pt-20 border-t border-white/5">
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-16 mb-24">
-            <div className="max-w-md">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="w-8 h-8 border border-[#E62E2E] flex items-center justify-center text-[#E62E2E] font-bold text-xs">C</div>
-                <h5 className="text-sm font-bold uppercase tracking-[0.2em]">GenAI Cornell</h5>
-              </div>
-              <p className="text-white/20 text-sm leading-relaxed font-light mb-8">
-                Architecting autonomous systems for a decentralized world. Operated by the Cornell Vanguard Collective.
-              </p>
-              <div className="flex gap-6 text-white/30">
-                <Twitter size={16} className="hover:text-white transition-colors" />
-                <Linkedin size={16} className="hover:text-white transition-colors" />
-                <Github size={16} className="hover:text-white transition-colors" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-16 sm:gap-24">
-              <div>
-                <h6 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-8">Nodes</h6>
-                <div className="flex flex-col gap-4 text-xs font-bold text-white/60">
-                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Lab Status</a>
-                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Archives</a>
-                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Register</a>
-                </div>
-              </div>
-              <div>
-                <h6 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-8">Protocols</h6>
-                <div className="flex flex-col gap-4 text-xs font-bold text-white/60">
-                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Whitepaper</a>
-                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Ethics</a>
-                  <a href="#" className="hover:text-[#E62E2E] transition-colors">Compute</a>
-                </div>
-              </div>
-              <div className="col-span-2 sm:col-span-1">
-                <h6 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-8">Contact</h6>
-                <div className="text-xs font-bold text-white/60 leading-relaxed uppercase tracking-tighter">
-                  Bill & Melinda Gates Hall<br />
-                  Ithaca, NY 14853
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row justify-between items-center pt-12 border-t border-white/5 text-[9px] font-bold uppercase tracking-[0.4em] text-white/10">
-            <div>© 2026 CORNELL GENERATIVE AI // ALL SYSTEMS NOMINAL</div>
-            <div className="flex gap-12 mt-4 md:mt-0">
-              <span className="flex items-center gap-2"><span className="w-1 h-1 bg-green-500/40 rounded-full" /> Latency: 22ms</span>
-              <span className="flex items-center gap-2 text-[#E62E2E]/30"><Layers size={10} /> Implementation Lab</span>
-            </div>
-          </div>
-        </footer>
-
-      </main>
-
-      {/* Persistent Floating Command */}
-      <div className="fixed bottom-8 right-8 z-[60] hidden sm:block">
-        <button className="w-14 h-14 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full flex items-center justify-center group hover:bg-[#E62E2E] transition-all duration-700">
-          <Layers size={18} className="text-white group-hover:rotate-12 transition-transform" />
-        </button>
-      </div>
-    </div>
-  );
+// Animation variants for coordinated orchestration
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.12,
+            delayChildren: 0.15,
+            when: "beforeChildren"
+        }
+    },
+    exit: {
+        opacity: 0,
+        transition: { duration: 0.2, ease: "easeOut" as const }
+    }
 };
 
-export default App;
+const cardVariants = {
+    hidden: { opacity: 0, y: 40, scale: 0.95 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: {
+            duration: 0.5,
+            ease: SMOOTH_EASE
+        }
+    }
+};
+
+const headerVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: 0.6, ease: SMOOTH_EASE }
+    }
+};
+
+const contentVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.4,
+            ease: SMOOTH_EASE,
+            staggerChildren: 0.08,
+            delayChildren: 0.1
+        }
+    },
+    exit: {
+        opacity: 0,
+        transition: { duration: 0.15 }
+    }
+};
+
+const SECTIONS = [
+    {
+        id: 'projects',
+        title: 'Projects',
+        subtitle: 'Building the future',
+        description: 'Explore our cutting-edge initiatives from QuickFi to ComputeSwarm.',
+        longDescription: 'Our projects range from large language model research to practical applications in industry. Students work in teams to build, deploy, and publish their work.',
+        image: '/network.png'
+    },
+    {
+        id: 'team',
+        title: 'Team',
+        subtitle: 'World-class talent',
+        description: 'Meet the students and faculty driving the generative revolution.',
+        longDescription: 'Our team is composed of undergraduate and graduate students from across the university, united by a passion for AI.',
+        image: '/tower.png'
+    },
+    {
+        id: 'involved',
+        title: 'Get Involved',
+        subtitle: 'Join the community',
+        description: 'Join our community, apply for projects, or contact us.',
+        longDescription: 'We are always looking for passionate individuals to join our ranks. Whether you are a developer, designer, or researcher, there is a place for you here.',
+        image: '/envelopes.png'
+    }
+];
+
+export default function StanfordPage() {
+    const [mounted, setMounted] = useState(false);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [contentReady, setContentReady] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Reset content ready state when selection changes
+    useEffect(() => {
+        if (selectedId) {
+            // Small delay to let the layout animation start first
+            const timer = setTimeout(() => setContentReady(true), 300);
+            return () => clearTimeout(timer);
+        } else {
+            setContentReady(false);
+        }
+    }, [selectedId]);
+
+    if (!mounted) return <div className="min-h-screen bg-black" />;
+
+    const selectedSection = SECTIONS.find(s => s.id === selectedId);
+
+    return (
+        <div className="min-h-screen bg-[#050505] text-white font-[family-name:var(--font-inter)] selection:bg-white/20 selection:text-white overflow-x-hidden relative">
+            <GrainOverlay />
+
+            {/* Organic Animated Background */}
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+                {/* Base Gradient - Warmer, more visible maroon tones */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#3A1212] via-[#1a0808] to-[#0a0505]" />
+
+                {/* Large ambient blob 1 - Upper left, slow drift */}
+                <motion.div
+                    animate={{
+                        x: ['-5%', '10%', '-5%'],
+                        y: ['-5%', '8%', '-5%'],
+                        scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                        duration: 30,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                    className="absolute top-[-30%] left-[-20%] w-[90%] h-[90%] bg-[#D42020] blur-[200px] opacity-[0.35] rounded-full will-change-transform"
+                />
+
+                {/* Large ambient blob 2 - Bottom right, counter-drift */}
+                <motion.div
+                    animate={{
+                        x: ['5%', '-8%', '5%'],
+                        y: ['5%', '-10%', '5%'],
+                        scale: [1.1, 1, 1.1],
+                    }}
+                    transition={{
+                        duration: 35,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 5
+                    }}
+                    className="absolute bottom-[-40%] right-[-30%] w-[100%] h-[100%] bg-[#8B1A1A] blur-[220px] opacity-[0.3] rounded-full will-change-transform"
+                />
+
+                {/* Center glow - subtle pulse */}
+                <motion.div
+                    animate={{
+                        scale: [1, 1.15, 1],
+                        opacity: [0.15, 0.25, 0.15],
+                    }}
+                    transition={{
+                        duration: 12,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 2
+                    }}
+                    className="absolute top-[20%] left-[30%] w-[60%] h-[60%] bg-[#FF3333] blur-[180px] rounded-full will-change-transform"
+                />
+
+                {/* White highlight 1 - Upper right, organic drift */}
+                <motion.div
+                    animate={{
+                        x: [0, 50, -30, 0],
+                        y: [0, -40, 20, 0],
+                        opacity: [0.08, 0.14, 0.06, 0.08],
+                    }}
+                    transition={{
+                        duration: 25,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                    }}
+                    className="absolute top-[-10%] right-[0%] w-[70%] h-[70%] bg-white blur-[200px] rounded-full mix-blend-soft-light will-change-transform"
+                />
+
+                {/* White highlight 2 - Lower area, slow float */}
+                <motion.div
+                    animate={{
+                        x: [-20, 30, -20],
+                        y: [0, -25, 0],
+                        opacity: [0.05, 0.1, 0.05],
+                    }}
+                    transition={{
+                        duration: 28,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 8
+                    }}
+                    className="absolute bottom-[10%] left-[10%] w-[50%] h-[50%] bg-[#FFE8E8] blur-[180px] rounded-full mix-blend-soft-light will-change-transform"
+                />
+
+                {/* Accent color shift - pink/rose undertone */}
+                <motion.div
+                    animate={{
+                        x: ['-10%', '5%', '-10%'],
+                        y: ['10%', '-5%', '10%'],
+                        opacity: [0.1, 0.18, 0.1],
+                    }}
+                    transition={{
+                        duration: 40,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 3
+                    }}
+                    className="absolute top-[40%] right-[-10%] w-[60%] h-[80%] bg-[#CC3366] blur-[200px] rounded-full will-change-transform"
+                />
+            </div>
+
+            {/* Navigation */}
+            <motion.nav
+                animate={{ opacity: selectedId ? 0 : 1 }}
+                transition={{ duration: 0.2 }}
+                className="fixed top-0 left-0 right-0 z-50 px-6 sm:px-12 py-6 flex justify-between items-center max-w-[1600px] mx-auto w-full pointer-events-none"
+            >
+                <div className="pointer-events-auto">
+                    <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs font-bold tracking-[0.3em] uppercase opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+                        Cornell <span className="text-white">GenAI</span> Club
+                    </a>
+                </div>
+                <div className="flex gap-6 text-white/70 pointer-events-auto">
+                    <a href="https://twitter.com" target="_blank" className="hover:text-white transition-colors"><Twitter size={18} /></a>
+                    <a href="https://youtube.com" target="_blank" className="hover:text-white transition-colors"><Youtube size={18} /></a>
+                </div>
+            </motion.nav>
+
+            <LayoutGroup>
+                <main className="relative z-10 min-h-screen max-w-[1600px] mx-auto px-4 sm:px-8 h-full flex flex-col">
+
+                    {/* Landing View */}
+                    <AnimatePresence mode="wait">
+                        {!selectedId && (
+                            <motion.div
+                                key="landing"
+                                variants={containerVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="exit"
+                                className="flex flex-col h-full pt-24 pb-12"
+                            >
+                                {/* Header Section */}
+                                <motion.section
+                                    variants={headerVariants}
+                                    className="max-w-4xl mb-16 px-2"
+                                >
+                                    <h1 className="text-5xl md:text-8xl font-semibold tracking-tight leading-[0.95] mb-6 mix-blend-overlay opacity-90">
+                                        Cornell's home <br />
+                                        for students in AI
+                                    </h1>
+
+                                    <p className="text-lg md:text-xl text-white/60 font-normal leading-relaxed max-w-2xl">
+                                        Cornell GenAI is where the students that shape the future of AI at Cornell come together.
+                                        From research to industry, we offer opportunities to connect with titans of industry,
+                                        learn from the best in the field, and get started in the field.
+                                    </p>
+                                </motion.section>
+
+                                {/* 3 Columns Grid - Centered & Larger */}
+                                <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 items-center justify-items-center w-full max-w-[1800px] mx-auto flex-1">
+                                    {SECTIONS.map((section) => (
+                                        <motion.div
+                                            layoutId={`card-${section.id}`}
+                                            key={section.id}
+                                            variants={cardVariants}
+                                            onClick={() => setSelectedId(section.id)}
+                                            whileHover={{ scale: 1.03 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            transition={{
+                                                layout: { duration: 0.4, ease: SNAPPY_EASE },
+                                                scale: { duration: 0.2 }
+                                            }}
+                                            className="group relative flex flex-col items-center text-center cursor-pointer w-full h-full justify-center p-4 will-change-transform"
+                                            style={{ transformOrigin: "center center" }}
+                                        >
+                                            {/* Translucent overlay - covers full card, behind everything */}
+                                            <div className="absolute inset-0 bg-white/[0.03] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                                            {/* Image Asset - No layoutId to prevent competing animations */}
+                                            <div className="relative h-64 w-full md:w-[90%] aspect-[4/5] mb-6 overflow-hidden rounded-sm bg-transparent z-10">
+                                                <Image
+                                                    src={section.image}
+                                                    alt={section.title}
+                                                    fill
+                                                    className="object-contain object-center transition-all duration-300"
+                                                />
+                                            </div>
+
+                                            <div className="relative z-10 px-2 flex flex-col items-center">
+                                                <h3 className="text-4xl md:text-6xl font-semibold mb-4 tracking-tight group-hover:opacity-80 transition-opacity duration-200">
+                                                    {section.title}
+                                                </h3>
+                                                <p className="text-sm text-white/50 font-normal max-w-[80%] group-hover:text-white/70 transition-colors duration-200">
+                                                    {section.description}
+                                                </p>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </section>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Detailed Expanded View */}
+                    <AnimatePresence>
+                        {selectedId && selectedSection && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
+                                {/* Backdrop */}
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="absolute inset-0 bg-black/90 backdrop-blur-xl pointer-events-auto"
+                                    onClick={() => setSelectedId(null)}
+                                />
+
+                                {/* Expanded Card Container */}
+                                <motion.div
+                                    layoutId={`card-${selectedId}`}
+                                    className="relative z-10 w-full max-w-[1600px] h-full md:h-[90vh] bg-[#0a0a0a] md:rounded-2xl overflow-hidden shadow-2xl flex flex-col pointer-events-auto border border-white/5 will-change-transform"
+                                    transition={{
+                                        layout: { duration: 0.4, ease: SNAPPY_EASE }
+                                    }}
+                                    style={{ transformOrigin: "center center" }}
+                                >
+                                    {/* Close Button - Floating */}
+                                    <motion.button
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.25, delay: 0.2 }}
+                                        onClick={(e) => { e.stopPropagation(); setSelectedId(null); }}
+                                        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-white/50 hover:text-white transition-colors group"
+                                    >
+                                        <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform duration-200" />
+                                        <span className="text-sm font-medium uppercase tracking-widest">Back</span>
+                                    </motion.button>
+
+                                    {/* Main Content Container - Single Column */}
+                                    <div className="flex-1 overflow-y-auto relative w-full">
+
+                                        {/* Top Right Absolute Image - Fade in, no layoutId */}
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            transition={{ duration: 0.4, ease: SMOOTH_EASE, delay: 0.1 }}
+                                            className="fixed md:absolute top-0 right-0 w-full md:w-[400px] h-64 md:h-[400px] pointer-events-none opacity-20 md:opacity-100 mix-blend-screen md:mix-blend-normal z-0 grayscale will-change-transform"
+                                        >
+                                            <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-l from-black via-transparent to-transparent z-10" />
+                                            <Image
+                                                src={selectedSection.image}
+                                                alt={selectedSection.title}
+                                                fill
+                                                className="object-contain object-right-top opacity-50 md:opacity-100"
+                                            />
+                                        </motion.div>
+
+                                        {/* Content Wrapper - Waits for layout animation */}
+                                        <div className="p-8 md:p-16 pt-32 md:pt-24 relative z-10 w-full max-w-[1400px] mx-auto">
+                                            <AnimatePresence>
+                                                {contentReady && (
+                                                    <motion.div
+                                                        variants={contentVariants}
+                                                        initial="hidden"
+                                                        animate="visible"
+                                                        exit="exit"
+                                                        className="w-full"
+                                                    >
+                                                        <motion.div
+                                                            variants={contentVariants}
+                                                            className="max-w-4xl"
+                                                        >
+                                                            <motion.h2
+                                                                variants={contentVariants}
+                                                                className="text-6xl md:text-8xl font-semibold tracking-tight mb-8 text-white"
+                                                            >
+                                                                {selectedSection.title}
+                                                            </motion.h2>
+
+                                                            <motion.div
+                                                                variants={contentVariants}
+                                                                className="text-xl text-white/70 font-normal leading-relaxed mb-16 max-w-2xl"
+                                                            >
+                                                                {selectedSection.longDescription}
+                                                            </motion.div>
+                                                        </motion.div>
+
+                                                        {/* Dynamic Content - Full Width */}
+                                                        <motion.div
+                                                            variants={contentVariants}
+                                                            className="w-full pb-20"
+                                                        >
+                                                            {selectedId === 'projects' && <ProjectGrid />}
+                                                            {selectedId === 'team' && <TeamDirectory />}
+                                                            {selectedId === 'involved' && <RecruitmentTimeline />}
+                                                        </motion.div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </div>
+                        )}
+                    </AnimatePresence>
+
+                </main>
+            </LayoutGroup>
+        </div>
+    );
+}
