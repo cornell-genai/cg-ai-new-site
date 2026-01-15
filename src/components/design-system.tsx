@@ -2,7 +2,6 @@
 
 import React from "react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 /**
  * GlassCard
@@ -25,7 +24,7 @@ export function GlassCard({ children, className, hoverEffect = true, ...props }:
     >
       {/* Subtle Noise Overlay */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-noise z-0" />
-      
+
       {/* Content */}
       <div className="relative z-10">{children}</div>
     </div>
@@ -43,13 +42,13 @@ interface GlowingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export function GlowingButton({ children, className, variant = "primary", ...props }: GlowingButtonProps) {
   const isPrimary = variant === "primary";
-  
+
   return (
     <button
       className={cn(
         "group relative inline-flex items-center justify-center rounded-xl px-8 py-3.5 font-medium transition-all duration-300",
-        isPrimary 
-          ? "bg-white text-black hover:scale-105" 
+        isPrimary
+          ? "bg-white text-black hover:scale-105"
           : "bg-white/10 text-white border border-white/10 hover:bg-white/20",
         className
       )}

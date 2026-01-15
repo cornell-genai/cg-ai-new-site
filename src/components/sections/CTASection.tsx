@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ScrollSection, Container, fadeInUp } from "../layout/ScrollSection";
+import { ScrollSection, Container } from "../layout/ScrollSection";
 import { ArrowUpRight } from "lucide-react";
 
 export default function CTASection() {

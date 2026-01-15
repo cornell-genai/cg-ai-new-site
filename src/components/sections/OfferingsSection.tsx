@@ -67,7 +67,7 @@ export default function OfferingsSection() {
                     viewport={{ once: true }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
-                    {OFFERINGS.map((item, i) => (
+                    {OFFERINGS.map((item) => (
                         <motion.div
                             key={item.title}
                             variants={fadeInUp}

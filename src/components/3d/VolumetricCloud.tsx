@@ -2,7 +2,6 @@
 
 import React, { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Sphere } from "@react-three/drei";
 import { LayerMaterial, Depth, Noise } from "lamina";
 import * as THREE from "three";
 

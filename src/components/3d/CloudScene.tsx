@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Text, Float, Stars, Sparkles } from "@react-three/drei";
 import { EffectComposer, Bloom, Noise, Vignette } from "@react-three/postprocessing";
@@ -14,9 +14,8 @@ import * as THREE from "three";
  */
 function CameraController() {
     const { camera, mouse } = useThree();
-    const vec = new THREE.Vector3();
 
-    useFrame((state, delta) => {
+    useFrame(() => {
         // Smooth mouse look
         camera.position.x = THREE.MathUtils.lerp(camera.position.x, mouse.x * 2, 0.05);
         camera.position.y = THREE.MathUtils.lerp(camera.position.y, mouse.y * 2, 0.05);

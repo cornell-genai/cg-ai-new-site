@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Sparkles, BarChart3, Eye, Network, Smartphone, Leaf, Cpu } from "lucide-react";
+import { Sparkles, BarChart3, Eye, Network, Smartphone, Leaf } from "lucide-react";
 import { GlassCard } from "./design-system";
 
 /**

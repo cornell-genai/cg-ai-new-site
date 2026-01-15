@@ -2,7 +2,6 @@
 import React from 'react';
 import { GrainOverlay } from '@/components/ui/GrainOverlay';
 import { DiffusedImage } from '@/components/ui/DiffusedImage';
-import Image from "next/image";
 
 export default function PortfolioPage() {
   return (

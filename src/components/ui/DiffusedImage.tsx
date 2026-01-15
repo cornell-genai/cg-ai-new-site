@@ -11,7 +11,6 @@ export const DiffusedImage = ({ src, alt = "Visual" }: { src: string, alt?: stri
                 className="object-cover transition-all duration-1000 ease-out grayscale-[0.4] opacity-80 group-hover:grayscale-0 group-hover:opacity-100 scale-105 group-hover:scale-100"
             />
         ) : (
-            // eslint-disable-next-line @next/next/no-img-element
             <img
                 src={src}
                 alt={alt}

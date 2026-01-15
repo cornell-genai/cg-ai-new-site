@@ -3,9 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { GrainOverlay } from '@/components/ui/GrainOverlay';
-import { DiffusedImage } from '@/components/ui/DiffusedImage';
 import { Linkedin } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
 
 const executiveBoard = [

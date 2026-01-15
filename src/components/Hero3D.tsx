@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useRef, useMemo } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial, Float } from "@react-three/drei";
 import * as random from "maath/random/dist/maath-random.esm";
-import { motion } from "framer-motion";
 
 /**
  * NeuralConstellation
@@ -15,7 +14,7 @@ function NeuralConstellation(props: any) {
     // Generate 5000 random points in a sphere
     const sphere = useMemo(() => random.inSphere(new Float32Array(5000), { radius: 1.5 }), []);
 
-    useFrame((state, delta) => {
+    useFrame((_, delta) => {
         if (ref.current) {
             ref.current.rotation.x -= delta / 10;
             ref.current.rotation.y -= delta / 15;
@@ -33,25 +32,6 @@ function NeuralConstellation(props: any) {
                     depthWrite={false}
                 />
             </Points>
-        </group>
-    );
-}
-
-/**
- * ConnectingLines
- * Adds conceptual "neurons" connecting. This is a simplified visual.
- */
-function ConnectingLines() {
-    const ref = useRef<any>(null);
-    useFrame((state) => {
-        if (ref.current) {
-            ref.current.rotation.y = state.clock.getElapsedTime() * 0.05;
-        }
-    });
-
-    return (
-        <group ref={ref}>
-            {/* Abstract lines or mesh could go here, keeping it minimal for performance */}
         </group>
     );
 }
