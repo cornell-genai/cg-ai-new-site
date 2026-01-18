@@ -1,0 +1,122 @@
+"use client";
+
+import React, { useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
+import HeroTypography from "./HeroTypography";
+import ScrollIndicator from "./ScrollIndicator";
+import HeroOverlays from "./HeroOverlays";
+
+// Dynamically import the 3D background to avoid SSR issues
+const HeroBackground3D = dynamic(() => import("./HeroBackground3D"), {
+    ssr: false,
+    loading: () => (
+        <div className="absolute inset-0 bg-[#050505]" />
+    ),
+});
+
+interface HeroSectionProps {
+    headline?: string;
+    subtitle?: string;
+    onScrollPastHero?: (isPast: boolean) => void;
+}
+
+export default function HeroSection({ 
+    headline = "Cornell's home for students in AI",
+    subtitle = "Cornell GenAI is where the students that shape the future of AI at Cornell come together. From research to industry, we offer opportunities to connect with titans of industry, learn from the best in the field, and get started in the field.",
+    onScrollPastHero 
+}: HeroSectionProps) {
+    const [isMobile, setIsMobile] = useState(false);
+    const [scrollProgress, setScrollProgress] = useState(0);
+    const [isHeroVisible, setIsHeroVisible] = useState(true);
+    const heroRef = useRef<HTMLElement>(null);
+
+    // Detect mobile
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
+
+    // Track scroll progress for parallax and fade effects
+    useEffect(() => {
+        let ticking = false;
+        
+        const handleScroll = () => {
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    const scrollY = window.scrollY;
+                    const windowHeight = window.innerHeight;
+                    const progress = Math.min(1, scrollY / windowHeight);
+                    
+                    setScrollProgress(progress);
+                    
+                    const isPast = scrollY > windowHeight * 0.5;
+                    setIsHeroVisible(!isPast);
+                    onScrollPastHero?.(isPast);
+                    
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [onScrollPastHero]);
+
+    return (
+        <section 
+            ref={heroRef}
+            className="relative h-screen w-full overflow-hidden bg-[#050505]"
+            aria-label="Hero section"
+        >
+            {/* 3D Background Layer */}
+            <HeroBackground3D 
+                scrollProgress={scrollProgress}
+            />
+            
+            {/* Gradient Overlays */}
+            <HeroOverlays 
+                scrollProgress={scrollProgress}
+                isMobile={isMobile}
+            />
+            
+            {/* Content Container */}
+            <div className="relative z-10 h-full flex flex-col">
+                {/* Navigation spacer */}
+                <div className="h-20 md:h-24 shrink-0" />
+                
+                {/* Main content - vertically centered */}
+                <motion.div 
+                    className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 max-w-[1600px] mx-auto w-full"
+                    style={{
+                        opacity: 1 - scrollProgress * 1.5,
+                        transform: `translateY(${scrollProgress * -50}px)`,
+                    }}
+                >
+                    <HeroTypography 
+                        isMobile={isMobile}
+                        headline={headline}
+                        subtitle={subtitle}
+                    />
+                </motion.div>
+                
+                {/* Scroll Indicator - positioned at bottom */}
+                <div className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2">
+                    <ScrollIndicator 
+                        targetId="sections"
+                        visible={isHeroVisible && scrollProgress < 0.3}
+                    />
+                </div>
+            </div>
+            
+            {/* Bottom gradient fade into next section */}
+            <div 
+                className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#050505] to-transparent pointer-events-none z-20"
+                style={{ opacity: Math.min(1, scrollProgress * 3 + 0.3) }}
+            />
+        </section>
+    );
+}
