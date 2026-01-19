@@ -168,7 +168,7 @@ export default function StanfordPage() {
                 className="fixed top-0 left-0 right-0 z-[60] px-6 sm:px-12 py-6 flex justify-between items-center max-w-[1600px] mx-auto w-full pointer-events-none"
             >
                 <div className="pointer-events-auto">
-                    <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs font-bold tracking-[0.3em] uppercase opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
+                    <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-xs font-mono tracking-[0.3em] uppercase opacity-70 hover:opacity-100 transition-opacity cursor-pointer">
                         Generative AI <span className="text-white">@ Cornell</span>
                     </a>
                 </div>
@@ -180,8 +180,8 @@ export default function StanfordPage() {
 
             {/* Hero Section - Full viewport height */}
             <HeroSection 
-                headline="Cornell's home for students in AI"
-                subtitle="Where the students that shape the future of AI come together. Research. Build. Ship."
+                headline="AI products that streamline workflows"
+                subtitle="Connecting Cornell's most passionate developers who iterate and ship quickly with industry giants to build AI products that streamline workflows."
             />
 
             {/* Content Section - Appears after hero */}

@@ -22,9 +22,9 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ 
-    headline = "Cornell's home for students in AI",
-    subtitle = "Cornell GenAI is where the students that shape the future of AI at Cornell come together. From research to industry, we offer opportunities to connect with titans of industry, learn from the best in the field, and get started in the field.",
-    onScrollPastHero 
+                headline="AI products that streamline workflows",
+                subtitle="Connecting Cornell's most passionate developers with industry leaders to build and ship AI products.",
+                onScrollPastHero
 }: HeroSectionProps) {
     const [isMobile, setIsMobile] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
