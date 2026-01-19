@@ -180,8 +180,9 @@ export default function StanfordPage() {
 
             {/* Hero Section - Full viewport height */}
             <HeroSection 
-                headline="AI products that streamline workflows"
-                subtitle="Connecting Cornell's most passionate developers who iterate and ship quickly with industry giants to build AI products that streamline workflows."
+                headline="Cornell's home
+for students in AI"
+                subtitle="Connecting Cornell's most passionate developers with industry giants to build AI products that streamline workflows."
             />
 
             {/* Content Section - Appears after hero */}

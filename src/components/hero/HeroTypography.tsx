@@ -69,23 +69,36 @@ function AnimatedText({ text, className = "", delay = 0 }: AnimatedTextProps) {
             className={`inline-flex flex-wrap ${className}`}
             style={{ perspective: "1000px" }}
         >
-            {words.map((word, wordIndex) => (
-                <span key={wordIndex} className="inline-block mr-[0.25em] whitespace-nowrap">
-                    {word.split("").map((letter, letterIndex) => (
-                        <motion.span
-                            key={letterIndex}
-                            variants={letterVariants}
-                            className="inline-block will-change-transform"
-                            style={{ 
-                                transformStyle: "preserve-3d",
-                                animationDelay: `${delay + (wordIndex * 0.1) + (letterIndex * 0.03)}s`
-                            }}
-                        >
-                            {letter}
-                        </motion.span>
-                    ))}
-                </span>
-            ))}
+            {words.map((word, wordIndex) => {
+                const isCornells = word === "Cornell's";
+                return (
+                    <span 
+                        key={wordIndex} 
+                        className="inline-block mr-[0.25em] whitespace-nowrap"
+                    >
+                        {word.split("").map((letter, letterIndex) => (
+                            <motion.span
+                                key={letterIndex}
+                                variants={letterVariants}
+                                className="inline-block will-change-transform"
+                                style={isCornells ? {
+                                    background: 'linear-gradient(135deg, #FF4444 0%, #B31B1B 50%, #8B0000 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    backgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    transformStyle: "preserve-3d",
+                                    animationDelay: `${delay + (wordIndex * 0.1) + (letterIndex * 0.03)}s`
+                                } : {
+                                    transformStyle: "preserve-3d",
+                                    animationDelay: `${delay + (wordIndex * 0.1) + (letterIndex * 0.03)}s`
+                                }}
+                            >
+                                {letter}
+                            </motion.span>
+                        ))}
+                    </span>
+                );
+            })}
         </motion.div>
     );
 }
