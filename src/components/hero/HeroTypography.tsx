@@ -66,11 +66,11 @@ function AnimatedText({ text, className = "", delay = 0 }: AnimatedTextProps) {
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className={`flex flex-wrap ${className}`}
+            className={`inline-flex flex-wrap ${className}`}
             style={{ perspective: "1000px" }}
         >
             {words.map((word, wordIndex) => (
-                <span key={wordIndex} className="inline-flex mr-[0.25em]">
+                <span key={wordIndex} className="inline-block mr-[0.25em] whitespace-nowrap">
                     {word.split("").map((letter, letterIndex) => (
                         <motion.span
                             key={letterIndex}
@@ -202,33 +202,9 @@ export default function HeroTypography({
     
     return (
         <div className={`relative z-10 ${className}`}>
-            {/* Pre-headline label */}
-            <motion.div
-                initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-                className="mb-6 md:mb-8"
-            >
-                <span className="inline-flex items-center gap-3 text-[10px] md:text-xs font-mono uppercase tracking-[0.35em] text-white/40">
-                    <motion.span 
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        className="w-12 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-white/50 origin-left" 
-                    />
-                    Generative AI @ Cornell
-                    <motion.span 
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ duration: 0.6, delay: 0.3 }}
-                        className="w-12 h-[1px] bg-gradient-to-l from-transparent via-white/30 to-white/50 origin-right" 
-                    />
-                </span>
-            </motion.div>
-            
             {/* Main headline with letter animation */}
             <h1 className={`font-bold tracking-tight leading-[0.95] mb-6 md:mb-8 ${
-                isMobile ? "text-4xl" : "text-5xl md:text-7xl lg:text-8xl"
+                isMobile ? "text-3xl" : "text-4xl md:text-5xl lg:text-6xl"
             }`}>
                 <AnimatedText 
                     text={headline}
@@ -237,7 +213,7 @@ export default function HeroTypography({
             </h1>
             
             {/* Subtitle with typewriter effect */}
-            <div className={`max-w-2xl ${isMobile ? "text-sm" : "text-lg md:text-xl"}`}>
+            <div className={`max-w-2xl ${isMobile ? "text-sm" : "text-base md:text-lg"}`}>
                 <TypewriterText 
                     text={isMobile ? mobileSubtitle : subtitle}
                     className="text-white/60 font-normal leading-relaxed"
