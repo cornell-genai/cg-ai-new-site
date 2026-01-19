@@ -72,9 +72,12 @@ export default function PartnersGrid() {
                     <motion.div
                         key={partner.alt}
                         variants={itemVariants}
-                        className="relative w-full h-16 md:h-24 flex items-center justify-center group"
+                        className="relative w-full h-16 md:h-24 flex items-center justify-center group cursor-pointer"
                     >
-                        <div className="relative w-full h-full opacity-50 hover:opacity-100 transition-opacity duration-500 filter grayscale hover:grayscale-0">
+                        <div 
+                            className="relative w-full h-full opacity-50 group-hover:opacity-100 grayscale group-hover:grayscale-0"
+                            style={{ transition: 'opacity 0.5s ease-in-out, filter 0.5s ease-in-out' }}
+                        >
                             <Image
                                 src={partner.src}
                                 alt={partner.alt}
