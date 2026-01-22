@@ -2,17 +2,45 @@
 
 import React from 'react';
 import { GrainOverlay } from '@/components/ui/GrainOverlay';
-import Timeline, { TimelineItemData } from "@/components/Timeline";
-import { Calendar, Users, FileText, MessageSquare, CheckCircle } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight, Code, Palette, Coffee } from 'lucide-react';
+import Link from 'next/link';
 
-const items: TimelineItemData[] = [
-  { icon: <Calendar className="h-6 w-6" />, title: "Applications Open", date: "1/26/26" },
-  { icon: <Users className="h-6 w-6" />, title: "Info Session 1", date: "TBD..." },
-  { icon: <Users className="h-6 w-6" />, title: "Info Session 2", date: "TBD..." },
-  { icon: <FileText className="h-6 w-6" />, title: "Project Submission Deadline", date: "TBD..." },
-  { icon: <MessageSquare className="h-6 w-6" />, title: "Interviews", date: "TBD..." },
-  { icon: <CheckCircle className="h-6 w-6" />, title: "Decisions", date: "TBD..." },
+const TIMELINE = [
+  { date: "Jan 20", label: "Coffee Chats Open", location: null },
+  { date: "Jan 21", label: "All Applications Open", location: null },
+  { date: "Jan 25", label: "Club Fest", location: null },
+  { date: "Jan 29", label: "Info Session #1", location: "Stimson Hall" },
+  { date: "Feb 1", label: "Info Session #2", location: "Gates Hall G01" },
+  { date: "Feb 7", label: "Applications Due", location: null },
+];
+
+const ROLES = [
+  {
+    id: 'developer',
+    icon: Code,
+    title: 'Developer Track',
+    subtitle: 'Build AI products with industry partners',
+    description: 'Join our engineering teams to develop real AI solutions for companies like QuickFi, Charter, and Cisco.',
+    lookingFor: [
+      'Technical depth in software/ML',
+      'Ability to ship real projects',
+      'Problem-solving mindset'
+    ],
+    applyUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSczHtve7uF-9Vm6RsD28WlanNAmP8ORY1jg9hk9pveuuJwe-Q/viewform'
+  },
+  {
+    id: 'design',
+    icon: Palette,
+    title: 'Design & Marketing',
+    subtitle: 'Shape our brand and grow our community',
+    description: 'Help define the visual identity, create content, and expand the reach of Cornell GenAI.',
+    lookingFor: [
+      'Creative vision & design skills',
+      'Strong communication',
+      'Collaborative spirit'
+    ],
+    applyUrl: 'https://forms.gle/DRq6W7sHwkhnjn7x5'
+  }
 ];
 
 export default function ApplyPage() {
@@ -26,7 +54,8 @@ export default function ApplyPage() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
           <div>
             <div className="flex items-center gap-4 mb-6">
               <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#E62E2E]">Recruitment</span>
@@ -36,68 +65,135 @@ export default function ApplyPage() {
           </div>
           <div className="max-w-md pb-2">
             <p className="text-lg text-white/40 font-light leading-relaxed">
-              We look for drive, technical depth, and the ability to ship.
+              Spring 2026 recruitment is open. We look for drive, technical depth, and the ability to ship.
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* Timeline Section */}
-          <div className="relative">
-            <div className="absolute left-[-20px] top-0 bottom-0 w-[1px] bg-white/5" />
-            <Timeline items={items} />
-          </div>
+        {/* Timeline Section */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-semibold mb-8 text-white/90">Recruitment Timeline</h2>
+          <div className="bg-white/[0.03] border border-white/5 rounded-xl p-8">
+            <div className="relative">
+              {/* Vertical line for mobile */}
+              <div className="absolute left-[7px] top-2 bottom-2 w-[1px] bg-white/10 md:hidden" />
+              {/* Horizontal line for desktop */}
+              <div className="absolute top-[7px] left-0 right-0 h-[1px] bg-gradient-to-r from-red-500/50 via-white/10 to-transparent hidden md:block" />
 
-          <div className="space-y-12">
-            <div className="p-8 border border-white/5 bg-white/[0.02] backdrop-blur-sm rounded-sm">
-              <h3 className="text-2xl font-bold mb-6">Status: <span className="text-white/40">Offline</span></h3>
-              <p className="text-white/40 leading-relaxed font-light mb-8">
-                We are currently not in the recruitment season. Check back around the start of the SP26 semester.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  href="https://docs.google.com/forms/d/e/1FAIpQLSeGj9KCqA4_iu4gMfV97mGATUtohsvN2yY3JbgpjH45ZTsX8A/viewform?usp=dialog"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-4 bg-white/5 text-white/40 font-bold text-[10px] uppercase tracking-[0.2em] border border-white/5 cursor-not-allowed text-center"
-                >
-                  Applications Closed
-                </Link>
-                <Link
-                  href="https://docs.google.com/forms/d/e/1FAIpQLSfWeNJ32lSA8jg-X1cBjJsSkinwIv0jX7tiE9ruvhOJJxyzdA/viewform?usp=dialog"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-4 bg-white text-black font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-[#E62E2E] hover:text-white transition-all text-center"
-                >
-                  Coffee Chat
-                </Link>
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-6 md:gap-4">
+                {TIMELINE.map((item, idx) => (
+                  <div key={idx} className="relative flex md:flex-col items-center md:items-start gap-4 md:gap-3 group">
+                    <div className={`w-4 h-4 rounded-full border-2 border-[#050505] z-10 transition-colors duration-300 flex-shrink-0 ${idx === 0 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-white/20 group-hover:bg-white'}`} />
+                    <div>
+                      <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-1">{item.date}</p>
+                      <p className="text-sm text-white font-medium group-hover:text-red-400 transition-colors duration-200">{item.label}</p>
+                      {item.location && (
+                        <p className="text-xs text-white/30 mt-1">{item.location}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-
-            <div className="space-y-6">
-              {[
-                {
-                  q: "Who we look for",
-                  a: "The most important trait is drive. We want to know that you can get things done no matter the challenge. Second is technical depth. Third is 'vibe'—we are a tight-knit team.",
-                },
-                {
-                  q: "The Application",
-                  a: "We want to see your skills put to the test in building and shipping a real AI application. You have 3 weeks. Any idea goes.",
-                },
-                {
-                  q: "Environment",
-                  a: "You'll be part of a small, agile team working quickly on specific client projects. We focus on delivering real solutions.",
-                }
-              ].map((f) => (
-                <div key={f.q} className="border-l-2 border-white/10 pl-6 py-2">
-                  <h3 className="text-lg font-bold text-white mb-2">{f.q}</h3>
-                  <p className="text-sm text-white/40 leading-relaxed font-light">{f.a}</p>
-                </div>
-              ))}
-            </div>
           </div>
-        </div>
+        </section>
+
+        {/* Open Roles */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-semibold mb-8 text-white/90">Open Roles</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            {ROLES.map((role) => (
+              <div
+                key={role.id}
+                className="group bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/5 rounded-xl p-6 hover:border-white/15 transition-all duration-300"
+              >
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="p-3 rounded-lg bg-white/5 group-hover:bg-red-500/10 transition-colors duration-300">
+                    <role.icon size={24} className="text-white/70 group-hover:text-red-400 transition-colors duration-300" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-medium text-white mb-1">{role.title}</h3>
+                    <p className="text-sm text-white/50">{role.subtitle}</p>
+                  </div>
+                </div>
+
+                <p className="text-sm text-white/60 leading-relaxed mb-5">
+                  {role.description}
+                </p>
+
+                <div className="mb-6">
+                  <p className="text-xs font-bold text-white/40 uppercase tracking-wider mb-3">What we look for</p>
+                  <ul className="space-y-2">
+                    {role.lookingFor.map((item, idx) => (
+                      <li key={idx} className="text-sm text-white/50 flex items-center gap-2">
+                        <span className="w-1 h-1 rounded-full bg-red-500/50" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <Link
+                  href={role.applyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full text-sm font-medium hover:bg-red-500 hover:text-white active:scale-95 transition-all duration-200 shadow-lg shadow-white/5"
+                >
+                  Apply Now <ArrowRight size={16} />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Coffee Chat */}
+        <section className="mb-16">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 bg-gradient-to-r from-white/[0.04] to-transparent border border-white/5 rounded-xl">
+            <div className="flex items-center gap-4">
+              <div className="p-2 rounded-lg bg-white/5">
+                <Coffee size={20} className="text-white/60" />
+              </div>
+              <div>
+                <p className="text-white font-medium">Not sure which track?</p>
+                <p className="text-sm text-white/50">Book a coffee chat with a current member</p>
+              </div>
+            </div>
+            <Link
+              href="https://docs.google.com/forms/d/e/1FAIpQLSeT6zY3ZnLLzLh00GOcP-MQwYadRs49YOLukcxny0kytQCyAg/viewform"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-5 py-2 border border-white/20 rounded-full text-sm font-medium text-white/80 hover:bg-white hover:text-black active:scale-95 transition-all duration-200"
+            >
+              Book Coffee Chat <ArrowRight size={14} />
+            </Link>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section>
+          <h2 className="text-2xl font-semibold mb-8 text-white/90">FAQs</h2>
+          <div className="space-y-6">
+            {[
+              {
+                q: "Who we look for",
+                a: "The most important trait is drive. We want to know that you can get things done no matter the challenge. Second is technical depth. Third is 'vibe'—we are a tight-knit team.",
+              },
+              {
+                q: "The Application",
+                a: "We want to see your skills put to the test in building and shipping a real AI application. You have 3 weeks. Any idea goes.",
+              },
+              {
+                q: "Environment",
+                a: "You'll be part of a small, agile team working quickly on specific client projects. We focus on delivering real solutions.",
+              }
+            ].map((f) => (
+              <div key={f.q} className="border-l-2 border-white/10 pl-6 py-2">
+                <h3 className="text-lg font-bold text-white mb-2">{f.q}</h3>
+                <p className="text-sm text-white/40 leading-relaxed font-light">{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
     </div>
   );
