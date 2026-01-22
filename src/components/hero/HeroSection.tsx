@@ -95,7 +95,7 @@ export default function HeroSection({
                 {isMobile ? (
                     /* Mobile: Static layout (no animations, no motion) */
                     <div className="flex-1 flex flex-col px-6 justify-start pt-4 max-w-[1600px] mx-auto w-full">
-                        <div className="flex flex-col items-center gap-6">
+                        <div className="flex flex-col items-center gap-8">
                             <HeroTypography
                                 isMobile={isMobile}
                                 headline={headline}
