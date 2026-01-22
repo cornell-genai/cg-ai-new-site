@@ -23,7 +23,7 @@ function NeuralNetwork3D({
     connectionDistance?: number;
     isMobile?: boolean;
 }) {
-    const { mouse, viewport } = useThree();
+    const { mouse } = useThree();
     const pointsRef = useRef<THREE.Points>(null);
     const groupRef = useRef<THREE.Group>(null);
 

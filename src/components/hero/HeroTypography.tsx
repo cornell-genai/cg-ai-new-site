@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { motion, Variants } from "framer-motion";
 
 // Animation variants
@@ -29,19 +28,6 @@ const letterVariants: Variants = {
             type: "spring",
             damping: 16,
             stiffness: 100,
-        },
-    },
-};
-
-const subtitleVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.8,
-            ease: [0.22, 1, 0.36, 1],
-            delay: 1.2,
         },
     },
 };
@@ -98,100 +84,6 @@ function AnimatedText({ text, className = "", delay = 0 }: AnimatedTextProps) {
                 );
             })}
         </motion.div>
-    );
-}
-
-/**
- * TypewriterText
- * Renders text with a typewriter effect
- */
-function TypewriterText({
-    text,
-    className = "",
-    startDelay = 1500,
-    typingSpeed = 30
-}: {
-    text: string;
-    className?: string;
-    startDelay?: number;
-    typingSpeed?: number;
-}) {
-    const [displayedText, setDisplayedText] = useState("");
-    const [showCursor, setShowCursor] = useState(true);
-    const [isTypingComplete, setIsTypingComplete] = useState(false);
-
-    useEffect(() => {
-        let timeout: NodeJS.Timeout;
-
-        // Start typing after delay
-        timeout = setTimeout(() => {
-            let currentIndex = 0;
-
-            const typeInterval = setInterval(() => {
-                if (currentIndex < text.length) {
-                    setDisplayedText(text.slice(0, currentIndex + 1));
-                    currentIndex++;
-                } else {
-                    clearInterval(typeInterval);
-                    setIsTypingComplete(true);
-                }
-            }, typingSpeed);
-
-            return () => clearInterval(typeInterval);
-        }, startDelay);
-
-        return () => clearTimeout(timeout);
-    }, [text, startDelay, typingSpeed]);
-
-    // Blinking cursor effect
-    useEffect(() => {
-        if (!isTypingComplete) return;
-
-        const cursorInterval = setInterval(() => {
-            setShowCursor(prev => !prev);
-        }, 530);
-
-        return () => clearInterval(cursorInterval);
-    }, [isTypingComplete]);
-
-    return (
-        <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: startDelay / 1000 - 0.3 }}
-            className={className}
-        >
-            {displayedText}
-            <span
-                className={`inline-block w-[2px] h-[1em] bg-white/70 ml-1 align-middle transition-opacity duration-100 ${showCursor ? "opacity-100" : "opacity-0"
-                    }`}
-            />
-        </motion.p>
-    );
-}
-
-/**
- * GlowText
- * Text with a subtle glow effect
- */
-function GlowText({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-    return (
-        <span className={`relative ${className}`}>
-            {/* Glow layer */}
-            <span
-                className="absolute inset-0 blur-2xl opacity-50"
-                style={{
-                    background: "linear-gradient(90deg, #FF1A1A 0%, #8B5CF6 50%, #0066FF 100%)",
-                    WebkitBackgroundClip: "text",
-                    backgroundClip: "text",
-                }}
-                aria-hidden="true"
-            >
-                {children}
-            </span>
-            {/* Main text */}
-            <span className="relative">{children}</span>
-        </span>
     );
 }
 
