@@ -89,28 +89,43 @@ export default function HeroSection({
                 {/* Navigation spacer */}
                 <div className="h-20 md:h-24 shrink-0" />
 
-                {/* Main content - vertically centered */}
+                {/* Main content - vertically centered on desktop, top-aligned on mobile */}
                 <motion.div
-                    className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-16 max-w-[1600px] mx-auto w-full"
+                    className={`flex-1 flex flex-col px-6 sm:px-12 lg:px-16 max-w-[1600px] mx-auto w-full ${
+                        isMobile ? 'justify-start pt-4' : 'justify-center'
+                    }`}
                     style={{
                         opacity: 1 - scrollProgress * 1.5,
                         transform: `translateY(${scrollProgress * -50}px)`,
                     }}
                 >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                        <HeroTypography
-                            isMobile={isMobile}
-                            headline={headline}
-                            subtitle={subtitle}
-                            className="max-w-2xl"
-                        />
-
-                        {!isMobile && (
-                            <div className="hidden lg:block relative z-20">
-                                <HeroTeamDisplay />
+                    {/* Mobile Layout: Vertical stack */}
+                    {isMobile ? (
+                        <div className="flex flex-col items-center gap-6">
+                            <HeroTypography
+                                isMobile={isMobile}
+                                headline={headline}
+                                subtitle={subtitle}
+                                className="w-full text-center"
+                            />
+                            <div className="relative z-20">
+                                <HeroTeamDisplay isMobile={isMobile} />
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        /* Desktop Layout: Side by side grid */
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                            <HeroTypography
+                                isMobile={isMobile}
+                                headline={headline}
+                                subtitle={subtitle}
+                                className="max-w-2xl"
+                            />
+                            <div className="relative z-20">
+                                <HeroTeamDisplay isMobile={isMobile} />
+                            </div>
+                        </div>
+                    )}
                 </motion.div>
 
                 {/* Scroll Indicator - positioned at bottom */}
