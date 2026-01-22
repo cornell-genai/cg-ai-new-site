@@ -54,7 +54,7 @@ function AnimatedText({ text, className = "", delay = 0 }: AnimatedTextProps) {
             style={{ perspective: "1000px" }}
         >
             {words.map((word, wordIndex) => {
-                const isCornells = word === "Cornell's";
+                const isCornell = word === "Cornell's" || word === "Cornell";
                 return (
                     <span
                         key={wordIndex}
@@ -65,8 +65,8 @@ function AnimatedText({ text, className = "", delay = 0 }: AnimatedTextProps) {
                                 key={letterIndex}
                                 variants={letterVariants}
                                 className="inline-block will-change-transform"
-                                style={isCornells ? {
-                                    background: 'linear-gradient(135deg, #FF4444 0%, #B31B1B 50%, #8B0000 100%)',
+                                style={isCornell ? {
+                                    background: 'linear-gradient(135deg, #b91c1c 0%, #be123c 50%, #9f1239 100%)',
                                     WebkitBackgroundClip: 'text',
                                     backgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
@@ -95,12 +95,12 @@ interface HeroTypographyProps {
 }
 
 export default function HeroTypography({
-    headline = "Cornell's home for students in AI",
-    subtitle = "Cornell GenAI is where the students that shape the future of AI at Cornell come together. From research to industry, we offer opportunities to connect with titans of industry, learn from the best in the field, and get started in the field.",
+    headline = "Where Cornell students build with AI",
+    subtitle = "We're a community of builders, researchers, and creators passionate about AI. Join us to work on real projects, learn from industry leaders, and shape the future together.",
     className = "",
     isMobile = false
 }: HeroTypographyProps) {
-    const mobileSubtitle = "Cornell GenAI is where the students that shape the future of AI at Cornell come together.";
+    const mobileSubtitle = "A community of builders and researchers passionate about AI. Join us to work on real projects and shape the future together.";
 
     return (
         <div className={`relative z-10 ${className}`}>
@@ -109,7 +109,7 @@ export default function HeroTypography({
                 }`}>
                 <AnimatedText
                     text={headline}
-                    className="text-white"
+                    className="text-zinc-900"
                 />
             </h1>
 
@@ -123,11 +123,32 @@ export default function HeroTypography({
                         delay: 0.8,
                         ease: [0.22, 1, 0.36, 1]
                     }}
-                    className="text-white/60 font-normal leading-relaxed"
+                    className="text-zinc-600 font-normal leading-relaxed"
                 >
                     {isMobile ? mobileSubtitle : subtitle}
                 </motion.p>
             </div>
+
+            {/* CTA Buttons */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 1.1 }}
+                className="flex flex-wrap gap-4 mt-8"
+            >
+                <a
+                    href="/team"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-red-700 text-white font-medium rounded-full hover:bg-red-800 transition-colors shadow-lg shadow-red-900/25"
+                >
+                    Meet the Team
+                </a>
+                <a
+                    href="#sections"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-white text-zinc-700 font-medium rounded-full border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-colors"
+                >
+                    Learn More
+                </a>
+            </motion.div>
         </div>
     );
 }

@@ -107,7 +107,7 @@ export default function GenerativeGrid() {
             <div className="mb-12 flex flex-col items-center justify-center space-y-6">
                 <GlassCard className="p-1 rounded-full flex items-center w-full max-w-2xl bg-black/40 border-white/10">
                     <div className="pl-4 text-zinc-400">
-                        <Sparkles className="w-5 h-5 text-indigo-400" />
+                        <Sparkles className="w-5 h-5 text-red-400" />
                     </div>
                     <input
                         type="text"
@@ -118,7 +118,7 @@ export default function GenerativeGrid() {
                     />
                 </GlassCard>
 
-                <div className="h-6 text-sm font-mono text-indigo-300">
+                <div className="h-6 text-sm font-mono text-red-300">
                     {/* Terminal-style status output */}
                     <span className="opacity-50">{">"} </span>
                     <TextStream text={aiMessage} />
@@ -137,8 +137,8 @@ export default function GenerativeGrid() {
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <GlassCard className="h-full p-8 flex flex-col hover:border-indigo-500/30 group">
-                                <div className="mb-6 inline-flex p-3 rounded-xl bg-white/5 text-indigo-400 group-hover:text-white group-hover:bg-indigo-500 transition-colors duration-300">
+                            <GlassCard className="h-full p-8 flex flex-col hover:border-red-500/30 group">
+                                <div className="mb-6 inline-flex p-3 rounded-xl bg-white/5 text-red-400 group-hover:text-white group-hover:bg-red-500 transition-colors duration-300">
                                     {item.icon}
                                 </div>
                                 <h3 className="text-xl font-semibold mb-3 text-white">{item.title}</h3>

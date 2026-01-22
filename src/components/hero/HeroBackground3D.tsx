@@ -13,6 +13,7 @@ interface NodeConnection {
 /**
  * NeuralNetwork3D
  * An interactive neural network visualization with connected nodes
+ * Updated with warm indigo/violet/amber color palette
  */
 function NeuralNetwork3D({
     count = 300,
@@ -35,11 +36,11 @@ function NeuralNetwork3D({
         const p = new Float32Array(actualCount * 3);
         const c = new Float32Array(actualCount * 3);
 
-        // Color palette
-        const colorRed = new THREE.Color("#FF1A1A");
-        const colorBlue = new THREE.Color("#0066FF");
-        const colorPurple = new THREE.Color("#8B5CF6");
-        const colorWhite = new THREE.Color("#FFFFFF");
+        // Red/Warm color palette
+        const colorPrimary = new THREE.Color("#b91c1c"); // Red-700
+        const colorSecondary = new THREE.Color("#be123c"); // Rose-700
+        const colorDark = new THREE.Color("#7f1d1d"); // Red-900
+        const colorLight = new THREE.Color("#fca5a5"); // Red-300
 
         for (let i = 0; i < actualCount; i++) {
             // Create a loose sphere/cloud shape with layers
@@ -52,17 +53,15 @@ function NeuralNetwork3D({
             p[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
             p[i * 3 + 2] = r * Math.cos(phi) - 5; // Offset back in z
 
-            // Assign colors based on position/layer
+            // Assign warm red colors
             const colorMix = Math.random();
             let color: THREE.Color;
-            if (colorMix < 0.3) {
-                color = colorRed.clone().lerp(colorPurple, Math.random());
-            } else if (colorMix < 0.6) {
-                color = colorBlue.clone().lerp(colorPurple, Math.random());
-            } else if (colorMix < 0.85) {
-                color = colorPurple.clone().lerp(colorBlue, Math.random() * 0.5);
+            if (colorMix < 0.4) {
+                color = colorPrimary.clone().lerp(colorSecondary, Math.random());
+            } else if (colorMix < 0.7) {
+                color = colorSecondary.clone().lerp(colorDark, Math.random() * 0.6);
             } else {
-                color = colorWhite.clone();
+                color = colorPrimary.clone().lerp(colorLight, Math.random() * 0.3);
             }
 
             c[i * 3] = color.r;
@@ -134,20 +133,20 @@ function NeuralNetwork3D({
                     size={isMobile ? 0.12 : 0.08}
                     sizeAttenuation={true}
                     depthWrite={false}
-                    opacity={1}
-                    blending={THREE.AdditiveBlending}
+                    opacity={0.9}
+                    blending={THREE.NormalBlending}
                 />
             </Points>
 
-            {/* Connection lines */}
+            {/* Connection lines - now indigo */}
             {connections.map((conn, i) => (
                 <Line
                     key={i}
                     points={[conn.start, conn.end]}
-                    color="#FF1A1A"
+                    color="#b91c1c"
                     lineWidth={1}
                     transparent
-                    opacity={0.35}
+                    opacity={0.25}
                 />
             ))}
         </group>
@@ -182,11 +181,11 @@ function FloatingParticles({ count = 50, isMobile = false }: { count?: number; i
         <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
             <PointMaterial
                 transparent
-                color="#FFFFFF"
+                color="#8B5CF6"
                 size={0.02}
                 sizeAttenuation={true}
                 depthWrite={false}
-                opacity={0.3}
+                opacity={0.4}
             />
         </Points>
     );
@@ -215,26 +214,30 @@ export default function HeroBackground3D({ className = "", scrollProgress = 0 }:
             className={`absolute inset-0 z-0 ${className}`}
             style={{ opacity }}
         >
+            {/* Light gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#FAFAF9] via-[#F5F5F4] to-[#EDE9FE]" />
+
             <Canvas
                 camera={{ position: [0, 0, 12], fov: 60 }}
                 dpr={isMobile ? 1 : [1, 2]}
                 gl={{ antialias: !isMobile, alpha: true }}
             >
-                <fog attach="fog" args={["#050505", 12, 35]} />
-                <ambientLight intensity={0.5} />
-                <pointLight position={[10, 10, 10]} intensity={1} color="#FF1A1A" />
-                <pointLight position={[-10, -10, -5]} intensity={0.6} color="#0066FF" />
-                <pointLight position={[0, 5, 5]} intensity={0.4} color="#8B5CF6" />
+                <fog attach="fog" args={["#FAFAF9", 15, 40]} />
+                <ambientLight intensity={0.8} />
+                <pointLight position={[10, 10, 10]} intensity={0.8} color="#6366F1" />
+                <pointLight position={[-10, -10, -5]} intensity={0.5} color="#8B5CF6" />
+                <pointLight position={[0, 5, 5]} intensity={0.4} color="#F59E0B" />
 
                 <NeuralNetwork3D isMobile={isMobile} />
                 <FloatingParticles isMobile={isMobile} />
             </Canvas>
 
-            {/* Vignette overlay */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_70%)] opacity-60 pointer-events-none" />
+            {/* Soft vignette overlay */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(250,250,249,0.5)_70%)] pointer-events-none" />
 
-            {/* Bottom fade gradient */}
-            <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent pointer-events-none" />
+            {/* Bottom fade gradient to content */}
+            <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#FAFAF9] via-[#FAFAF9]/80 to-transparent pointer-events-none" />
         </div>
     );
 }
+

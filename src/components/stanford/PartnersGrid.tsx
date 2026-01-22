@@ -58,7 +58,7 @@ export default function PartnersGrid() {
                 variants={itemVariants}
                 className="text-center mb-12 md:mb-16"
             >
-                <span className="text-sm md:text-lg font-medium uppercase tracking-[0.3em] text-white/40">
+                <span className="text-sm md:text-lg font-medium uppercase tracking-[0.3em] text-red-700/60">
                     Industry Partners
                 </span>
             </motion.div>

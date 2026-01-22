@@ -1,20 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  /* The Vanguard Palette */
-  --color-obsidian: #050505;
-  /* Primary Canvas */
-  --color-laser-red: #FF1A1A;
-  /* Action/Accent */
-  --color-stark-white: #FFFFFF;
-  /* Headlines */
-  --color-slate-grey: #121212;
-  /* Structural/Borders */
-  --color-blind-steel: #A1A1AA;
-  /* Secondary Text */
+  /* Warm Community Palette */
+  --color-background: #FAFAF9;
+  --color-background-alt: #F5F5F4;
+  --color-surface: #FFFFFF;
 
-  --background: var(--color-obsidian);
-  --foreground: var(--color-stark-white);
+  /* Brand Colors - Red/Rose (Bold, warm, professional) */
+  --color-brand: #6366F1;
+  --color-brand-light: #818CF8;
+  --color-brand-dark: #4F46E5;
+  --color-accent-warm: #F59E0B;
+  --color-accent-secondary: #8B5CF6;
+
+  /* Text Colors */
+  --color-text-primary: #18181B;
+  --color-text-secondary: #52525B;
+  --color-text-muted: #A1A1AA;
+
+  /* Borders */
+  --color-border: #E4E4E7;
+  --color-border-light: #F4F4F5;
+
+  --background: var(--color-background);
+  --foreground: var(--color-text-primary);
 
   /* Fonts */
   --font-mono: 'JetBrains Mono', monospace;
@@ -24,27 +33,11 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-accent: var(--color-laser-red);
-  --color-border: var(--color-slate-grey);
+  --color-accent: var(--color-brand);
+  --color-border: var(--color-border);
 
   --font-sans: var(--font-display);
   --font-mono: var(--font-mono);
-}
-
-/* CRT/Scanline Effect (Subtle) */
-.scanlines::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 999;
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
-  opacity: 0.15;
 }
 
 body {

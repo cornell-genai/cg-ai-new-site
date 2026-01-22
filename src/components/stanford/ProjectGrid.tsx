@@ -72,29 +72,29 @@ export default function ProjectGrid() {
                 <motion.div
                     key={project.id}
                     variants={itemVariants}
-                    className="group relative bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:bg-white/10 hover:border-white/20 transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 will-change-transform"
+                    className="group relative bg-white border border-zinc-200 rounded-xl overflow-hidden hover:border-red-300 hover:shadow-xl hover:shadow-red-900/10 transition-all duration-300 hover:-translate-y-1 will-change-transform"
                 >
-                    <div className="aspect-video relative overflow-hidden bg-black/50">
+                    <div className="aspect-video relative overflow-hidden bg-zinc-100">
                         <Image
                             src={project.image}
                             alt={project.title}
                             fill
-                            className="object-cover opacity-70 group-hover:scale-105 group-hover:opacity-90 transition-all duration-500"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
                         />
-                        {/* Subtle gradient only at bottom for text readability */}
-                        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/60 to-transparent" />
+                        {/* Subtle gradient only at bottom for better text contrast if needed */}
+                        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
 
-                        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 duration-300">
-                            <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest">
+                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 duration-300 shadow-sm">
+                            <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-red-700">
                                 View <ArrowUpRight size={10} />
                             </div>
                         </div>
 
                         <div className="absolute bottom-0 left-0 right-0 p-5 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                            <h3 className="text-2xl font-medium text-white mb-2">{project.title}</h3>
+                            <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-md">{project.title}</h3>
                             <div className="flex flex-wrap gap-2 mb-2">
                                 {project.tags.map(tag => (
-                                    <span key={tag} className="text-[10px] uppercase tracking-wider px-2 py-1 bg-white/10 backdrop-blur-sm rounded-md border border-white/5 text-white/80 group-hover:bg-white/20 transition-colors">
+                                    <span key={tag} className="text-[10px] uppercase tracking-wider px-2 py-1 bg-white/20 backdrop-blur-md rounded-md border border-white/10 text-white font-medium group-hover:bg-white/30 transition-colors shadow-sm">
                                         {tag}
                                     </span>
                                 ))}
@@ -102,26 +102,26 @@ export default function ProjectGrid() {
                         </div>
                     </div>
 
-                    <div className="p-5 border-t border-white/5 bg-black/20">
-                        <p className="text-sm text-white/60 font-normal leading-relaxed mb-4 group-hover:text-white/80 transition-colors">
+                    <div className="p-6 bg-white">
+                        <p className="text-sm text-zinc-600 font-normal leading-relaxed mb-6 group-hover:text-zinc-900 transition-colors">
                             {project.description}
                         </p>
 
-                        <div className="flex items-center justify-between pt-2">
+                        <div className="flex items-center justify-between pt-4 border-t border-zinc-100">
                             <div className="flex gap-4">
                                 {'blog' in project.links && project.links.blog && (
-                                    <a href={project.links.blog} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-white/40 hover:text-white transition-colors uppercase tracking-widest font-medium">
+                                    <a href={project.links.blog} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-zinc-500 hover:text-red-700 transition-colors uppercase tracking-widest font-bold">
                                         <ExternalLink size={14} /> Blog
                                     </a>
                                 )}
                                 {'demo' in project.links && project.links.demo && (
-                                    <a href={project.links.demo} className="flex items-center gap-2 text-xs text-white/40 hover:text-white transition-colors uppercase tracking-widest font-medium">
+                                    <a href={project.links.demo} className="flex items-center gap-2 text-xs text-zinc-500 hover:text-red-700 transition-colors uppercase tracking-widest font-bold">
                                         <ExternalLink size={14} /> Demo
                                     </a>
                                 )}
                             </div>
                             {project.status && (
-                                <span className="text-[10px] uppercase tracking-wider px-2 py-1 bg-white/5 rounded-md border border-white/10 text-white/50">
+                                <span className="text-[10px] uppercase tracking-wider px-2 py-1 bg-zinc-100 rounded-md border border-zinc-200 text-zinc-500 font-medium">
                                     {project.status}
                                 </span>
                             )}

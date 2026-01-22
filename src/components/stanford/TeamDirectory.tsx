@@ -49,10 +49,10 @@ const isPlaceholderImage = (image: string): boolean => {
 // Initials Avatar Component
 const InitialsAvatar = ({ name, className }: { name: string; className?: string }) => (
     <div
-        className={`w-full h-full flex items-center justify-center bg-gradient-to-br from-[#8B2635] via-[#6B1D29] to-[#4A1420] ${className || ''}`}
+        className={`w-full h-full flex items-center justify-center bg-gradient-to-br from-red-600 via-rose-700 to-red-800 ${className || ''}`}
     >
         <span
-            className="text-white/90 font-light tracking-wide select-none"
+            className="text-white/95 font-light tracking-wide select-none"
             style={{
                 fontSize: 'clamp(2rem, 8vw, 4rem)',
                 fontFamily: 'ui-serif, Georgia, Cambria, "Times New Roman", Times, serif'
@@ -119,8 +119,8 @@ export default function TeamDirectory() {
                         key={team}
                         onClick={() => setFilter(team)}
                         className={`px-4 py-2 rounded-full text-xs font-medium uppercase tracking-wider transition-all duration-200 ${filter === team
-                            ? 'bg-white text-black'
-                            : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                            ? 'bg-red-700 text-white shadow-md shadow-red-900/20'
+                            : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200 hover:text-zinc-900'
                             }`}
                     >
                         {team}
@@ -145,7 +145,7 @@ export default function TeamDirectory() {
                             className="group will-change-transform"
                         >
                             {/* Photo or Initials Avatar */}
-                            <div className="aspect-square w-full relative rounded-2xl overflow-hidden bg-white/5 mb-4">
+                            <div className="aspect-square w-full relative rounded-2xl overflow-hidden bg-zinc-100 mb-4 shadow-inner">
                                 {isPlaceholderImage(member.image) ? (
                                     <InitialsAvatar name={member.name} className="group-hover:scale-105 transition-transform duration-500" />
                                 ) : (
@@ -158,8 +158,8 @@ export default function TeamDirectory() {
                             </div>
 
                             {/* Name and role below */}
-                            <h3 className="text-lg font-medium text-white mb-1">{member.name}</h3>
-                            <p className="text-sm text-white/50 mb-3">{member.role}</p>
+                            <h3 className="text-lg font-bold text-zinc-900 mb-1">{member.name}</h3>
+                            <p className="text-sm text-zinc-500 mb-3 font-medium">{member.role}</p>
 
                             {/* Social icons */}
                             {member.linkedInUrl && (
@@ -167,7 +167,7 @@ export default function TeamDirectory() {
                                     href={member.linkedInUrl.startsWith('http') ? member.linkedInUrl : `https://${member.linkedInUrl}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex text-white/40 hover:text-[#0A66C2] transition-colors duration-200"
+                                    className="inline-flex text-zinc-400 hover:text-[#0A66C2] transition-colors duration-200"
                                     aria-label={`${member.name}'s LinkedIn profile`}
                                     onClick={(e) => e.stopPropagation()}
                                 >

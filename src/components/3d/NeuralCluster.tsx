@@ -68,7 +68,7 @@ function InteractiveNodeCluster({ count = 300 }) {
             <Points positions={initialPositions.map(p => p * 1.5)} stride={3} frustumCulled={false}>
                 <PointMaterial
                     transparent
-                    color="#A855F7" // Nebula Purple
+                    color="#be123c" // Nebula Rose
                     size={0.04}
                     sizeAttenuation={true}
                     depthWrite={false}
