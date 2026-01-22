@@ -102,11 +102,63 @@ export default function HeroTypography({
 }: HeroTypographyProps) {
     const mobileSubtitle = "A community of builders and researchers passionate about AI. Join us to work on real projects and shape the future together.";
 
+    // Render simple gradient text for "Cornell" or "Cornell's"
+    const renderHeadlineWithGradient = (text: string) => {
+        const words = text.split(" ");
+        return words.map((word, index) => {
+            const isCornell = word === "Cornell's" || word === "Cornell";
+            return (
+                <span key={index} className="inline-block mr-[0.25em]">
+                    <span
+                        className={isCornell ? "bg-gradient-to-r from-[#b91c1c] via-[#be123c] to-[#9f1239] bg-clip-text text-transparent" : ""}
+                    >
+                        {word}
+                    </span>
+                </span>
+            );
+        });
+    };
+
+    // Mobile: Use static content (no animations)
+    if (isMobile) {
+        return (
+            <div className={`relative z-10 ${className}`}>
+                {/* Main headline - static, no animation */}
+                <h1 className="font-bold tracking-tight leading-[0.95] mb-6 text-3xl text-zinc-900">
+                    {renderHeadlineWithGradient(headline)}
+                </h1>
+
+                {/* Subtitle - static, no animation */}
+                <div className="max-w-2xl text-sm">
+                    <p className="text-zinc-600 font-normal leading-relaxed">
+                        {mobileSubtitle}
+                    </p>
+                </div>
+
+                {/* CTA Buttons - static, no animation */}
+                <div className="flex flex-wrap gap-4 mt-8 justify-center">
+                    <a
+                        href="/team"
+                        className="inline-flex items-center justify-center px-6 py-3 bg-red-700 text-white font-medium rounded-full hover:bg-red-800 transition-colors shadow-lg shadow-red-900/25"
+                    >
+                        Meet the Team
+                    </a>
+                    <a
+                        href="#sections"
+                        className="inline-flex items-center justify-center px-6 py-3 bg-white text-zinc-700 font-medium rounded-full border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-colors"
+                    >
+                        Learn More
+                    </a>
+                </div>
+            </div>
+        );
+    }
+
+    // Desktop: Use full animations
     return (
         <div className={`relative z-10 ${className}`}>
             {/* Main headline with letter animation */}
-            <h1 className={`font-bold tracking-tight leading-[0.95] mb-6 md:mb-8 ${isMobile ? "text-3xl" : "text-4xl md:text-5xl lg:text-6xl"
-                }`}>
+            <h1 className="font-bold tracking-tight leading-[0.95] mb-6 md:mb-8 text-4xl md:text-5xl lg:text-6xl">
                 <AnimatedText
                     text={headline}
                     className="text-zinc-900"
@@ -114,7 +166,7 @@ export default function HeroTypography({
             </h1>
 
             {/* Subtitle with smooth fade in */}
-            <div className={`max-w-2xl ${isMobile ? "text-sm" : "text-base md:text-lg"}`}>
+            <div className="max-w-2xl text-base md:text-lg">
                 <motion.p
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -125,7 +177,7 @@ export default function HeroTypography({
                     }}
                     className="text-zinc-600 font-normal leading-relaxed"
                 >
-                    {isMobile ? mobileSubtitle : subtitle}
+                    {subtitle}
                 </motion.p>
             </div>
 
@@ -134,7 +186,7 @@ export default function HeroTypography({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 1.1 }}
-                className={`flex flex-wrap gap-4 mt-8 ${isMobile ? 'justify-center' : ''}`}
+                className="flex flex-wrap gap-4 mt-8"
             >
                 <a
                     href="/team"

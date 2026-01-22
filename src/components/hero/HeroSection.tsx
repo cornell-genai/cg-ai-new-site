@@ -73,10 +73,12 @@ export default function HeroSection({
             className="relative h-screen w-full overflow-hidden bg-[#FAFAF9]"
             aria-label="Hero section"
         >
-            {/* 3D Background Layer */}
-            <HeroBackground3D
-                scrollProgress={scrollProgress}
-            />
+            {/* 3D Background Layer - don't even load on mobile */}
+            {!isMobile && (
+                <HeroBackground3D
+                    scrollProgress={scrollProgress}
+                />
+            )}
 
             {/* Gradient Overlays */}
             <HeroOverlays
@@ -90,17 +92,9 @@ export default function HeroSection({
                 <div className="h-20 md:h-24 shrink-0" />
 
                 {/* Main content - vertically centered on desktop, top-aligned on mobile */}
-                <motion.div
-                    className={`flex-1 flex flex-col px-6 sm:px-12 lg:px-16 max-w-[1600px] mx-auto w-full ${
-                        isMobile ? 'justify-start pt-4' : 'justify-center'
-                    }`}
-                    style={{
-                        opacity: 1 - scrollProgress * 1.5,
-                        transform: `translateY(${scrollProgress * -50}px)`,
-                    }}
-                >
-                    {/* Mobile Layout: Vertical stack */}
-                    {isMobile ? (
+                {isMobile ? (
+                    /* Mobile: Static layout (no animations, no motion) */
+                    <div className="flex-1 flex flex-col px-6 justify-start pt-4 max-w-[1600px] mx-auto w-full">
                         <div className="flex flex-col items-center gap-6">
                             <HeroTypography
                                 isMobile={isMobile}
@@ -112,8 +106,16 @@ export default function HeroSection({
                                 <HeroTeamDisplay isMobile={isMobile} />
                             </div>
                         </div>
-                    ) : (
-                        /* Desktop Layout: Side by side grid */
+                    </div>
+                ) : (
+                    /* Desktop: Animated layout with Framer Motion */
+                    <motion.div
+                        className="flex-1 flex flex-col px-6 sm:px-12 lg:px-16 max-w-[1600px] mx-auto w-full justify-center"
+                        style={{
+                            opacity: 1 - scrollProgress * 1.5,
+                            transform: `translateY(${scrollProgress * -50}px)`,
+                        }}
+                    >
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                             <HeroTypography
                                 isMobile={isMobile}
@@ -125,8 +127,8 @@ export default function HeroSection({
                                 <HeroTeamDisplay isMobile={isMobile} />
                             </div>
                         </div>
-                    )}
-                </motion.div>
+                    </motion.div>
+                )}
 
                 {/* Scroll Indicator - positioned at bottom */}
                 <div className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2">
