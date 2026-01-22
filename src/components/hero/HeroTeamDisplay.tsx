@@ -35,6 +35,12 @@ export default function HeroTeamDisplay({ isMobile = false }: HeroTeamDisplayPro
                         {/* Gradient Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-tr from-red-900/20 to-transparent pointer-events-none mix-blend-overlay" />
                     </div>
+
+                    {/* Decorative circles for visual interest - static, lightweight */}
+                    <div className="absolute -top-2 -right-2 w-10 h-10 bg-red-100/70 rounded-full border-2 border-white shadow-md" />
+                    <div className="absolute -bottom-3 -left-3 w-14 h-14 bg-rose-100/60 rounded-full border-2 border-white shadow-md" />
+                    <div className="absolute top-1/2 -right-6 w-8 h-8 bg-red-50/80 rounded-full border-2 border-white shadow-md" />
+                    <div className="absolute bottom-8 -left-4 w-6 h-6 bg-red-200/50 rounded-full border border-white shadow-sm" />
                 </div>
 
                 {/* Background Glow - lighter on mobile */}
