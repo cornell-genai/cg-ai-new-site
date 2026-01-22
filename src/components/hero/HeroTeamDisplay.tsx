@@ -63,19 +63,7 @@ export default function HeroTeamDisplay() {
                 />
 
                 {/* Badge */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1, duration: 0.5 }}
-                    className="absolute bottom-8 -right-4 md:right-0 bg-white px-4 py-2 rounded-full shadow-lg border border-red-100 flex items-center gap-2 z-20"
-                >
-                    <div className="flex -space-x-2">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="w-6 h-6 rounded-full bg-zinc-200 border-2 border-white" />
-                        ))}
-                    </div>
-                    <span className="text-xs font-bold text-red-700 uppercase tracking-wider">Join 100+ Builders</span>
-                </motion.div>
+
             </motion.div>
 
             {/* Background Glow */}
