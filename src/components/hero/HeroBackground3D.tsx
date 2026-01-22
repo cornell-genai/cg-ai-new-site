@@ -181,7 +181,7 @@ function FloatingParticles({ count = 50, isMobile = false }: { count?: number; i
         <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
             <PointMaterial
                 transparent
-                color="#8B5CF6"
+                color="#7f1d1d"
                 size={0.02}
                 sizeAttenuation={true}
                 depthWrite={false}
@@ -217,20 +217,23 @@ export default function HeroBackground3D({ className = "", scrollProgress = 0 }:
             {/* Light gradient background */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#FAFAF9] via-[#F5F5F4] to-[#EDE9FE]" />
 
-            <Canvas
-                camera={{ position: [0, 0, 12], fov: 60 }}
-                dpr={isMobile ? 1 : [1, 2]}
-                gl={{ antialias: !isMobile, alpha: true }}
-            >
-                <fog attach="fog" args={["#FAFAF9", 15, 40]} />
-                <ambientLight intensity={0.8} />
-                <pointLight position={[10, 10, 10]} intensity={0.8} color="#6366F1" />
-                <pointLight position={[-10, -10, -5]} intensity={0.5} color="#8B5CF6" />
-                <pointLight position={[0, 5, 5]} intensity={0.4} color="#F59E0B" />
+            {/* Hide 3D Canvas on mobile devices */}
+            {!isMobile && (
+                <Canvas
+                    camera={{ position: [0, 0, 12], fov: 60 }}
+                    dpr={isMobile ? 1 : [1, 2]}
+                    gl={{ antialias: !isMobile, alpha: true }}
+                >
+                    <fog attach="fog" args={["#FAFAF9", 15, 40]} />
+                    <ambientLight intensity={0.8} />
+                    <pointLight position={[10, 10, 10]} intensity={0.8} color="#7f1d1d" />
+                    <pointLight position={[-10, -10, -5]} intensity={0.5} color="#991b1b" />
+                    <pointLight position={[0, 5, 5]} intensity={0.4} color="#b91c1c" />
 
-                <NeuralNetwork3D isMobile={isMobile} />
-                <FloatingParticles isMobile={isMobile} />
-            </Canvas>
+                    <NeuralNetwork3D isMobile={isMobile} />
+                    <FloatingParticles isMobile={isMobile} />
+                </Canvas>
+            )}
 
             {/* Soft vignette overlay */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(250,250,249,0.5)_70%)] pointer-events-none" />
