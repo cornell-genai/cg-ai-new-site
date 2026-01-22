@@ -16,56 +16,51 @@ export default function HeroOverlays({
 
     return (
         <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ opacity }}>
-            {/* Animated gradient mesh - disabled on mobile */}
-            {!isMobile && (
-                <>
-                    {/* Primary red glow - top left */}
-                    <motion.div
-                        initial={{ opacity: 0.3 }}
-                        animate={{ opacity: [0.3, 0.4, 0.3] }}
-                        transition={{
-                            duration: 8,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                        }}
-                        className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#FF1A1A] blur-[80px] rounded-full"
-                    />
+            {/* Animated gradient mesh */}
+            <>
+                {/* Primary red glow - top left */}
+                <motion.div
+                    initial={{ opacity: 0.3 }}
+                    animate={{ opacity: [0.3, 0.4, 0.3] }}
+                    transition={{
+                        duration: 8,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                    }}
+                    className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#FF1A1A] rounded-full ${isMobile ? 'blur-[50px]' : 'blur-[80px]'}`}
+                />
 
-                    {/* Secondary purple glow - center right */}
-                    <motion.div
-                        initial={{ opacity: 0.2 }}
-                        animate={{ opacity: [0.2, 0.3, 0.2] }}
-                        transition={{
-                            duration: 10,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: 0.3
-                        }}
-                        className="absolute top-[10%] right-[-15%] w-[50%] h-[70%] bg-[#8B5CF6] blur-[100px] rounded-full"
-                    />
+                {/* Secondary purple glow - center right */}
+                <motion.div
+                    initial={{ opacity: 0.2 }}
+                    animate={{ opacity: [0.2, 0.3, 0.2] }}
+                    transition={{
+                        duration: 10,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.3
+                    }}
+                    className={`absolute top-[10%] right-[-15%] w-[50%] h-[70%] bg-[#8B5CF6] rounded-full ${isMobile ? 'blur-[50px]' : 'blur-[100px]'}`}
+                />
 
-                    {/* Tertiary blue glow - bottom */}
-                    <motion.div
-                        initial={{ opacity: 0.15 }}
-                        animate={{ opacity: [0.15, 0.2, 0.15] }}
-                        transition={{
-                            duration: 12,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: 0.6
-                        }}
-                        className="absolute bottom-[-30%] left-[20%] w-[60%] h-[50%] bg-[#0066FF] blur-[100px] rounded-full"
-                    />
+                {/* Tertiary blue glow - bottom */}
+                <motion.div
+                    initial={{ opacity: 0.15 }}
+                    animate={{ opacity: [0.15, 0.2, 0.15] }}
+                    transition={{
+                        duration: 12,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.6
+                    }}
+                    className={`absolute bottom-[-30%] left-[20%] w-[60%] h-[50%] bg-[#0066FF] rounded-full ${isMobile ? 'blur-[50px]' : 'blur-[100px]'}`}
+                />
 
-                    {/* White highlight accent - simplified */}
+                {/* White highlight accent - simplified */}
+                {!isMobile && (
                     <div className="absolute top-[30%] left-[40%] w-[30%] h-[30%] bg-white/5 blur-[80px] rounded-full" />
-                </>
-            )}
-
-            {/* Mobile: Simple static gradient */}
-            {isMobile && (
-                <div className="absolute inset-0 bg-gradient-to-b from-[#1a0808] via-[#0a0505] to-[#050505]" />
-            )}
+                )}
+            </>
 
             {/* Noise/grain texture overlay */}
             <div
