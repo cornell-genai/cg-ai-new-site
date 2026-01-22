@@ -4,15 +4,23 @@ import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-export default function HeroTeamDisplay() {
+interface HeroTeamDisplayProps {
+    isMobile?: boolean;
+}
+
+export default function HeroTeamDisplay({ isMobile = false }: HeroTeamDisplayProps) {
     return (
-        <div className="relative w-full h-[400px] md:h-[500px] flex items-center justify-center">
+        <div className={`relative w-full flex items-center justify-center ${
+            isMobile ? 'h-[220px]' : 'h-[400px] md:h-[500px]'
+        }`}>
             {/* Animated blob container */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-                className="relative z-10 w-[300px] h-[300px] md:w-[400px] md:h-[400px]"
+                className={`relative z-10 ${
+                    isMobile ? 'w-[200px] h-[200px]' : 'w-[300px] h-[300px] md:w-[400px] md:h-[400px]'
+                }`}
             >
                 {/* Main Image Blob */}
                 <motion.div
@@ -46,21 +54,25 @@ export default function HeroTeamDisplay() {
                 </motion.div>
 
                 {/* Decorative floating elements */}
-                <FloatingElement
-                    className="absolute -top-4 -right-4 w-16 h-16 bg-red-100/80 backdrop-blur-md"
-                    delay={0}
-                    duration={6}
-                />
-                <FloatingElement
-                    className="absolute -bottom-8 -left-8 w-24 h-24 bg-rose-100/80 backdrop-blur-md"
-                    delay={2}
-                    duration={8}
-                />
-                <FloatingElement
-                    className="absolute top-1/2 -right-12 w-12 h-12 bg-red-50/80 backdrop-blur-md"
-                    delay={1}
-                    duration={5}
-                />
+                {!isMobile && (
+                    <>
+                        <FloatingElement
+                            className="absolute -top-4 -right-4 w-16 h-16 bg-red-100/80 backdrop-blur-md"
+                            delay={0}
+                            duration={6}
+                        />
+                        <FloatingElement
+                            className="absolute -bottom-8 -left-8 w-24 h-24 bg-rose-100/80 backdrop-blur-md"
+                            delay={2}
+                            duration={8}
+                        />
+                        <FloatingElement
+                            className="absolute top-1/2 -right-12 w-12 h-12 bg-red-50/80 backdrop-blur-md"
+                            delay={1}
+                            duration={5}
+                        />
+                    </>
+                )}
 
                 {/* Badge */}
 
