@@ -119,15 +119,15 @@ export default function StanfordPage() {
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [contentReady, setContentReady] = useState(false);
     const isMobile = useIsMobile();
-    
+
     // Scroll-based animations for sections
     const { scrollY } = useScroll();
     const sectionOpacity = useTransform(scrollY, [200, 500], [0, 1]);
     const sectionY = useTransform(scrollY, [200, 500], [60, 0]);
     const navOpacity = useTransform(scrollY, [0, 100], [0.7, 1]);
     const navBackground = useTransform(
-        scrollY, 
-        [0, 200], 
+        scrollY,
+        [0, 200],
         ["rgba(5,5,5,0)", "rgba(5,5,5,0.8)"]
     );
 
@@ -159,8 +159,8 @@ export default function StanfordPage() {
             <motion.nav
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: selectedId ? 0 : 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
-                style={{ 
+                transition={{ duration: 0.5, delay: 0.2 }}
+                style={{
                     opacity: navOpacity,
                     backgroundColor: navBackground,
                     backdropFilter: "blur(8px)",
@@ -179,7 +179,7 @@ export default function StanfordPage() {
             </motion.nav>
 
             {/* Hero Section - Full viewport height */}
-            <HeroSection 
+            <HeroSection
                 headline="Cornell's home
 for students in AI"
                 subtitle="Connecting Cornell's most passionate developers with industry giants to build AI products that streamline workflows."
@@ -248,7 +248,7 @@ for students in AI"
                                     </motion.div>
 
                                     {/* Section Cards - 3-column grid on desktop */}
-                                    <motion.section 
+                                    <motion.section
                                         variants={containerVariants}
                                         initial="hidden"
                                         whileInView="visible"
@@ -265,7 +265,8 @@ for students in AI"
                                                 whileTap={{ scale: 0.97 }}
                                                 transition={{
                                                     layout: { duration: 0.4, ease: SNAPPY_EASE },
-                                                    scale: { duration: 0.2 }
+                                                    scale: { duration: 0.2, delay: 0 },
+                                                    y: { duration: 0.2, delay: 0 }
                                                 }}
                                                 className={`group relative cursor-pointer will-change-transform ${isMobile
                                                     ? 'flex flex-col items-center text-center py-6 px-4 bg-white/[0.03] rounded-2xl border border-white/5'
@@ -302,7 +303,7 @@ for students in AI"
                                                                 className="object-contain object-center transition-transform duration-500 group-hover:scale-110"
                                                             />
                                                         </div>
-                                                        <h3 className="text-4xl font-semibold mb-3 tracking-tight group-hover:text-[#FF1A1A] transition-colors duration-300">
+                                                        <h3 className="text-4xl font-semibold mb-3 tracking-tight transition-colors duration-300">
                                                             {section.title}
                                                         </h3>
                                                         <p className="text-sm text-white/50 font-normal group-hover:text-white/70 transition-colors duration-300">

@@ -9,36 +9,34 @@ const containerVariants: Variants = {
     visible: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.03,
-            delayChildren: 0.2,
+            staggerChildren: 0.04,
+            delayChildren: 0.15,
         },
     },
 };
 
 const letterVariants: Variants = {
-    hidden: { 
-        opacity: 0, 
-        y: 40,
-        rotateX: -60,
-        filter: "blur(8px)",
+    hidden: {
+        opacity: 0,
+        y: 20,
+        rotateX: -30,
     },
-    visible: { 
-        opacity: 1, 
+    visible: {
+        opacity: 1,
         y: 0,
         rotateX: 0,
-        filter: "blur(0px)",
         transition: {
             type: "spring",
-            damping: 15,
-            stiffness: 120,
+            damping: 16,
+            stiffness: 100,
         },
     },
 };
 
 const subtitleVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-        opacity: 1, 
+    visible: {
+        opacity: 1,
         y: 0,
         transition: {
             duration: 0.8,
@@ -60,7 +58,7 @@ interface AnimatedTextProps {
  */
 function AnimatedText({ text, className = "", delay = 0 }: AnimatedTextProps) {
     const words = text.split(" ");
-    
+
     return (
         <motion.div
             variants={containerVariants}
@@ -72,8 +70,8 @@ function AnimatedText({ text, className = "", delay = 0 }: AnimatedTextProps) {
             {words.map((word, wordIndex) => {
                 const isCornells = word === "Cornell's";
                 return (
-                    <span 
-                        key={wordIndex} 
+                    <span
+                        key={wordIndex}
                         className="inline-block mr-[0.25em] whitespace-nowrap"
                     >
                         {word.split("").map((letter, letterIndex) => (
@@ -107,13 +105,13 @@ function AnimatedText({ text, className = "", delay = 0 }: AnimatedTextProps) {
  * TypewriterText
  * Renders text with a typewriter effect
  */
-function TypewriterText({ 
-    text, 
-    className = "", 
+function TypewriterText({
+    text,
+    className = "",
     startDelay = 1500,
-    typingSpeed = 30 
-}: { 
-    text: string; 
+    typingSpeed = 30
+}: {
+    text: string;
     className?: string;
     startDelay?: number;
     typingSpeed?: number;
@@ -124,11 +122,11 @@ function TypewriterText({
 
     useEffect(() => {
         let timeout: NodeJS.Timeout;
-        
+
         // Start typing after delay
         timeout = setTimeout(() => {
             let currentIndex = 0;
-            
+
             const typeInterval = setInterval(() => {
                 if (currentIndex < text.length) {
                     setDisplayedText(text.slice(0, currentIndex + 1));
@@ -138,21 +136,21 @@ function TypewriterText({
                     setIsTypingComplete(true);
                 }
             }, typingSpeed);
-            
+
             return () => clearInterval(typeInterval);
         }, startDelay);
-        
+
         return () => clearTimeout(timeout);
     }, [text, startDelay, typingSpeed]);
 
     // Blinking cursor effect
     useEffect(() => {
         if (!isTypingComplete) return;
-        
+
         const cursorInterval = setInterval(() => {
             setShowCursor(prev => !prev);
         }, 530);
-        
+
         return () => clearInterval(cursorInterval);
     }, [isTypingComplete]);
 
@@ -164,10 +162,9 @@ function TypewriterText({
             className={className}
         >
             {displayedText}
-            <span 
-                className={`inline-block w-[2px] h-[1em] bg-white/70 ml-1 align-middle transition-opacity duration-100 ${
-                    showCursor ? "opacity-100" : "opacity-0"
-                }`}
+            <span
+                className={`inline-block w-[2px] h-[1em] bg-white/70 ml-1 align-middle transition-opacity duration-100 ${showCursor ? "opacity-100" : "opacity-0"
+                    }`}
             />
         </motion.p>
     );
@@ -181,9 +178,9 @@ function GlowText({ children, className = "" }: { children: React.ReactNode; cla
     return (
         <span className={`relative ${className}`}>
             {/* Glow layer */}
-            <span 
+            <span
                 className="absolute inset-0 blur-2xl opacity-50"
-                style={{ 
+                style={{
                     background: "linear-gradient(90deg, #FF1A1A 0%, #8B5CF6 50%, #0066FF 100%)",
                     WebkitBackgroundClip: "text",
                     backgroundClip: "text",
@@ -205,43 +202,40 @@ interface HeroTypographyProps {
     isMobile?: boolean;
 }
 
-export default function HeroTypography({ 
+export default function HeroTypography({
     headline = "Cornell's home for students in AI",
     subtitle = "Cornell GenAI is where the students that shape the future of AI at Cornell come together. From research to industry, we offer opportunities to connect with titans of industry, learn from the best in the field, and get started in the field.",
     className = "",
     isMobile = false
 }: HeroTypographyProps) {
     const mobileSubtitle = "Cornell GenAI is where the students that shape the future of AI at Cornell come together.";
-    
+
     return (
         <div className={`relative z-10 ${className}`}>
             {/* Main headline with letter animation */}
-            <h1 className={`font-bold tracking-tight leading-[0.95] mb-6 md:mb-8 ${
-                isMobile ? "text-3xl" : "text-4xl md:text-5xl lg:text-6xl"
-            }`}>
-                <AnimatedText 
+            <h1 className={`font-bold tracking-tight leading-[0.95] mb-6 md:mb-8 ${isMobile ? "text-3xl" : "text-4xl md:text-5xl lg:text-6xl"
+                }`}>
+                <AnimatedText
                     text={headline}
                     className="text-white"
                 />
             </h1>
-            
-            {/* Subtitle with typewriter effect */}
+
+            {/* Subtitle with smooth fade in */}
             <div className={`max-w-2xl ${isMobile ? "text-sm" : "text-base md:text-lg"}`}>
-                <TypewriterText 
-                    text={isMobile ? mobileSubtitle : subtitle}
+                <motion.p
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        duration: 0.6,
+                        delay: 0.8,
+                        ease: [0.22, 1, 0.36, 1]
+                    }}
                     className="text-white/60 font-normal leading-relaxed"
-                    startDelay={1800}
-                    typingSpeed={isMobile ? 20 : 25}
-                />
+                >
+                    {isMobile ? mobileSubtitle : subtitle}
+                </motion.p>
             </div>
-            
-            {/* Accent line */}
-            <motion.div
-                initial={{ scaleX: 0, opacity: 0 }}
-                animate={{ scaleX: 1, opacity: 1 }}
-                transition={{ duration: 1, delay: 2.5, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-8 md:mt-12 h-[2px] w-24 md:w-32 bg-gradient-to-r from-[#FF1A1A] via-[#8B5CF6] to-transparent origin-left"
-            />
         </div>
     );
 }

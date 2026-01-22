@@ -14,44 +14,44 @@ interface NodeConnection {
  * NeuralNetwork3D
  * An interactive neural network visualization with connected nodes
  */
-function NeuralNetwork3D({ 
-    count = 600, 
+function NeuralNetwork3D({
+    count = 300,
     connectionDistance = 2.5,
-    isMobile = false 
-}: { 
-    count?: number; 
+    isMobile = false
+}: {
+    count?: number;
     connectionDistance?: number;
     isMobile?: boolean;
 }) {
     const { mouse, viewport } = useThree();
     const pointsRef = useRef<THREE.Points>(null);
     const groupRef = useRef<THREE.Group>(null);
-    
-    // Reduce count for mobile
-    const actualCount = isMobile ? Math.floor(count / 3) : count;
-    
+
+    // Reduce count for mobile/lower devices
+    const actualCount = isMobile ? Math.floor(count / 4) : count;
+
     // Generate initial random positions in a spread-out sphere
     const { positions, colors } = useMemo(() => {
         const p = new Float32Array(actualCount * 3);
         const c = new Float32Array(actualCount * 3);
-        
+
         // Color palette
         const colorRed = new THREE.Color("#FF1A1A");
         const colorBlue = new THREE.Color("#0066FF");
         const colorPurple = new THREE.Color("#8B5CF6");
         const colorWhite = new THREE.Color("#FFFFFF");
-        
+
         for (let i = 0; i < actualCount; i++) {
             // Create a loose sphere/cloud shape with layers
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(Math.random() * 2 - 1);
             const layer = Math.floor(Math.random() * 3); // 0, 1, 2 for depth layers
             const r = 3 + layer * 2 + Math.random() * 2;
-            
+
             p[i * 3] = r * Math.sin(phi) * Math.cos(theta);
             p[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
             p[i * 3 + 2] = r * Math.cos(phi) - 5; // Offset back in z
-            
+
             // Assign colors based on position/layer
             const colorMix = Math.random();
             let color: THREE.Color;
@@ -64,7 +64,7 @@ function NeuralNetwork3D({
             } else {
                 color = colorWhite.clone();
             }
-            
+
             c[i * 3] = color.r;
             c[i * 3 + 1] = color.g;
             c[i * 3 + 2] = color.b;
@@ -75,25 +75,25 @@ function NeuralNetwork3D({
     // Generate connections between nearby nodes
     const connections = useMemo(() => {
         if (isMobile) return []; // Skip connections on mobile for performance
-        
+
         const conns: NodeConnection[] = [];
-        const maxConnections = 150; // Limit for performance
+        const maxConnections = 60; // Reduced for performance
         let connCount = 0;
-        
+
         for (let i = 0; i < actualCount && connCount < maxConnections; i++) {
             const x1 = positions[i * 3];
             const y1 = positions[i * 3 + 1];
             const z1 = positions[i * 3 + 2];
-            
+
             for (let j = i + 1; j < actualCount && connCount < maxConnections; j++) {
                 const x2 = positions[j * 3];
                 const y2 = positions[j * 3 + 1];
                 const z2 = positions[j * 3 + 2];
-                
+
                 const distance = Math.sqrt(
                     (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2
                 );
-                
+
                 if (distance < connectionDistance && Math.random() > 0.7) {
                     conns.push({
                         start: new THREE.Vector3(x1, y1, z1),
@@ -109,17 +109,17 @@ function NeuralNetwork3D({
     // Animation loop
     useFrame((state) => {
         if (!pointsRef.current || !groupRef.current) return;
-        
+
         const time = state.clock.getElapsedTime();
-        
+
         // Slow rotation of the entire system
         groupRef.current.rotation.y = time * 0.05;
         groupRef.current.rotation.x = Math.sin(time * 0.03) * 0.1;
-        
+
         // Mouse influence on rotation
         const targetRotationX = mouse.y * 0.3;
         const targetRotationY = mouse.x * 0.3;
-        
+
         pointsRef.current.rotation.x += (targetRotationX - pointsRef.current.rotation.x) * 0.02;
         pointsRef.current.rotation.y += (targetRotationY - pointsRef.current.rotation.y) * 0.02;
     });
@@ -138,20 +138,7 @@ function NeuralNetwork3D({
                     blending={THREE.AdditiveBlending}
                 />
             </Points>
-            
-            {/* Secondary glow layer */}
-            <Points positions={positions} stride={3} frustumCulled={false}>
-                <PointMaterial
-                    transparent
-                    color="#FF1A1A"
-                    size={isMobile ? 0.25 : 0.18}
-                    sizeAttenuation={true}
-                    depthWrite={false}
-                    opacity={0.25}
-                    blending={THREE.AdditiveBlending}
-                />
-            </Points>
-            
+
             {/* Connection lines */}
             {connections.map((conn, i) => (
                 <Line
@@ -171,10 +158,10 @@ function NeuralNetwork3D({
  * FloatingParticles
  * Ambient floating particles for atmosphere
  */
-function FloatingParticles({ count = 100, isMobile = false }: { count?: number; isMobile?: boolean }) {
+function FloatingParticles({ count = 50, isMobile = false }: { count?: number; isMobile?: boolean }) {
     const ref = useRef<THREE.Points>(null);
-    const actualCount = isMobile ? Math.floor(count / 2) : count;
-    
+    const actualCount = isMobile ? Math.floor(count / 3) : count;
+
     const positions = useMemo(() => {
         const p = new Float32Array(actualCount * 3);
         for (let i = 0; i < actualCount; i++) {
@@ -212,7 +199,7 @@ interface HeroBackground3DProps {
 
 export default function HeroBackground3D({ className = "", scrollProgress = 0 }: HeroBackground3DProps) {
     const [isMobile, setIsMobile] = useState(false);
-    
+
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         checkMobile();
@@ -224,12 +211,12 @@ export default function HeroBackground3D({ className = "", scrollProgress = 0 }:
     const opacity = Math.max(0, 1 - scrollProgress * 1.5);
 
     return (
-        <div 
+        <div
             className={`absolute inset-0 z-0 ${className}`}
             style={{ opacity }}
         >
-            <Canvas 
-                camera={{ position: [0, 0, 12], fov: 60 }} 
+            <Canvas
+                camera={{ position: [0, 0, 12], fov: 60 }}
                 dpr={isMobile ? 1 : [1, 2]}
                 gl={{ antialias: !isMobile, alpha: true }}
             >
@@ -238,14 +225,14 @@ export default function HeroBackground3D({ className = "", scrollProgress = 0 }:
                 <pointLight position={[10, 10, 10]} intensity={1} color="#FF1A1A" />
                 <pointLight position={[-10, -10, -5]} intensity={0.6} color="#0066FF" />
                 <pointLight position={[0, 5, 5]} intensity={0.4} color="#8B5CF6" />
-                
+
                 <NeuralNetwork3D isMobile={isMobile} />
                 <FloatingParticles isMobile={isMobile} />
             </Canvas>
-            
+
             {/* Vignette overlay */}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#050505_70%)] opacity-60 pointer-events-none" />
-            
+
             {/* Bottom fade gradient */}
             <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent pointer-events-none" />
         </div>
