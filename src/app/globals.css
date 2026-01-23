@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Configure Tailwind v4 to use class-based dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Warm Community Palette */
   --color-background: #FAFAF9;
@@ -28,6 +31,32 @@
   /* Fonts */
   --font-mono: 'JetBrains Mono', monospace;
   --font-display: 'Space Grotesk', sans-serif;
+}
+
+/* Dark Mode - Deep Purple Theme */
+.dark {
+  --color-background: #0F0A1A;
+  --color-background-alt: #1A1226;
+  --color-surface: #1E1730;
+
+  /* Brand Colors stay consistent */
+  --color-brand: #818CF8;
+  --color-brand-light: #A5B4FC;
+  --color-brand-dark: #6366F1;
+  --color-accent-warm: #FBBF24;
+  --color-accent-secondary: #A78BFA;
+
+  /* Text Colors - inverted for dark */
+  --color-text-primary: #F4F4F5;
+  --color-text-secondary: #A1A1AA;
+  --color-text-muted: #71717A;
+
+  /* Borders - darker */
+  --color-border: #3F3A4A;
+  --color-border-light: #2E2A38;
+
+  --background: var(--color-background);
+  --foreground: var(--color-text-primary);
 }
 
 @theme inline {

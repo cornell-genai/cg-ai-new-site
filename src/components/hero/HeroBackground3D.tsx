@@ -4,6 +4,7 @@ import React, { useRef, useMemo, useEffect, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Points, PointMaterial, Line } from "@react-three/drei";
 import * as THREE from "three";
+import { useTheme } from "@/components/ThemeProvider";
 
 interface NodeConnection {
     start: THREE.Vector3;
@@ -16,8 +17,8 @@ interface NodeConnection {
  * Updated with warm indigo/violet/amber color palette
  */
 function NeuralNetwork3D({
-    count = 300,
-    connectionDistance = 2.5,
+    count = 450,
+    connectionDistance = 2.0,
     isMobile = false
 }: {
     count?: number;
@@ -43,15 +44,16 @@ function NeuralNetwork3D({
         const colorLight = new THREE.Color("#fca5a5"); // Red-300
 
         for (let i = 0; i < actualCount; i++) {
-            // Create a loose sphere/cloud shape with layers
+            // Create a tighter sphere/cloud shape with layers for denser clustering
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos(Math.random() * 2 - 1);
-            const layer = Math.floor(Math.random() * 3); // 0, 1, 2 for depth layers
-            const r = 3 + layer * 2 + Math.random() * 2;
+            const layer = Math.floor(Math.random() * 4); // 0, 1, 2, 3 for depth layers
+            // Adjusted radius: halfway between tight and loose (range ~1.75-6)
+            const r = 1.75 + layer * 1.25 + Math.random() * 1.5;
 
             p[i * 3] = r * Math.sin(phi) * Math.cos(theta);
             p[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-            p[i * 3 + 2] = r * Math.cos(phi) - 5; // Offset back in z
+            p[i * 3 + 2] = r * Math.cos(phi) - 3; // Offset back in z (closer to camera)
 
             // Assign warm red colors
             const colorMix = Math.random();
@@ -76,7 +78,7 @@ function NeuralNetwork3D({
         if (isMobile) return []; // Skip connections on mobile for performance
 
         const conns: NodeConnection[] = [];
-        const maxConnections = 60; // Reduced for performance
+        const maxConnections = 120; // Increased for denser network appearance
         let connCount = 0;
 
         for (let i = 0; i < actualCount && connCount < maxConnections; i++) {
@@ -93,7 +95,7 @@ function NeuralNetwork3D({
                     (x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2
                 );
 
-                if (distance < connectionDistance && Math.random() > 0.7) {
+                if (distance < connectionDistance && Math.random() > 0.55) {
                     conns.push({
                         start: new THREE.Vector3(x1, y1, z1),
                         end: new THREE.Vector3(x2, y2, z2)
@@ -198,6 +200,8 @@ interface HeroBackground3DProps {
 
 export default function HeroBackground3D({ className = "", scrollProgress = 0 }: HeroBackground3DProps) {
     const [isMobile, setIsMobile] = useState(false);
+    const { theme } = useTheme();
+    const isDark = theme === 'dark';
 
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -209,13 +213,16 @@ export default function HeroBackground3D({ className = "", scrollProgress = 0 }:
     // Calculate opacity based on scroll progress
     const opacity = Math.max(0, 1 - scrollProgress * 1.5);
 
+    // Theme-dependent colors
+    const fogColor = isDark ? "#0F0A1A" : "#FAFAF9";
+
     return (
         <div
             className={`absolute inset-0 z-0 ${className}`}
             style={{ opacity }}
         >
-            {/* Light gradient background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#FAFAF9] via-[#F5F5F4] to-[#EDE9FE]" />
+            {/* Light/Dark gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#FAFAF9] via-[#F5F5F4] to-[#EDE9FE] dark:from-[#0F0A1A] dark:via-[#1A1226] dark:to-[#0F0A1A]" />
 
             {/* Hide 3D Canvas on mobile devices */}
             {!isMobile && (
@@ -224,22 +231,26 @@ export default function HeroBackground3D({ className = "", scrollProgress = 0 }:
                     dpr={isMobile ? 1 : [1, 2]}
                     gl={{ antialias: !isMobile, alpha: true }}
                 >
-                    <fog attach="fog" args={["#FAFAF9", 15, 40]} />
-                    <ambientLight intensity={0.8} />
-                    <pointLight position={[10, 10, 10]} intensity={0.8} color="#7f1d1d" />
-                    <pointLight position={[-10, -10, -5]} intensity={0.5} color="#991b1b" />
-                    <pointLight position={[0, 5, 5]} intensity={0.4} color="#b91c1c" />
+                    <fog attach="fog" args={[fogColor, 15, 40]} />
+                    <ambientLight intensity={isDark ? 0.4 : 0.8} />
+                    <pointLight position={[10, 10, 10]} intensity={isDark ? 1.2 : 0.8} color="#b91c1c" />
+                    <pointLight position={[-10, -10, -5]} intensity={isDark ? 0.8 : 0.5} color="#991b1b" />
+                    <pointLight position={[0, 5, 5]} intensity={isDark ? 0.6 : 0.4} color="#dc2626" />
 
                     <NeuralNetwork3D isMobile={isMobile} />
                     <FloatingParticles isMobile={isMobile} />
                 </Canvas>
             )}
 
-            {/* Soft vignette overlay */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(250,250,249,0.5)_70%)] pointer-events-none" />
+            {/* Soft vignette overlay - light mode only */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(250,250,249,0.5)_70%)] dark:hidden pointer-events-none" />
 
             {/* Bottom fade gradient to content */}
-            <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#FAFAF9] via-[#FAFAF9]/80 to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#FAFAF9] via-[#FAFAF9]/80 to-transparent dark:from-[#0F0A1A] dark:via-[#0F0A1A]/80 dark:to-transparent pointer-events-none" />
+
+            {/* Red glow for dark mode */}
+            <div className="absolute top-0 left-0 w-[60%] h-[60%] bg-red-600/20 blur-[150px] rounded-full opacity-0 dark:opacity-100 pointer-events-none" />
+            <div className="absolute bottom-[20%] right-[10%] w-[40%] h-[40%] bg-purple-600/15 blur-[120px] rounded-full opacity-0 dark:opacity-100 pointer-events-none" />
         </div>
     );
 }

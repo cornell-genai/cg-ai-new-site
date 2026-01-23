@@ -124,13 +124,13 @@ export default function HeroTypography({
         return (
             <div className={`relative z-10 ${className}`}>
                 {/* Main headline - static, no animation */}
-                <h1 className="font-bold tracking-tight leading-[0.95] mb-6 text-3xl text-zinc-900">
+                <h1 className="font-bold tracking-tight leading-[0.95] mb-6 text-3xl text-zinc-900 dark:text-zinc-100">
                     {renderHeadlineWithGradient(headline)}
                 </h1>
 
                 {/* Subtitle - static, no animation */}
                 <div className="max-w-2xl text-sm">
-                    <p className="text-zinc-600 font-normal leading-relaxed">
+                    <p className="text-zinc-600 dark:text-zinc-400 font-normal leading-relaxed">
                         {mobileSubtitle}
                     </p>
                 </div>
@@ -139,13 +139,13 @@ export default function HeroTypography({
                 <div className="flex flex-wrap gap-4 mt-8 justify-center">
                     <a
                         href="/team"
-                        className="inline-flex items-center justify-center px-6 py-3 bg-red-700 text-white font-medium rounded-full hover:bg-red-800 transition-colors shadow-lg shadow-red-900/25"
+                        className="inline-flex items-center justify-center px-6 py-3 bg-red-700 dark:bg-red-600 text-white font-medium rounded-full hover:bg-red-800 dark:hover:bg-red-700 transition-colors shadow-lg shadow-red-900/25"
                     >
                         Meet the Team
                     </a>
                     <a
                         href="#sections"
-                        className="inline-flex items-center justify-center px-6 py-3 bg-white text-zinc-700 font-medium rounded-full border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-colors"
+                        className="inline-flex items-center justify-center px-6 py-3 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 font-medium rounded-full border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
                     >
                         Learn More
                     </a>
@@ -161,7 +161,7 @@ export default function HeroTypography({
             <h1 className="font-bold tracking-tight leading-[0.95] mb-6 md:mb-8 text-4xl md:text-5xl lg:text-6xl">
                 <AnimatedText
                     text={headline}
-                    className="text-zinc-900"
+                    className="text-zinc-900 dark:text-zinc-100"
                 />
             </h1>
 
@@ -175,7 +175,7 @@ export default function HeroTypography({
                         delay: 0.8,
                         ease: [0.22, 1, 0.36, 1]
                     }}
-                    className="text-zinc-600 font-normal leading-relaxed"
+                    className="text-zinc-600 dark:text-zinc-400 font-normal leading-relaxed"
                 >
                     {subtitle}
                 </motion.p>
@@ -190,13 +190,13 @@ export default function HeroTypography({
             >
                 <a
                     href="/team"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-red-700 text-white font-medium rounded-full hover:bg-red-800 transition-colors shadow-lg shadow-red-900/25"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-red-700 dark:bg-red-600 text-white font-medium rounded-full hover:bg-red-800 dark:hover:bg-red-700 transition-colors shadow-lg shadow-red-900/25"
                 >
                     Meet the Team
                 </a>
                 <a
                     href="#sections"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-white text-zinc-700 font-medium rounded-full border border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50 transition-colors"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 font-medium rounded-full border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
                 >
                     Learn More
                 </a>
