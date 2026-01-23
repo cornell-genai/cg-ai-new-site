@@ -5,7 +5,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display" });
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" }); // Added for separate Stanford page
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "Generative AI @ Cornell",

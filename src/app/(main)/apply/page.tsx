@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { GrainOverlay } from '@/components/ui/GrainOverlay';
 import { ArrowRight, Code, Palette, Coffee } from 'lucide-react';
 import Link from 'next/link';
 
@@ -55,7 +54,6 @@ export default function ApplyPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF9] dark:bg-[#0F0A1A] text-zinc-900 dark:text-zinc-100 font-sans selection:bg-red-100 dark:selection:bg-red-900 selection:text-red-900 dark:selection:text-red-100 pt-32 pb-20 transition-colors duration-300">
-      {/* <GrainOverlay /> */}
 
       {/* Background Decorative Gradients */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">

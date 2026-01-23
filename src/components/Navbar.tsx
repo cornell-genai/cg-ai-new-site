@@ -4,8 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowRight, Sun, Moon } from "lucide-react";
-import { useTheme } from "./ThemeProvider";
+import { Menu, X, ArrowRight } from "lucide-react";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -18,7 +17,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const { theme, toggleTheme } = useTheme();
+
 
   // Handle scroll effect
   useEffect(() => {
