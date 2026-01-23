@@ -29,14 +29,11 @@ export default function ThemeProvider({ children }: ThemeProviderProps) {
     const [mounted, setMounted] = useState(false);
 
     // Initialize theme from localStorage or system preference
+    // Initialize theme - Force light mode for now as per requirements
     useEffect(() => {
         setMounted(true);
-        const stored = localStorage.getItem("theme") as Theme | null;
-        if (stored) {
-            setThemeState(stored);
-        } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            setThemeState("dark");
-        }
+        // Force light mode
+        setThemeState("light");
     }, []);
 
     // Apply theme class to html element
