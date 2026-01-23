@@ -2,8 +2,8 @@
 
 import React from 'react';
 import HeroSection from '@/components/hero/HeroSection';
-import PartnersGrid from '@/components/stanford/PartnersGrid';
-import { motion } from 'framer-motion';
+import PartnersGrid from '@/components/features/PartnersGrid';
+
 import { Terminal, Cpu, Users, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 

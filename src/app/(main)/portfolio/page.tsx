@@ -84,7 +84,7 @@ export default function PortfolioPage() {
           viewport={{ once: true, margin: "-100px" }}
           className="mb-16 last:mb-8"
         >
-          <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center ${index % 2 === 1 ? 'lg:grid-flow-dense' : ''
+          <div className={`max-w-7xl mx-auto px-6 sm:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center ${index % 2 === 1 ? 'lg:grid-flow-dense' : ''
             }`}>
             {/* Image Side */}
             <div className={`${index % 2 === 1 ? 'lg:col-start-2' : ''} group`}>
