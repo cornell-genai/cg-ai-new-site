@@ -23,8 +23,8 @@ export default function HeroOverlays({
                 <div className="absolute top-[10%] right-[-15%] w-[50%] h-[70%] bg-[#be123c] rounded-full blur-[40px] opacity-15" />
                 <div className="absolute bottom-[-30%] left-[20%] w-[60%] h-[50%] bg-[#fca5a5] rounded-full blur-[40px] opacity-12" />
 
-                {/* Subtle soft vignette for depth */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_50%,rgba(250,250,249,0.3)_100%)]" />
+                {/* Subtle soft vignette for depth - light mode only */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_50%,rgba(250,250,249,0.3)_100%)] dark:hidden" />
             </div>
         );
     }
@@ -75,8 +75,8 @@ export default function HeroOverlays({
                 <div className="absolute top-[30%] left-[40%] w-[30%] h-[30%] bg-[#fecaca]/10 blur-[100px] rounded-full" />
             </>
 
-            {/* Subtle soft vignette for depth */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_50%,rgba(250,250,249,0.3)_100%)]" />
+            {/* Subtle soft vignette for depth - light mode only */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_50%,rgba(250,250,249,0.3)_100%)] dark:hidden" />
         </div>
     );
 }

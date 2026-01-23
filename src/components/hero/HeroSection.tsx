@@ -12,7 +12,7 @@ import HeroTeamDisplay from "./HeroTeamDisplay";
 const HeroBackground3D = dynamic(() => import("./HeroBackground3D"), {
     ssr: false,
     loading: () => (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#FAFAF9] via-[#F5F5F4] to-[#EDE9FE]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#FAFAF9] via-[#F5F5F4] to-[#EDE9FE] dark:from-[#0F0A1A] dark:via-[#1A1226] dark:to-[#1E1730]" />
     ),
 });
 
@@ -70,7 +70,7 @@ export default function HeroSection({
     return (
         <section
             ref={heroRef}
-            className="relative h-screen w-full overflow-hidden bg-[#FAFAF9]"
+            className="relative h-screen w-full overflow-hidden bg-[#FAFAF9] dark:bg-[#0F0A1A] transition-colors duration-300"
             aria-label="Hero section"
         >
             {/* 3D Background Layer - don't even load on mobile */}
@@ -141,7 +141,7 @@ export default function HeroSection({
 
             {/* Bottom gradient fade into next section */}
             <div
-                className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#FAFAF9] to-transparent pointer-events-none z-20"
+                className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#FAFAF9] dark:from-[#0F0A1A] to-transparent pointer-events-none z-20"
                 style={{ opacity: Math.min(1, scrollProgress * 3 + 0.3) }}
             />
         </section>
