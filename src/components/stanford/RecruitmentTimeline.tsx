@@ -42,12 +42,12 @@ const cardVariants = {
 };
 
 const TIMELINE = [
-    { date: "Jan 20", label: "Coffee Chats Open", location: null },
-    { date: "Jan 21", label: "All Applications Open", location: null },
-    { date: "Jan 25", label: "Club Fest", location: null },
-    { date: "Jan 29", label: "Info Session #1", location: "Stimson Hall" },
-    { date: "Feb 1", label: "Info Session #2", location: "Gates Hall G01" },
-    { date: "Feb 7", label: "Applications Due", location: null },
+    { date: "Jan 20", fullDate: "2026-01-20", label: "Coffee Chats Open", location: null },
+    { date: "Jan 21", fullDate: "2026-01-21", label: "All Applications Open", location: null },
+    { date: "Jan 25", fullDate: "2026-01-25", label: "Club Fest", location: null },
+    { date: "Jan 29", fullDate: "2026-01-29", label: "Info Session #1", location: "Stimson Hall" },
+    { date: "Feb 1", fullDate: "2026-02-01", label: "Info Session #2", location: "Gates Hall G01" },
+    { date: "Feb 7", fullDate: "2026-02-07", label: "Applications Due", location: null },
 ];
 
 const ROLES = [
@@ -80,13 +80,14 @@ const ROLES = [
 ];
 
 export default function RecruitmentTimeline() {
-    // Determine which timeline items are "past" based on current date
-    const now = new Date();
-    const getMonthDay = (dateStr: string) => {
-        const [month, day] = dateStr.split(' ');
-        const monthMap: Record<string, number> = { 'Jan': 0, 'Feb': 1 };
-        return new Date(2026, monthMap[month] || 0, parseInt(day));
-    };
+    const [todayDateString, setTodayDateString] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        // Get current EST date as YYYY-MM-DD string
+        const now = new Date();
+        const estString = now.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+        setTodayDateString(estString); // Format: "2026-01-23"
+    }, []);
 
     return (
         <motion.div
@@ -115,16 +116,38 @@ export default function RecruitmentTimeline() {
 
                         <div className="grid grid-cols-1 md:grid-cols-6 gap-6 md:gap-4">
                             {TIMELINE.map((item, idx) => {
-                                const itemDate = getMonthDay(item.date);
-                                const isPast = itemDate < now;
-                                const isActive = idx === 0; // First item is active
+                                // Simple check: is today's date exactly this item's date?
+                                const isActive = todayDateString === item.fullDate;
 
                                 return (
                                     <div key={idx} className="relative flex md:flex-col items-center md:items-start gap-4 md:gap-3 group">
-                                        <div className={`w-4 h-4 rounded-full border-2 border-white z-10 transition-all duration-300 flex-shrink-0 shadow-sm ${isActive ? 'bg-red-600 ring-4 ring-red-100 scale-110' : isPast ? 'bg-zinc-300' : 'bg-white border-zinc-300 group-hover:border-red-400'}`} />
+                                        {/* Dot Styling:
+                                            - Active (today matches): Red background with ring
+                                            - Default: White background, gray border
+                                         */}
+                                        <div className={`
+                                            w-4 h-4 rounded-full border-2 z-10 transition-all duration-300 flex-shrink-0 shadow-sm
+                                            ${isActive
+                                                ? 'bg-red-600 border-red-600 ring-4 ring-red-100 scale-110'
+                                                : 'bg-white border-zinc-300 group-hover:border-red-400'
+                                            }
+                                        `} />
+
                                         <div>
-                                            <p className="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">{item.date}</p>
-                                            <p className="text-sm text-zinc-900 font-medium group-hover:text-red-700 transition-colors duration-200">{item.label}</p>
+                                            <p className={`
+                                                text-xs font-bold uppercase tracking-wider mb-1 transition-colors duration-200
+                                                ${isActive ? "text-red-600" : "text-zinc-500"}
+                                            `}>
+                                                {item.date}
+                                            </p>
+
+                                            <p className={`
+                                                text-sm font-medium transition-colors duration-200
+                                                ${isActive ? "text-red-900" : "text-zinc-900"}
+                                            `}>
+                                                {item.label}
+                                            </p>
+
                                             {item.location && (
                                                 <p className="text-xs text-zinc-500 mt-1">{item.location}</p>
                                             )}

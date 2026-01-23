@@ -9,7 +9,7 @@ import Image from 'next/image';
 
 const PARTNERS = [
     { src: "/chartercommunications.png", alt: "Charter Communications" },
-    { src: "/vero.webp", alt: "Vero Technologies" },
+    { src: "/vero.png", alt: "Vero Technologies" },
     { src: "/quickfi-logo-01-1.png", alt: "QuickFi" },
     { src: "/cisco.png", alt: "Cisco" },
     { src: "/gradial.jpeg", alt: "Gradial" },

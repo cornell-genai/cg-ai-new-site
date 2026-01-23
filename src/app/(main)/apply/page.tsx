@@ -1,17 +1,17 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { GrainOverlay } from '@/components/ui/GrainOverlay';
 import { ArrowRight, Code, Palette, Coffee } from 'lucide-react';
 import Link from 'next/link';
 
 const TIMELINE = [
-  { date: "Jan 20", label: "Coffee Chats Open", location: null },
-  { date: "Jan 21", label: "All Applications Open", location: null },
-  { date: "Jan 25", label: "Club Fest", location: null },
-  { date: "Jan 29", label: "Info Session #1", location: "Stimson Hall" },
-  { date: "Feb 1", label: "Info Session #2", location: "Gates Hall G01" },
-  { date: "Feb 7", label: "Applications Due", location: null },
+  { date: "Jan 20", fullDate: "2026-01-20", label: "Coffee Chats Open", location: null },
+  { date: "Jan 21", fullDate: "2026-01-21", label: "All Applications Open", location: null },
+  { date: "Jan 25", fullDate: "2026-01-25", label: "Club Fest", location: null },
+  { date: "Jan 29", fullDate: "2026-01-29", label: "Info Session #1", location: "Stimson Hall" },
+  { date: "Feb 1", fullDate: "2026-02-01", label: "Info Session #2", location: "Gates Hall G01" },
+  { date: "Feb 7", fullDate: "2026-02-07", label: "Applications Due", location: null },
 ];
 
 const ROLES = [
@@ -44,6 +44,15 @@ const ROLES = [
 ];
 
 export default function ApplyPage() {
+  // Get current date in EST timezone as YYYY-MM-DD string
+  const [todayDateString, setTodayDateString] = useState<string | null>(null);
+
+  useEffect(() => {
+    const now = new Date();
+    const estString = now.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+    setTodayDateString(estString); // Format: "2026-01-22"
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#FAFAF9] text-zinc-900 font-sans selection:bg-red-100 selection:text-red-900 pt-32 pb-20">
       {/* <GrainOverlay /> */}
@@ -81,18 +90,32 @@ export default function ApplyPage() {
               <div className="absolute top-[7px] left-0 right-0 h-[1px] bg-gradient-to-r from-red-500/20 via-zinc-200 to-transparent hidden md:block" />
 
               <div className="grid grid-cols-1 md:grid-cols-6 gap-6 md:gap-4">
-                {TIMELINE.map((item, idx) => (
-                  <div key={idx} className="relative flex md:flex-col items-center md:items-start gap-4 md:gap-3 group">
-                    <div className={`w-4 h-4 rounded-full border-2 border-[#FAFAF9] z-10 transition-colors duration-300 flex-shrink-0 ${idx === 0 ? 'bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.3)]' : 'bg-zinc-200 group-hover:bg-red-400'}`} />
-                    <div>
-                      <p className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-1">{item.date}</p>
-                      <p className="text-sm text-zinc-800 font-medium group-hover:text-red-700 transition-colors duration-200">{item.label}</p>
-                      {item.location && (
-                        <p className="text-xs text-zinc-500 mt-1">{item.location}</p>
-                      )}
+                {TIMELINE.map((item, idx) => {
+                  // Find the most recent event that occurred on or before today
+                  let isActive = false;
+                  if (todayDateString) {
+                    // Find all events that have occurred (on or before today)
+                    const pastOrCurrentEvents = TIMELINE.filter(t => t.fullDate <= todayDateString);
+                    // The most recent one is the last one (since they're in chronological order)
+                    const mostRecentEvent = pastOrCurrentEvents.length > 0
+                      ? pastOrCurrentEvents[pastOrCurrentEvents.length - 1]
+                      : null;
+                    isActive = mostRecentEvent?.fullDate === item.fullDate;
+                  }
+
+                  return (
+                    <div key={idx} className="relative flex md:flex-col items-center md:items-start gap-4 md:gap-3 group">
+                      <div className={`w-4 h-4 rounded-full border-2 border-[#FAFAF9] z-10 transition-colors duration-300 flex-shrink-0 ${isActive ? 'bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.3)]' : 'bg-zinc-200 group-hover:bg-red-400'}`} />
+                      <div>
+                        <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${isActive ? 'text-red-600' : 'text-zinc-400'}`}>{item.date}</p>
+                        <p className="text-sm text-zinc-800 font-medium group-hover:text-red-700 transition-colors duration-200">{item.label}</p>
+                        {item.location && (
+                          <p className="text-xs text-zinc-500 mt-1">{item.location}</p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
