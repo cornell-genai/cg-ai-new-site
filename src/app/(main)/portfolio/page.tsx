@@ -29,7 +29,7 @@ const PROJECTS = [
     id: 3,
     title: "QuickFi: Vendor Due Diligence",
     category: "QuickFi Partnership",
-    description: "An intelligent system that verifies vendor legitimacy by cross-referencing public business records, risk databases, and online presence. Flags potential issues like high-risk scores, inactive registrations, or adverse news.",
+    description: "An intelligent system that verifies vendor legitimacy by cross-referencing public business records, risk databases, and online presence. Flags potential issues like high-risk scores, inactive registrations, or adverse news for internal review.",
     image: "/quickfi-logo-01-1.png",
     tags: ["Risk Management", "Fraud Prevention", "AI Agents", "FinTech"],
     status: "Completed",
@@ -37,25 +37,14 @@ const PROJECTS = [
   }
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.1
-    }
-  }
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 30 },
+const sectionVariants = {
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.5,
-      ease: [0.22, 1, 0.36, 1]
+      duration: 0.6,
+      ease: [0.22, 1, 0.36, 1] as const
     }
   }
 };
@@ -71,13 +60,13 @@ export default function PortfolioPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-12">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
           <div>
             <div className="flex items-center gap-4 mb-6">
               <span className="text-[10px] font-bold tracking-[0.4em] uppercase text-red-700">Portfolio</span>
               <div className="h-[2px] w-12 bg-red-100" />
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter">Our Work</h1>
+            <h1 className="text-5xl md:text-8xl font-bold tracking-tighter">Our Work</h1>
           </div>
           <div className="max-w-md pb-2">
             <p className="text-lg text-zinc-500 font-normal leading-relaxed">
@@ -86,91 +75,93 @@ export default function PortfolioPage() {
           </div>
         </div>
 
-        {/* Project Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
-          {PROJECTS.map((project) => (
-            <motion.div
-              key={project.id}
-              variants={cardVariants}
-              className="group bg-white border border-zinc-200 rounded-2xl overflow-hidden hover:border-red-300 hover:shadow-2xl hover:shadow-red-900/10 transition-all duration-300 hover:-translate-y-2 will-change-transform flex flex-col"
-            >
-              {/* Image Container - Proper sizing for logos */}
-              <div className="relative bg-zinc-50 p-8 flex items-center justify-center h-48 border-b border-zinc-100">
-                <div className="relative w-full h-full flex items-center justify-center">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-contain p-4 transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-
-                {/* Status Badge */}
-                <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${project.status === 'Completed'
+        {/* Project Sections - Alternating Layout */}
+        {PROJECTS.map((project, index) => (
+          <motion.section
+            key={project.id}
+            variants={sectionVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="mb-16 last:mb-8"
+          >
+            <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center ${index % 2 === 1 ? 'lg:grid-flow-dense' : ''
+              }`}>
+              {/* Image Side */}
+              <div className={`${index % 2 === 1 ? 'lg:col-start-2' : ''} group`}>
+                <div className="relative bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-lg shadow-zinc-200/50 hover:shadow-xl hover:shadow-red-900/10 hover:border-red-200 transition-all duration-500">
+                  {/* Status Badge */}
+                  <div className={`absolute top-4 right-4 z-10 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${project.status === 'Completed'
                     ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                     : 'bg-amber-50 text-amber-700 border border-amber-200'
-                  }`}>
-                  {project.status}
+                    }`}>
+                    {project.status}
+                  </div>
+
+                  {/* Image Container */}
+                  <div className="aspect-[4/3] relative bg-zinc-50 flex items-center justify-center p-8">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      fill
+                      className="object-contain p-8 transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+
+                  {/* Tags Bar */}
+                  <div className="px-6 py-4 bg-zinc-50/50 border-t border-zinc-100 flex flex-wrap gap-2">
+                    {project.tags.map(tag => (
+                      <span
+                        key={tag}
+                        className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-white rounded-md text-zinc-600 font-medium border border-zinc-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors cursor-default"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* Tags */}
-              <div className="px-6 pt-5 pb-3 flex flex-wrap gap-2">
-                {project.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="text-[10px] uppercase tracking-wider px-2.5 py-1 bg-zinc-100 rounded-md text-zinc-600 font-medium hover:bg-red-50 hover:text-red-700 transition-colors cursor-default"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              {/* Content */}
-              <div className="px-6 pb-6 flex-grow flex flex-col">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 mb-2 block">
+              {/* Text Side */}
+              <div className={index % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 mb-4 block">
                   {project.category}
                 </span>
-                <h3 className="text-xl font-bold text-zinc-900 mb-3 group-hover:text-red-800 transition-colors">
+                <h2 className="text-4xl md:text-5xl font-bold text-zinc-900 mb-6 tracking-tight">
                   {project.title}
-                </h3>
-                <p className="text-sm text-zinc-500 leading-relaxed mb-6 flex-grow">
+                </h2>
+                <p className="text-zinc-600 leading-relaxed text-lg font-normal mb-8">
                   {project.description}
                 </p>
 
-                {/* Link */}
                 {project.link ? (
                   <a
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-900 hover:text-red-700 transition-colors group/link"
+                    className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-zinc-900 hover:text-red-700 transition-colors border-b-2 border-zinc-200 pb-1 hover:border-red-700 group/link"
                   >
-                    <ExternalLink size={14} className="transition-transform group-hover/link:rotate-12" />
+                    <ExternalLink size={14} />
                     View Case Study
                     <ArrowUpRight size={12} className="opacity-0 -translate-x-2 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all" />
                   </a>
                 ) : (
-                  <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-zinc-400">
-                    Coming Soon
+                  <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">
+                    Case Study Coming Soon
                   </span>
                 )}
               </div>
-            </motion.div>
-          ))}
-        </motion.div>
+            </div>
+          </motion.section>
+        ))}
 
         {/* Bottom CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="mt-20 text-center"
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="mt-8 text-center"
         >
           <p className="text-zinc-400 text-sm mb-4">Interested in partnering with us?</p>
           <a
