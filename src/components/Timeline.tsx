@@ -1,42 +1,82 @@
 "use client";
-import { PropsWithChildren } from "react";
 
-export interface TimelineItemData {
-  icon: React.ReactNode;
-  title: string;
-  date: string;
+import { useEffect, useState } from "react";
+import { RECRUITING } from "@/lib/data";
+import { cn } from "@/lib/utils";
+
+const fmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+
+function todayInIthaca() {
+    return new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 }
 
-interface TimelineProps {
-  items: TimelineItemData[];
+// Recruiting is open from the first event through the deadline (inclusive).
+export function useRecruitingOpen() {
+    const [today, setToday] = useState<string | null>(null);
+    useEffect(() => setToday(todayInIthaca()), []);
+    const { timeline } = RECRUITING;
+    const open = today !== null && today >= timeline[0].date && today <= timeline[timeline.length - 1].date;
+    return { today, open };
 }
 
-export default function Timeline({ items }: PropsWithChildren<TimelineProps>) {
-  return (
-    <div className="relative max-w-4xl">
-      <ol className="relative border-l border-zinc-800 ml-6">
-        {items.map((item, index) => (
-          <li
-            key={index}
-            className={`mb-12 ml-12 ${index === items.length - 1 ? '' : ''}`}
-          >
-            {/* Timeline dot with ring */}
-            <span className={`absolute flex items-center justify-center w-12 h-12 rounded-full -start-6 ring-4 ring-[#050505] ${index === 0 ? 'bg-[var(--color-laser-red)]' :
-              'bg-zinc-800'
-              }`}>
-              <span className="text-white text-2xl" aria-hidden>{item.icon}</span>
+export function StatusPill() {
+    const { today, open } = useRecruitingOpen();
+    return (
+        <span className="label inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-ink-2">
+            <span className={cn("size-1.5 rounded-full", today === null ? "bg-ink-3" : open ? "animate-pulse bg-ember" : "bg-ink-3")} />
+            {today === null ? RECRUITING.cycle : open ? "Applications open" : "Applications closed"}
+        </span>
+    );
+}
+
+export function ApplyButton({ url, title }: { url: string; title: string }) {
+    const { today, open } = useRecruitingOpen();
+    if (today !== null && !open) {
+        return (
+            <span className="inline-flex cursor-not-allowed items-center gap-2 rounded-full border border-line px-5 py-2.5 text-[14px] font-medium text-ink-3">
+                Opens next cycle
             </span>
+        );
+    }
+    return (
+        <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Apply to ${title}`}
+            className="group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-[14px] font-medium text-paper transition-colors hover:bg-ember"
+        >
+            Apply <span className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+        </a>
+    );
+}
 
-            {/* Content */}
-            <h3 className="mb-2 text-xl md:text-2xl font-semibold text-gray-900 dark:text-white">
-              {item.title}
-            </h3>
-            <time className="block mb-3 text-base md:text-lg font-normal leading-none text-gray-300 dark:text-gray-400">
-              {item.date}
-            </time>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-} 
+export default function Timeline() {
+    const { today } = useRecruitingOpen();
+    const nextIdx = today === null ? -1 : RECRUITING.timeline.findIndex((e) => e.date >= today);
+
+    return (
+        <ol className="border-t border-line">
+            {RECRUITING.timeline.map((e, i) => {
+                const past = today !== null && e.date < today;
+                const next = i === nextIdx;
+                return (
+                    <li
+                        key={e.date + e.label}
+                        className={cn(
+                            "grid grid-cols-12 items-baseline gap-4 border-b border-line py-5 transition-colors",
+                            past && "text-ink-3",
+                        )}
+                    >
+                        <span className="label col-span-3 md:col-span-2">{fmt.format(new Date(e.date))}</span>
+                        <span className="col-span-9 text-[clamp(1.25rem,2vw,1.75rem)] font-medium tracking-[-0.03em] md:col-span-6">
+                            {e.label}
+                            {next && <span className="label ml-3 rounded-full bg-ember px-2 py-0.5 align-middle text-paper">Next</span>}
+                        </span>
+                        <span className="label col-span-9 col-start-4 text-ink-3 md:col-span-4 md:col-start-auto md:text-right">{e.location ?? ""}</span>
+                    </li>
+                );
+            })}
+        </ol>
+    );
+}

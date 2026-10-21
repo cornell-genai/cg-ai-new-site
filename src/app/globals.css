@@ -1,151 +1,86 @@
 @import "tailwindcss";
 
-/* Configure Tailwind v4 to use class-based dark mode */
-@custom-variant dark (&:where(.dark, .dark *));
+@theme {
+  --color-paper: #f3f2ef;
+  --color-paper-2: #e9e7e2;
+  --color-ink: #0b0b0c;
+  --color-ink-2: #56544f;
+  --color-ink-3: #8d8a84;
+  --color-line: rgb(11 11 12 / 0.12);
+  --color-ember: #ff4a1c;
+  --color-ember-soft: #ff9a6a;
+  --color-cobalt: #1b25ff;
 
-:root {
-  /* Warm Community Palette */
-  --color-background: #FAFAF9;
-  --color-background-alt: #F5F5F4;
-  --color-surface: #FFFFFF;
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Brand Colors - Red/Rose (Bold, warm, professional) */
-  --color-brand: #6366F1;
-  --color-brand-light: #818CF8;
-  --color-brand-dark: #4F46E5;
-  --color-accent-warm: #F59E0B;
-  --color-accent-secondary: #8B5CF6;
-
-  /* Text Colors */
-  --color-text-primary: #18181B;
-  --color-text-secondary: #52525B;
-  --color-text-muted: #A1A1AA;
-
-  /* Borders */
-  --color-border: #E4E4E7;
-  --color-border-light: #F4F4F5;
-
-  --background: var(--color-background);
-  --foreground: var(--color-text-primary);
-
-  /* Fonts */
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-display: 'Space Grotesk', sans-serif;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Dark Mode - Deep Purple Theme */
-.dark {
-  --color-background: #0F0A1A;
-  --color-background-alt: #1A1226;
-  --color-surface: #1E1730;
-
-  /* Brand Colors stay consistent */
-  --color-brand: #818CF8;
-  --color-brand-light: #A5B4FC;
-  --color-brand-dark: #6366F1;
-  --color-accent-warm: #FBBF24;
-  --color-accent-secondary: #A78BFA;
-
-  /* Text Colors - inverted for dark */
-  --color-text-primary: #F4F4F5;
-  --color-text-secondary: #A1A1AA;
-  --color-text-muted: #71717A;
-
-  /* Borders - darker */
-  --color-border: #3F3A4A;
-  --color-border-light: #2E2A38;
-
-  --background: var(--color-background);
-  --foreground: var(--color-text-primary);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent: var(--color-brand);
-  --color-border: var(--color-border);
-
-  --font-sans: var(--font-display);
-  --font-mono: var(--font-mono);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-display);
-  overflow-x: hidden;
-}
-
-.apply-strikeout {
-  text-decoration: line-through;
-}
-
-.h1 {
-  font-family: var(--font-space-grotesk);
-  font-size: 2.25rem;
-  /* text-4xl */
-  line-height: 1.2;
-  font-weight: 800;
-}
-
-@media (min-width: 768px) {
-  .h1 {
-    font-size: 3.75rem;
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
-
-  /* md:text-6xl */
-}
-
-.h2 {
-  font-family: var(--font-space-grotesk);
-  font-size: 1.5rem;
-  /* text-2xl */
-  font-weight: 800;
-}
-
-@media (min-width: 768px) {
-  .h2 {
-    font-size: 2.25rem;
+  body {
+    background: var(--color-paper);
+    font-feature-settings: "ss01", "cv11";
   }
-
-  /* md:text-4xl */
-}
-
-.focus-ring {
-  outline: none;
-  box-shadow: none;
-}
-
-.focus-ring:focus-visible {
-  box-shadow: 0 0 0 2px rgb(167 139 250);
-  /* ring-violet-400 */
-}
-
-/* Marquee animations */
-@keyframes marquee {
-  0% {
-    transform: translateX(0%);
+  ::selection {
+    background: var(--color-ember);
+    color: var(--color-paper);
   }
-
-  100% {
-    transform: translateX(-100%);
+  :focus-visible {
+    outline: 2px solid var(--color-cobalt);
+    outline-offset: 3px;
+    border-radius: 4px;
   }
 }
 
-@keyframes marquee-vertical {
-  0% {
-    transform: translateY(0%);
-  }
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 
-  100% {
-    transform: translateY(-100%);
+@utility display {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.92;
+}
+
+/* Halftone dot screen used over imagery. */
+@utility halftone {
+  background-image: radial-gradient(circle at center, rgb(11 11 12 / 0.55) 0.9px, transparent 1.3px);
+  background-size: 4px 4px;
+}
+
+/* Static film grain (SVG turbulence) for CSS-only surfaces. */
+@utility grain {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
-.animate-marquee {
-  animation: marquee var(--duration) linear infinite;
-}
-
-.animate-marquee-vertical {
-  animation: marquee-vertical var(--duration) linear infinite;
+@keyframes blink {
+  0% { opacity: 1; }
+  100% { opacity: 0.15; }
 }

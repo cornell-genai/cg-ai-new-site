@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# cornellgenai.dev
 
-## Getting Started
-
-First, run the development server:
+Website for Generative AI at Cornell. Next.js 15 (static export), Tailwind 4, Framer Motion, Lenis.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000
+npm run build    # static site in ./out
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Updating content
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Everything editable lives in `src/lib/data.ts`: members, projects, partners, and the recruiting
+cycle (timeline dates, application forms, FAQ). The Apply page opens and closes itself based on
+the timeline dates, so a new cycle only needs new dates and form links.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Team headshots go in `public/team/` as ~720px WebP. Members without a photo get a generated
+gradient tile with their initials.
 
-## Learn More
+## Visual system
 
-To learn more about Next.js, take a look at the following resources:
+- **AsciiField**: two-pass WebGL ASCII renderer. The scene (gradient sky plus a procedural
+  McGraw Tower, or any photo via `image`) is computed once per character cell into a tiny
+  texture, then a full-res pass draws glyphs from a font atlas. Cursor opens a pixel lens.
+- **GrainField**: grainy, domain-warped gradient. `pixel > 1` switches to Bayer-dithered pixels.
+- **DotMatrix**: re-draws a small blurred photo as a halftone dot screen; dots react to the cursor.
+  It only renders while something is animating.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All three pause offscreen and in background tabs, and render a single still frame under
+`prefers-reduced-motion`. Photo sources for the shaders are intentionally small and blurred
+(`public/brand/*-src.jpg`, 20–35 KB); the shader supplies the detail.
