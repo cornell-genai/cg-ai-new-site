@@ -15,12 +15,15 @@ Everything editable lives in `src/lib/data.ts`: members, projects, and the recru
 from the timeline dates, so a new cycle only needs new dates and form links.
 
 Headshots go in `public/team/` as ~720px WebP; they appear when hovering a name on the Team page.
-Photos for the halftone live in `public/brand/` as small (~400px), blurred JPEGs; the shader adds the detail.
 
 ## Pieces
 
-- `Halftone`: posterised blue dot screen (WebGL) for photos and the page backdrop. The cursor pushes
-  the dots aside and clicks send ripples through them; it only renders while something moves.
-- `Log`: monospace status lines that type themselves out when scrolled into view.
+- `Swarm`: the homepage. Schools of ASCII agents on a character grid flee the cursor, leave red
+  wakes, and ripple on click; 81 of them assemble the mark in the lockup (`[data-swarm-mark]`).
+  Anything marked `[data-swarm-avoid]` (nav, copy) is swum around. Canvas 2D, fixed timestep.
+- `PageTransition`: the pixel-dissolve curtain for the first load and every internal link. It
+  catches `<a>` clicks in the capture phase, so plain `<Link>`s need no wrapper.
+- `Scramble`: text that decodes from ASCII noise as the curtain lifts.
+- `Mark`: the red square with a pixel spark; also `src/app/icon.svg`.
 
-The halftone draws a single still frame under `prefers-reduced-motion`.
+Everything pauses offscreen and respects `prefers-reduced-motion`.
