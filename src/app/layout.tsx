@@ -1,30 +1,37 @@
-import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono, Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter_Tight, Instrument_Serif, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ThemeProvider from "@/components/ThemeProvider";
 
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display" });
-const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const sans = Inter_Tight({ subsets: ["latin"], variable: "--font-inter-tight" });
+const serif = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-instrument-serif" });
+const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 export const metadata: Metadata = {
-  title: "Generative AI @ Cornell",
-  description: "Architecting Intelligence. Theoretically grounded, implementation focused.",
+  metadataBase: new URL("https://cornellgenai.dev"),
+  title: {
+    default: "Cornell GenAI",
+    template: "%s — Cornell GenAI",
+  },
+  description:
+    "Cornell's student-run community for building with AI. We build AI products with industry partners and for Cornell.",
+  openGraph: {
+    title: "Cornell GenAI",
+    description: "Cornell's student-run community for building with AI.",
+    url: "https://cornellgenai.dev",
+    siteName: "Cornell GenAI",
+    type: "website",
+  },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  themeColor: "#f3f2ef",
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} font-sans antialiased bg-[var(--background)] text-[var(--foreground)] selection:bg-[var(--color-laser-red)] selection:text-black transition-colors duration-300`}
-      >
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+    <html lang="en">
+      <body className={`${sans.variable} ${serif.variable} ${mono.variable} font-sans antialiased`}>
+        {children}
       </body>
     </html>
   );

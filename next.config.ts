@@ -1,16 +1,10 @@
 import type { NextConfig } from "next";
 
+// Static export: the whole site is prerendered to /out.
 const nextConfig: NextConfig = {
-  // Only use static export for production builds, not for dev server
-  ...(process.env.NODE_ENV === 'production' && { output: 'export' }),
-  images: {
-    unoptimized: true,
-    remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      { protocol: "https", hostname: "pbs.twimg.com" },
-      { protocol: "https", hostname: "media.licdn.com" },
-    ],
-  },
+  output: "export",
+  images: { unoptimized: true },
+  trailingSlash: true,
 };
 
 export default nextConfig;
