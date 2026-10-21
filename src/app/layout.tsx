@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Newsreader, Geist_Mono } from "next/font/google";
+import { Host_Grotesk, Geist_Mono } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
+import PageTransition from "@/components/PageTransition";
+import Nav from "@/components/Nav";
 import "./globals.css";
 
-const serif = Newsreader({ subsets: ["latin"], axes: ["opsz"], variable: "--font-newsreader" });
-const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+const sans = Host_Grotesk({ subsets: ["latin"], variable: "--font-host" });
+const mono = Geist_Mono({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-geist-mono" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://cornellgenai.dev"),
@@ -19,13 +21,17 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = { themeColor: "#ebebec" };
+export const viewport: Viewport = { themeColor: "#121212" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${serif.variable} ${mono.variable}`}>
-      <body className="font-serif antialiased">
+    // Pages start covered; PageTransition lifts the curtain once fonts are ready.
+    <html lang="en" data-transition="cover" className={`${sans.variable} ${mono.variable}`}>
+      <body className="bg-night font-sans text-bone antialiased">
+        <div id="curtain" aria-hidden className="curtain" />
+        <PageTransition />
         <SmoothScroll />
+        <Nav />
         {children}
       </body>
     </html>
