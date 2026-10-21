@@ -8,24 +8,22 @@ npm run dev      # http://localhost:3000
 npm run build    # static site in ./out
 ```
 
-## Updating content
+## Content
 
-Everything editable lives in `src/lib/data.ts`: members, projects, partners, and the recruiting
-cycle (timeline dates, application forms, FAQ). The Apply page opens and closes itself based on
-the timeline dates, so a new cycle only needs new dates and form links.
+Everything editable lives in `src/lib/data.ts`: members, projects, and the recruiting cycle
+(timeline dates, application forms, FAQ). The Get Involved page opens and closes applications
+from the timeline dates, so a new cycle only needs new dates and form links.
 
-Team headshots go in `public/team/` as ~720px WebP. Members without a photo get a generated
-gradient tile with their initials.
+Headshots go in `public/team/` as ~720px WebP; they appear when hovering a name on the Team page.
 
-## Visual system
+## Pieces
 
-- **AsciiField**: two-pass WebGL ASCII renderer. The scene (gradient sky plus a procedural
-  McGraw Tower, or any photo via `image`) is computed once per character cell into a tiny
-  texture, then a full-res pass draws glyphs from a font atlas. Cursor opens a pixel lens.
-- **GrainField**: grainy, domain-warped gradient. `pixel > 1` switches to Bayer-dithered pixels.
-- **DotMatrix**: re-draws a small blurred photo as a halftone dot screen; dots react to the cursor.
-  It only renders while something is animating.
+- `Swarm`: the homepage hero. Schools of ASCII agents on a character grid that flee the cursor,
+  leave diffusing wakes, and ripple on click. 81 agents assemble the mark in the hero lockup
+  (`[data-swarm-mark]`); text marked `[data-swarm-avoid]` is swum around. Canvas 2D, fixed timestep.
+- `DotMatrix`: re-draws a small blurred photo (`public/brand/*-src.jpg`) as a halftone dot screen
+  that reacts to the cursor, and only renders while something is animating.
+- `Mark`: the red square with a pixel spark; also `src/app/icon.svg`.
 
-All three pause offscreen and in background tabs, and render a single still frame under
-`prefers-reduced-motion`. Photo sources for the shaders are intentionally small and blurred
-(`public/brand/*-src.jpg`, 20–35 KB); the shader supplies the detail.
+Both canvases pause offscreen and in background tabs, and draw a single still frame under
+`prefers-reduced-motion`.

@@ -21,6 +21,10 @@ uniform vec2 uMouse;
 uniform float uMouseAmt;
 uniform float uIntro;
 uniform vec3 uBg;
+uniform vec3 uSrcBg;
+uniform vec2 uImgScale;
+uniform vec2 uFocus;
+uniform float uLift;
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
 
@@ -28,10 +32,10 @@ void main() {
     vec2 frag = gl_FragCoord.xy;
     vec2 cell = floor(frag / uPitch);
     vec2 center = (cell + 0.5) * uPitch;
-    vec3 c = texture2D(uImg, center / uRes).rgb;
+    vec3 c = texture2D(uImg, (center / uRes - 0.5) * uImgScale + uFocus).rgb; // cover-fit
 
     // Background-coloured areas get no dot; ink gets a full one.
-    float ink = smoothstep(0.035, 0.16, distance(c, uBg));
+    float ink = smoothstep(0.06, 0.2, distance(c, uSrcBg));
     float lum = dot(c, vec3(0.299, 0.587, 0.114));
     float r = uPitch * mix(0.34, 0.48, 1.0 - lum) * ink;
 
@@ -48,6 +52,7 @@ void main() {
     float d = length(frag - center - off);
     float a = 1.0 - smoothstep(r - 0.75, r + 0.75, d);
     vec3 dot = mix(c, c * c * 1.1, 0.35); // deepen tones, dots read lighter than fills
+    dot = mix(dot, sqrt(dot), uLift);     // on dark grounds, lift shadows so dark clothes stay visible
     gl_FragColor = vec4(mix(uBg, dot, a), 1.0);
 }
 `;
@@ -61,16 +66,22 @@ export default function DotMatrix({
     src,
     alt,
     pitch = 7,
-    background = "#f3f2ef",
+    background = "#f3f1ec",
+    sourceBackground = "#f9f8f4",
+    focus = [0.5, 0.5],
     className,
 }: {
     src: string;
     alt: string;
     pitch?: number;
     background?: string;
+    sourceBackground?: string;
+    /** Point of the image (0–1, from top-left) to keep in frame when cropping. */
+    focus?: [number, number];
     className?: string;
 }) {
     const ref = useRef<HTMLCanvasElement>(null);
+    const [fx, fy] = focus;
 
     useEffect(() => {
         const canvas = ref.current;
@@ -98,12 +109,16 @@ export default function DotMatrix({
 
         const u = (n: string) => gl.getUniformLocation(prog, n);
         gl.uniform3fv(u("uBg"), hexToRgb(background));
+        gl.uniform3fv(u("uSrcBg"), hexToRgb(sourceBackground));
+        const [br, bgc, bb] = hexToRgb(background);
+        gl.uniform1f(u("uLift"), br + bgc + bb < 1.2 ? 0.45 : 0);
 
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         const state = { intro: reduced ? 1 : 0, introTarget: reduced ? 1 : 0, mx: 0, my: 0, tx: 0, ty: 0, amt: 0, tamt: 0 };
         let raf = 0;
         let ready = false;
+        let imgAspect = 1;
 
         const resize = () => {
             const { width, height } = canvas.getBoundingClientRect();
@@ -111,6 +126,11 @@ export default function DotMatrix({
             canvas.height = Math.max(1, Math.round(height * dpr));
             gl.viewport(0, 0, canvas.width, canvas.height);
             gl.uniform2f(u("uRes"), canvas.width, canvas.height);
+            const ca = width / height;
+            const sx = ca > imgAspect ? 1 : ca / imgAspect, sy = ca > imgAspect ? imgAspect / ca : 1;
+            gl.uniform2f(u("uImgScale"), sx, sy);
+            // Keep the focal point in frame without sampling past the edges.
+            gl.uniform2f(u("uFocus"), Math.min(1 - sx / 2, Math.max(sx / 2, fx)), Math.min(1 - sy / 2, Math.max(sy / 2, 1 - fy)));
             gl.uniform1f(u("uPitch"), Math.max(4, (width < 640 ? pitch * 0.7 : pitch) * dpr));
         };
 
@@ -173,6 +193,7 @@ export default function DotMatrix({
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            imgAspect = img.naturalWidth / img.naturalHeight;
             ready = true;
             resize();
             draw();
@@ -191,7 +212,7 @@ export default function DotMatrix({
             window.removeEventListener("pointermove", onMove);
             gl.getExtension("WEBGL_lose_context")?.loseContext();
         };
-    }, [src, pitch, background]);
+    }, [src, pitch, background, sourceBackground, fx, fy]);
 
     return (
         <canvas
