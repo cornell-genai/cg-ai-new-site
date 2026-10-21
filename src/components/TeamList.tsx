@@ -23,16 +23,16 @@ export default function TeamList({ groups }: { groups: { title?: string; members
                     {g.members.map((m) => {
                         const Tag = m.linkedIn ? "a" : "div";
                         return (
-                            <li key={m.name} className="border-b border-ink/10" onPointerEnter={() => setImg(m.image ?? null)}>
+                            <li key={m.name} className="border-b border-black/[0.06] last:border-0" onPointerEnter={() => setImg(m.image ?? null)}>
                                 <Tag
                                     {...(m.linkedIn ? { href: m.linkedIn, target: "_blank", rel: "noopener noreferrer" } : {})}
-                                    className="group flex items-baseline justify-between gap-6 py-5"
+                                    className="group flex items-baseline justify-between gap-6 py-3.5"
                                 >
-                                    <span className="text-[18px] tracking-[-0.015em]">
+                                    <span className="text-[18px] tracking-[-0.01em]">
                                         {m.name}
-                                        {m.linkedIn && <span className="ml-2 text-[13px] text-ink-2 opacity-0 transition-opacity group-hover:opacity-100">LinkedIn ↗</span>}
+                                        {m.linkedIn && <span className="ml-2 font-mono text-[11px] text-ink-3 opacity-0 transition-opacity group-hover:opacity-100">linkedin ↗</span>}
                                     </span>
-                                    {g.showRole !== false && <span className="shrink-0 text-right text-[15px] text-ink-2">{m.role}</span>}
+                                    {g.showRole !== false && <span className="shrink-0 text-right font-mono text-[11.5px] text-ink-2">{m.role}</span>}
                                 </Tag>
                             </li>
                         );
@@ -50,7 +50,7 @@ export default function TeamList({ groups }: { groups: { title?: string; members
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.92 }}
                             transition={{ duration: 0.2 }}
-                            className="absolute h-40 w-32 object-cover grayscale"
+                            className="absolute h-40 w-32 rounded-xl object-cover shadow-xl"
                         />
                     )}
                 </AnimatePresence>
