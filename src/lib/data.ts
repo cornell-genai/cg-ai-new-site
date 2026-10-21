@@ -62,13 +62,8 @@ export type Project = {
     slug: string;
     title: string;
     partner: string;
-    kind: string;
     status: "Shipped" | "In development";
-    term: string;
-    summary: string;
     description: string;
-    tags: string[];
-    image: string;
     link?: string;
 };
 
@@ -77,51 +72,28 @@ export const PROJECTS: Project[] = [
         slug: "classgpt",
         title: "ClassGPT",
         partner: "Cornell",
-        kind: "Internal product",
         status: "In development",
-        term: "SP25",
-        summary: "AI tutors grounded in each course's material.",
         description:
-            "A Cornell-exclusive platform that lets professors spin up AI tutors grounded in their own course material. Students join supported classes and get tutoring tailored to exactly what they're being taught.",
-        tags: ["RAG", "LLMs", "Education"],
-        image: "/work/network.webp",
+            "A Cornell-exclusive platform that lets professors set up AI tutors grounded in their own course material. Students join supported classes and get tutoring tailored to what they're being taught.",
     },
     {
         slug: "insurance-verification",
         title: "Insurance Verification Agent",
         partner: "QuickFi",
-        kind: "Partner project",
         status: "Shipped",
-        term: "SP25",
-        summary: "An agent that collects and validates insurance certificates.",
         description:
-            "Reaches out to insurance providers, requests commercial certificates, validates contract-specific coverage, handles follow-ups, and files every document correctly tagged for compliance.",
-        tags: ["Agents", "Automation", "Compliance"],
-        image: "/work/tower.webp",
+            "Reaches out to insurance providers, requests commercial certificates, validates contract-specific coverage, handles follow-ups, and files every document tagged for compliance.",
         link: "https://drive.google.com/file/u/0/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view",
     },
     {
         slug: "vendor-due-diligence",
         title: "Vendor Due Diligence",
         partner: "QuickFi",
-        kind: "Partner project",
         status: "Shipped",
-        term: "SP25",
-        summary: "Automated vendor checks across public records and risk data.",
         description:
             "Verifies vendors by cross-referencing public business records, risk databases, and online presence, then flags high-risk scores, inactive registrations, or adverse news for review.",
-        tags: ["Risk", "Fraud prevention", "Agents"],
-        image: "/work/envelopes.webp",
         link: "https://drive.google.com/file/u/0/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view",
     },
-];
-
-export const PARTNERS = [
-    { name: "Cisco", logo: "/partners/cisco.png" },
-    { name: "Charter Communications", logo: "/partners/charter.png" },
-    { name: "QuickFi", logo: "/partners/quickfi.png" },
-    { name: "Vero", logo: "/partners/vero.png" },
-    { name: "Gradial", logo: "/partners/gradial.png", wordmark: true },
 ];
 
 export const RECRUITING = {
