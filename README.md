@@ -15,15 +15,12 @@ Everything editable lives in `src/lib/data.ts`: members, projects, and the recru
 from the timeline dates, so a new cycle only needs new dates and form links.
 
 Headshots go in `public/team/` as ~720px WebP; they appear when hovering a name on the Team page.
+Photos for the halftone live in `public/brand/` as small (~400px), blurred JPEGs; the shader adds the detail.
 
 ## Pieces
 
-- `Swarm`: the homepage hero. Schools of ASCII agents on a character grid that flee the cursor,
-  leave diffusing wakes, and ripple on click. 81 agents assemble the mark in the hero lockup
-  (`[data-swarm-mark]`); text marked `[data-swarm-avoid]` is swum around. Canvas 2D, fixed timestep.
-- `DotMatrix`: re-draws a small blurred photo (`public/brand/*-src.jpg`) as a halftone dot screen
-  that reacts to the cursor, and only renders while something is animating.
-- `Mark`: the red square with a pixel spark; also `src/app/icon.svg`.
+- `Halftone`: posterised blue dot screen (WebGL) for photos and the page backdrop. The cursor pushes
+  the dots aside and clicks send ripples through them; it only renders while something moves.
+- `Log`: monospace status lines that type themselves out when scrolled into view.
 
-Both canvases pause offscreen and in background tabs, and draw a single still frame under
-`prefers-reduced-motion`.
+The halftone draws a single still frame under `prefers-reduced-motion`.

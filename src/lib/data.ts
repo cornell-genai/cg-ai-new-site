@@ -137,3 +137,6 @@ export const RECRUITING = {
         },
     ],
 };
+
+const dateFmt = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+export const formatDate = (d: string) => dateFmt.format(new Date(d));

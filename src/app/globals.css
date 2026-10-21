@@ -1,16 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-night: #161616;
-  --color-night-2: #1f1f1f;
-  --color-bone: #f1eee8;
-  --color-bone-2: #9a968f;
-  --color-paper: #f3f1ec;
-  --color-ink: #161616;
-  --color-ink-2: #75716b;
-  --color-red: #d7261e;
+  --color-mist: #ebebec;
+  --color-card: #fbfbfa;
+  --color-ink: #1b1b1c;
+  --color-ink-2: #6c6c70;
+  --color-ink-3: #a3a3a8;
+  --color-chip: #ececee;
+  --color-blue: #3446d8;
+  --color-blue-2: #5d6cef;
+  --color-log-red: #e0464a;
+  --color-log-pink: #c94fd1;
+  --color-log-green: #3a9f55;
+  --color-log-blue: #4a5ee8;
 
-  --font-sans: var(--font-host), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -22,22 +26,25 @@
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    background: var(--color-paper);
+    background: var(--color-mist);
     color: var(--color-ink);
   }
   ::selection {
-    background: var(--color-red);
-    color: var(--color-bone);
+    background: var(--color-blue-2);
+    color: white;
   }
   :focus-visible {
-    outline: 2px solid var(--color-red);
+    outline: 2px solid var(--color-blue-2);
     outline-offset: 3px;
+    border-radius: 4px;
   }
 }
 
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
+
+@keyframes caret { 50% { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

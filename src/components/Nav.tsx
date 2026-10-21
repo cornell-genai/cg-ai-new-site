@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Lockup } from "./Mark";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const LINKS = [
     { href: "/projects", label: "Projects" },
@@ -11,49 +10,22 @@ const LINKS = [
 ];
 
 export default function Nav() {
-    const [open, setOpen] = useState(false);
-
-    useEffect(() => {
-        document.documentElement.style.overflow = open ? "hidden" : "";
-    }, [open]);
-
+    const path = usePathname().replace(/(.)\/$/, "$1");
     return (
-        <header className="sticky top-0 z-50 border-b border-bone/10 bg-night text-bone">
-            <nav className="flex h-16 items-center justify-between px-5">
-                <Link href="/" aria-label="Cornell GenAI home">
-                    <Lockup />
-                </Link>
-                <div className="hidden items-center gap-8 md:flex">
-                    {LINKS.map((l) => (
-                        <Link key={l.href} href={l.href} className="text-[15px] text-bone/60 transition-colors hover:text-bone">
-                            {l.label}
-                        </Link>
-                    ))}
-                    <Link href="/get-involved" className="border border-bone/25 px-4 py-2 text-[15px] transition-colors hover:border-bone hover:bg-bone hover:text-night">
-                        Get Involved
+        <header className="relative z-10 mx-auto flex h-16 max-w-[1180px] items-center justify-between px-5">
+            <Link href="/" className="text-[19px] tracking-[-0.015em]">
+                Cornell GenAI
+            </Link>
+            <nav className="flex items-center gap-5 text-[16px]">
+                {LINKS.map((l) => (
+                    <Link key={l.href} href={l.href} className={cn("hidden transition-colors hover:text-ink sm:inline", path === l.href ? "text-ink" : "text-ink-2")}>
+                        {l.label}
                     </Link>
-                </div>
-                <button onClick={() => setOpen((o) => !o)} className="text-[15px] text-bone/70 md:hidden" aria-expanded={open}>
-                    {open ? "Close" : "Menu"}
-                </button>
+                ))}
+                <Link href="/get-involved" className="rounded-lg bg-ink px-3 py-1.5 text-[15px] text-card transition-colors hover:bg-blue">
+                    Get involved
+                </Link>
             </nav>
-            <AnimatePresence>
-                {open && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="fixed inset-x-0 bottom-0 top-16 bg-night px-5 pt-8 md:hidden"
-                    >
-                        {[...LINKS, { href: "/get-involved", label: "Get Involved" }].map((l) => (
-                            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="block border-b border-bone/10 py-4 text-[28px] tracking-[-0.03em]">
-                                {l.label}
-                            </Link>
-                        ))}
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </header>
     );
 }
