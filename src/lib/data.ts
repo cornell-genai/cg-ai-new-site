@@ -63,7 +63,9 @@ export type Project = {
     title: string;
     partner: string;
     status: "Shipped" | "In development";
+    summary: string;
     description: string;
+    image: string;
     link?: string;
 };
 
@@ -73,6 +75,8 @@ export const PROJECTS: Project[] = [
         title: "ClassGPT",
         partner: "Cornell",
         status: "In development",
+        summary: "AI tutors that professors ground in their own course material.",
+        image: "/work/tower.webp",
         description:
             "A Cornell-exclusive platform that lets professors set up AI tutors grounded in their own course material. Students join supported classes and get tutoring tailored to what they're being taught.",
     },
@@ -81,6 +85,8 @@ export const PROJECTS: Project[] = [
         title: "Insurance Verification Agent",
         partner: "QuickFi",
         status: "Shipped",
+        summary: "An agent that requests, reads, and validates insurance certificates.",
+        image: "/work/envelopes.webp",
         description:
             "Reaches out to insurance providers, requests commercial certificates, validates contract-specific coverage, handles follow-ups, and files every document tagged for compliance.",
         link: "https://drive.google.com/file/u/0/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view",
@@ -90,10 +96,20 @@ export const PROJECTS: Project[] = [
         title: "Vendor Due Diligence",
         partner: "QuickFi",
         status: "Shipped",
+        summary: "Automated vendor checks across public records and risk data.",
+        image: "/work/network.webp",
         description:
             "Verifies vendors by cross-referencing public business records, risk databases, and online presence, then flags high-risk scores, inactive registrations, or adverse news for review.",
         link: "https://drive.google.com/file/u/0/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view",
     },
+];
+
+export const PARTNERS = [
+    { name: "Cisco", logo: "/partners/cisco.png" },
+    { name: "Charter Communications", logo: "/partners/charter.png" },
+    { name: "QuickFi", logo: "/partners/quickfi.png" },
+    { name: "Vero", logo: "/partners/vero.png" },
+    { name: "Gradial", logo: "/partners/gradial.png", wordmark: true },
 ];
 
 export const RECRUITING = {

@@ -8,7 +8,7 @@ export default function SubPage({ title, intro, children }: { title: string; int
             <main className="mx-auto min-h-svh max-w-[60rem] px-5 pb-28 pt-36 md:pt-44">
                 <h1 className="flex items-center gap-[0.2em] text-[clamp(3.25rem,7vw,5.5rem)] font-medium leading-none tracking-[-0.05em]">
                     <Mark className="size-[0.72em]" />
-                    <Scramble text={title} delay={100} duration={700} />
+                    <Scramble text={title} duration={500} />
                 </h1>
                 {intro && <p className="mt-7 max-w-xl text-[18px] font-medium leading-snug tracking-[-0.01em] text-bone/70">{intro}</p>}
                 <div className="mt-16">{children}</div>

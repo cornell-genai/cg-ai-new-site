@@ -25,14 +25,11 @@ export const viewport: Viewport = { themeColor: "#121212" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    // Pages start covered; PageTransition lifts the curtain once fonts are ready.
-    <html lang="en" data-transition="cover" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body className="bg-night font-sans text-bone antialiased">
-        <div id="curtain" aria-hidden className="curtain" />
-        <PageTransition />
         <SmoothScroll />
         <Nav />
-        {children}
+        <PageTransition>{children}</PageTransition>
       </body>
     </html>
   );
