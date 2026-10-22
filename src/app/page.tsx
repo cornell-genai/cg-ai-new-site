@@ -3,7 +3,7 @@ import Swarm from "@/components/Swarm";
 import Footer from "@/components/Footer";
 import { Reveal } from "@/components/Reveal";
 import TeamPhoto from "@/components/TeamPhoto";
-import InlineLogo from "@/components/InlineLogo";
+import { ClientCycler, OrbLogo, ProjectIcons } from "@/components/Inline";
 import { MEMBERS } from "@/lib/data";
 
 export default function Home() {
@@ -49,16 +49,13 @@ export default function Home() {
 
                 <section className="mx-auto max-w-[78rem] pt-24 md:pt-40">
                     <Reveal>
-                        <p className="text-[clamp(2rem,5vw,4.75rem)] font-semibold leading-[1.12] tracking-[-0.04em] text-bone/35">
-                            <span className="text-white">We do applied AI research and build AI systems</span> for <InlineLogo name="Cisco" />,{" "}
-                            <InlineLogo name="Investcorp" />, and <InlineLogo name="QuickFi" />. Now: RL on Microduck with <InlineLogo name="Pollen Robotics" />,
-                            and a trading agent going live.
-                        </p>
-                    </Reveal>
-                    <Reveal delay={0.08}>
-                        <p className="mt-12 text-[clamp(1.25rem,2vw,1.75rem)] font-medium leading-[1.6] tracking-[-0.02em] text-bone/40">
-                            Also with <InlineLogo name="Charter" /> <InlineLogo name="Vero" /> <InlineLogo name="Bridge" /> <span className="text-white">NYSFP</span>{" "}
-                            <span className="text-white">Gradial</span>
+                        <p className="text-[clamp(1.9rem,4.4vw,4.1rem)] font-semibold leading-[1.18] tracking-[-0.04em] text-bone/35">
+                            We&apos;re Cornell engineers and researchers who build with AI.{" "}
+                            <span className="text-white">We run applied AI projects and research</span> <ProjectIcons />, from agents that hold up over
+                            long, multi-step tasks to systems that act in the real world.{" "}
+                            <span className="text-white">We build for clients</span> <ClientCycler />, shipping production AI for teams that need it to
+                            work. <span className="text-white">And we build in the open</span>, contributing to{" "}
+                            <OrbLogo src="/logos/mlx.png" name="MLX" /> and <OrbLogo src="/logos/pollen.svg" name="Pollen Robotics" /> Pollen Robotics.
                         </p>
                     </Reveal>
                 </section>

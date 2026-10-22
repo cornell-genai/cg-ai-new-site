@@ -41,7 +41,7 @@ export function Group({ title, children }: { title?: string; children: React.Rea
     );
 }
 
-export function Row({ left, right, sub, href }: { left: React.ReactNode; right?: React.ReactNode; sub?: React.ReactNode; href?: string }) {
+export function Row({ id, left, right, sub, href }: { id?: string; left: React.ReactNode; right?: React.ReactNode; sub?: React.ReactNode; href?: string }) {
     const inner = (
         <>
             <div className="flex items-baseline justify-between gap-6">
@@ -52,7 +52,7 @@ export function Row({ left, right, sub, href }: { left: React.ReactNode; right?:
         </>
     );
     return (
-        <li className="border-b border-bone/12">
+        <li id={id} className="scroll-mt-24 border-b border-bone/12">
             {href ? (
                 <a href={href} target={href.startsWith("mailto:") ? undefined : "_blank"} rel="noopener noreferrer" className="block py-5 transition-colors hover:text-red">
                     {inner}
