@@ -52,9 +52,9 @@ export default function Home() {
                         <p className="text-[clamp(1.6rem,3.3vw,3rem)] font-semibold leading-[1.28] tracking-[-0.035em] text-white">
                             We&apos;re Cornell engineers and researchers who build with AI. We run{" "}
                             <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">applied AI projects and research</span>{" "}
-                            <span className="whitespace-nowrap"><ProjectIcons />,</span> from agents for long-horizon tasks to systems that act in the real world. We{" "}
+                            <span className="whitespace-nowrap"><ProjectIcons />,</span> from agents for long horizon tasks to systems that act in the real world. We{" "}
                             <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">build for clients</span> <span className="whitespace-nowrap"><ClientStack />,</span>
-                            shipping production systems from agentic red teaming at Cisco to ESG news monitoring at Investcorp. And we{" "}
+                            shipping production systems used in the real world. And we{" "}
                             <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">contribute to open source</span>{" "}
                             <span className="whitespace-nowrap"><OpenSourceStack />.</span>
                         </p>
