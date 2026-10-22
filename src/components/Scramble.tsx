@@ -1,19 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useRef } from "react";
 
 const GLYPHS = "-\\|/+:#*=";
 
 // On hover, the text briefly decodes from ASCII noise back into itself, left
 // to right. The real text keeps its place in the layout (hidden while the
 // effect runs) so nothing shifts; the noise lives in an overlay React never
-// renders into. With `auto` it also runs on mount (remount it via `key` to replay).
-export default function Scramble({ text, duration = 420, className, auto }: { text: string; duration?: number; className?: string; auto?: boolean }) {
+// renders into.
+export default function Scramble({ text, duration = 420, className }: { text: string; duration?: number; className?: string }) {
     const real = useRef<HTMLSpanElement>(null);
     const fx = useRef<HTMLSpanElement>(null);
     const raf = useRef(0);
 
-    const run = useCallback(() => {
+    const run = () => {
         const el = fx.current, base = real.current;
         if (!el || !base || raf.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
         const chars = [...text];
@@ -33,17 +33,7 @@ export default function Scramble({ text, duration = 420, className, auto }: { te
             raf.current = requestAnimationFrame(tick);
         };
         raf.current = requestAnimationFrame(tick);
-    }, [text, duration]);
-
-    useEffect(() => {
-        if (auto) run();
-        return () => {
-            cancelAnimationFrame(raf.current);
-            raf.current = 0;
-            if (real.current) real.current.style.visibility = "";
-            if (fx.current) fx.current.textContent = "";
-        };
-    }, [auto, run]);
+    };
 
     return (
         <span className={`relative inline-block ${className ?? ""}`} onPointerEnter={run}>

@@ -1,38 +1,52 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Scramble from "./Scramble";
 import { TeamCard } from "./TeamGrid";
-import { cn } from "@/lib/utils";
 import type { Member } from "@/lib/data";
 
 type Group = { id: string; title: string; members: Member[] };
 
-// 3×5 pixel digits for the counter.
-const DIGITS = ["111101101101111", "010110010010111", "111001111100111", "111001111001111", "101101111001001", "111100111001111", "111100111101111", "111001001001001", "111101111101111", "111101111001111"];
+const GLYPHS = "-\\|/+:#*=";
 
-// Two digits on a 7×5 grid of cells (3 + gap + 3). Lit cells are red; when
-// the number changes they ripple over diagonally, like the mark assembling.
-function PixelCount({ n }: { n: number }) {
-    const [a, b] = String(Math.min(99, n)).padStart(2, "0").split("").map(Number);
-    const lit = (x: number, y: number) => (x < 3 ? DIGITS[a][y * 3 + x] : x > 3 ? DIGITS[b][y * 3 + x - 4] : "0") === "1";
+// A word that glitches into the next: a band of ASCII noise sweeps left to
+// right, leaving the new word behind it.
+function GlitchWord({ text }: { text: string }) {
+    const [shown, setShown] = useState(text);
+    const prev = useRef(text);
+
+    useEffect(() => {
+        const from = prev.current;
+        prev.current = text;
+        if (from === text) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return setShown(text);
+        const len = Math.max(from.length, text.length);
+        const t0 = performance.now();
+        let raf = 0;
+        const tick = (t: number) => {
+            const p = Math.min(1, (t - t0) / 560) * 1.3; // band front; its back edge trails by 0.3
+            let s = "";
+            for (let i = 0; i < len; i++) {
+                const x = i / len;
+                s += x < p - 0.3 ? (text[i] ?? " ") : x < p ? GLYPHS[(Math.random() * GLYPHS.length) | 0] : (from[i] ?? " ");
+            }
+            setShown(s.trimEnd());
+            if (p < 1.3) raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(raf);
+    }, [text]);
+
     return (
-        <div aria-hidden className="grid w-max grid-cols-7 gap-[3px]">
-            {Array.from({ length: 35 }, (_, i) => {
-                const x = i % 7, y = Math.floor(i / 7);
-                return (
-                    <span
-                        key={i}
-                        className={cn("size-[13px] transition-colors duration-300", lit(x, y) ? "bg-red" : "bg-bone/[0.06]")}
-                        style={{ transitionDelay: `${(x + y) * 28}ms` }}
-                    />
-                );
-            })}
-        </div>
+        <>
+            <span aria-hidden className="whitespace-pre">{shown}</span>
+            <span className="sr-only">{text}</span>
+        </>
     );
 }
 
-// Sticky index on the left tracks which group is in view on the right.
+const word = "font-medium leading-[0.85] tracking-[-0.05em] text-fg";
+
+// The left column holds one word, the group in view on the right.
 export default function TeamSections({ groups }: { groups: Group[] }) {
     const [active, setActive] = useState(0);
     const refs = useRef<(HTMLElement | null)[]>([]);
@@ -49,50 +63,21 @@ export default function TeamSections({ groups }: { groups: Group[] }) {
         return () => io.disconnect();
     }, []);
 
-    const current = groups[active];
-
     return (
-        <div className="grid gap-14 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-20">
-            {/* The aside stretches to the grid's full height, so its sticky part holds to the very end. */}
-            <aside>
-                <h1 className="text-[clamp(3rem,5vw,4.5rem)] font-medium leading-[0.9] tracking-[-0.05em] text-fg">The team</h1>
-
-                <div className="hidden lg:sticky lg:top-28 lg:block lg:pt-12">
-                    <PixelCount n={current.members.length} />
-                    <p className="mt-5 text-[22px] font-medium tracking-[-0.02em] text-fg">
-                        <Scramble key={current.id} text={current.title} duration={520} auto />
-                    </p>
-
-                <ol className="mt-10 border-t border-bone/12">
-                    {groups.map((g, i) => (
-                        <li key={g.id}>
-                            <button
-                                onClick={() => refs.current[i]?.scrollIntoView({ behavior: "smooth", block: "start" })}
-                                className={cn(
-                                    "flex w-full items-center gap-3 border-b border-bone/12 py-3 text-left font-mono text-[12px] uppercase tracking-[0.08em] transition-colors",
-                                    i === active ? "text-fg" : "text-bone/40 hover:text-bone/70",
-                                )}
-                            >
-                                <span className={cn("size-[7px] shrink-0 bg-red transition-transform duration-300", i === active ? "scale-100" : "scale-0")} />
-                                <span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-                                <span className="flex-1">{g.title}</span>
-                                <span className="tabular-nums opacity-60">{String(g.members.length).padStart(2, "0")}</span>
-                            </button>
-                        </li>
-                    ))}
-                </ol>
-                </div>
+        <div className="grid gap-14 lg:grid-cols-[minmax(0,26rem)_1fr] lg:gap-16">
+            <h1 className="sr-only">Team</h1>
+            {/* Stretches to the grid's full height so the word stays pinned to the end. */}
+            <aside aria-live="polite" className="hidden lg:block">
+                <p className={`sticky top-32 text-[clamp(3rem,5.2vw,5.5rem)] ${word}`}>
+                    <GlitchWord text={groups[active].title} />
+                </p>
             </aside>
 
             <div className="flex flex-col gap-24">
                 {groups.map((g, i) => (
                     <section key={g.id} id={g.id} data-index={i} ref={(el) => { refs.current[i] = el; }} className="scroll-mt-32">
-                        {/* On small screens there's no sticky index, so each group labels itself. */}
-                        <h2 className="mb-6 flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.08em] text-bone/50 lg:hidden">
-                            <span className="size-[7px] bg-red" />
-                            {g.title}
-                            <span className="opacity-60">{String(g.members.length).padStart(2, "0")}</span>
-                        </h2>
+                        {/* No sticky column on small screens, so each group carries its own word. */}
+                        <h2 className={`mb-8 text-[clamp(2.75rem,12vw,4rem)] lg:hidden ${word}`}>{g.title}</h2>
                         <ul className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3">
                             {g.members.map((m, j) => <TeamCard key={m.name} m={m} index={j} />)}
                         </ul>

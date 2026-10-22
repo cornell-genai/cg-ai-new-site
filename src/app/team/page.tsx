@@ -6,7 +6,7 @@ import { MEMBERS, type Team } from "@/lib/data";
 export const metadata: Metadata = { title: "Team" };
 
 const GROUPS: { team: Team; id: string; title: string }[] = [
-    { team: "Board", id: "board", title: "Executive board" },
+    { team: "Board", id: "board", title: "E-board" },
     { team: "Members", id: "developers", title: "Developers" },
     { team: "Business", id: "business", title: "Business" },
     { team: "Alumni", id: "alumni", title: "Alumni" },
