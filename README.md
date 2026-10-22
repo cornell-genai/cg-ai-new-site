@@ -25,7 +25,7 @@ Client marks for the home page circles are in `public/logos/mark-*`.
   catches `<a>` clicks in the capture phase, so plain `<Link>`s need no wrapper.
 - `Scramble`: section labels that decode from ASCII noise on hover.
 - `TeamPhoto` / `AsciiHover`: ASCII layers over the team and campus photos that react to the cursor.
-- `Glow`: the warm dot field in the footer, which spells out the wordmark.
+- `Glow`: the warm dot field in the footer. It can also spell out text (`text` prop).
 - `Mark`: the red square with a pixel spark; also `src/app/icon.svg`.
 
 Everything pauses offscreen and respects `prefers-reduced-motion`.

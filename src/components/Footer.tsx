@@ -16,8 +16,7 @@ export default function Footer() {
                 <span className="text-bone/40">© {new Date().getFullYear()} Generative AI at Cornell · Ithaca, NY</span>
             </div>
             <div className="relative h-[46svh] min-h-[300px] overflow-hidden">
-                <Glow text="Cornell GenAI" />
-                <span className="sr-only">Cornell GenAI</span>
+                <Glow />
             </div>
         </footer>
     );
