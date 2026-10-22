@@ -29,7 +29,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="bg-night font-sans text-bone antialiased">
         <SmoothScroll />
         <Nav />
-        <PageTransition>{children}</PageTransition>
+        <PageTransition>
+          <div className="page-enter">{children}</div>
+        </PageTransition>
       </body>
     </html>
   );

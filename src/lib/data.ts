@@ -62,55 +62,79 @@ export type Project = {
     slug: string;
     title: string;
     partner: string;
-    status: "Shipped" | "In development";
+    area: "Research" | "Engineering" | "Frontier";
     summary: string;
-    description: string;
-    image: string;
+    /** Link to the blog post or demo once published. */
     link?: string;
 };
 
-export const PROJECTS: Project[] = [
+// This semester. Demos get published as they ship.
+export const CURRENT: Project[] = [
     {
-        slug: "classgpt",
-        title: "ClassGPT",
-        partner: "Cornell",
-        status: "In development",
-        summary: "AI tutors that professors ground in their own course material.",
-        image: "/work/tower.webp",
-        description:
-            "A Cornell-exclusive platform that lets professors set up AI tutors grounded in their own course material. Students join supported classes and get tutoring tailored to what they're being taught.",
+        slug: "microduck",
+        title: "Microduck",
+        partner: "Pollen Robotics",
+        area: "Frontier",
+        summary: "Open-source contributions and reinforcement learning on Pollen Robotics' Microduck robot.",
     },
     {
-        slug: "insurance-verification",
-        title: "Insurance Verification Agent",
+        slug: "trading-agent",
+        title: "Trading agent",
+        partner: "Internal",
+        area: "Frontier",
+        summary: "An autonomous trading agent we're building to run live.",
+    },
+    {
+        slug: "long-horizon-agents",
+        title: "Long-horizon agents",
+        partner: "Research",
+        area: "Research",
+        summary: "Research on getting agents to hold up over long, multi-step tasks.",
+    },
+];
+
+// Past work, written up as blog posts.
+export const PAST: Project[] = [
+    {
+        slug: "cisco-red-teaming",
+        title: "Agentic red teaming",
+        partner: "Cisco",
+        area: "Engineering",
+        summary: "Agents that probe AI systems for vulnerabilities.",
+    },
+    {
+        slug: "investcorp-esg",
+        title: "ESG news monitoring",
+        partner: "Investcorp",
+        area: "Engineering",
+        summary: "Monitoring news for ESG signals across a portfolio.",
+    },
+    {
+        slug: "nysfp-data",
+        title: "Data aggregation & maintenance",
+        partner: "NYSFP",
+        area: "Engineering",
+        summary: "An automated data aggregator and service maintainer.",
+    },
+    {
+        slug: "quickfi-insurance",
+        title: "Insurance verification agent",
         partner: "QuickFi",
-        status: "Shipped",
-        summary: "An agent that requests, reads, and validates insurance certificates.",
-        image: "/work/envelopes.webp",
-        description:
-            "Reaches out to insurance providers, requests commercial certificates, validates contract-specific coverage, handles follow-ups, and files every document tagged for compliance.",
+        area: "Engineering",
+        summary: "Requests, reads, and validates commercial insurance certificates.",
         link: "https://drive.google.com/file/u/0/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view",
     },
     {
-        slug: "vendor-due-diligence",
-        title: "Vendor Due Diligence",
+        slug: "quickfi-vendors",
+        title: "Vendor due diligence",
         partner: "QuickFi",
-        status: "Shipped",
+        area: "Engineering",
         summary: "Automated vendor checks across public records and risk data.",
-        image: "/work/network.webp",
-        description:
-            "Verifies vendors by cross-referencing public business records, risk databases, and online presence, then flags high-risk scores, inactive registrations, or adverse news for review.",
         link: "https://drive.google.com/file/u/0/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view",
     },
 ];
 
-export const PARTNERS = [
-    { name: "Cisco", logo: "/partners/cisco.png" },
-    { name: "Charter Communications", logo: "/partners/charter.png" },
-    { name: "QuickFi", logo: "/partners/quickfi.png" },
-    { name: "Vero", logo: "/partners/vero.png" },
-    { name: "Gradial", logo: "/partners/gradial.png", wordmark: true },
-];
+export const PARTNERS = ["Cisco", "Investcorp", "QuickFi", "NYSFP", "Pollen Robotics", "Charter", "Vero", "Gradial"];
 
 export const RECRUITING = {
     cycle: "Spring 2026",

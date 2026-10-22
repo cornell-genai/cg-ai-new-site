@@ -3,18 +3,18 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-// Quiet page changes: the current page eases out, the route changes, and the
-// new page eases up into place. The nav sits outside #page and never moves.
+// Page wipe: a dark grey panel with a thin dark-red band on its leading edge
+// slides down over the page (accelerating), the route changes underneath,
+// then the panel carries on down and off the screen (decelerating).
 //
-// Internal <a> clicks are caught in the capture phase (ahead of <Link>'s own
-// handler), so plain <Link>s get the transition with no wrapper. Back/forward
-// navigation is left instant.
+// Internal <a> clicks are caught in the capture phase, ahead of <Link>'s own
+// handler, so plain <Link>s get the transition. Back/forward stays instant.
 
-const OUT = { duration: 260, easing: "cubic-bezier(0.4, 0, 1, 1)" };
-const IN = { duration: 700, easing: "cubic-bezier(0.16, 1, 0.3, 1)" };
+const COVER = { duration: 520, easing: "cubic-bezier(0.7, 0, 0.84, 0)" }; // ease-in
+const REVEAL = { duration: 620, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }; // ease-out
 
 export default function PageTransition({ children }: { children: React.ReactNode }) {
-    const ref = useRef<HTMLDivElement>(null);
+    const wipe = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const pathname = usePathname();
     const pending = useRef<string | null>(null);
@@ -30,15 +30,16 @@ export default function PageTransition({ children }: { children: React.ReactNode
             if (url.origin !== location.origin) return;
             const there = url.pathname.replace(/\/$/, "") || "/";
             if ((location.pathname.replace(/\/$/, "") || "/") === there) return;
+            const el = wipe.current;
+            if (!el) return;
             e.preventDefault();
-            e.stopPropagation(); // keep <Link> from navigating before the page has eased out
+            e.stopPropagation();
             busy.current = true;
             pending.current = there;
             router.prefetch(url.pathname);
-            const el = ref.current;
             const go = () => router.push(url.pathname + url.search + url.hash);
-            if (!el) return go();
-            el.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-6px)" }], { ...OUT, fill: "forwards" }).finished.then(go, go);
+            el.style.visibility = "visible";
+            el.animate([{ transform: "translateY(-100%)" }, { transform: "translateY(0%)" }], { ...COVER, fill: "forwards" }).finished.then(go, go);
         };
         document.addEventListener("click", onClick, true);
         return () => document.removeEventListener("click", onClick, true);
@@ -46,19 +47,29 @@ export default function PageTransition({ children }: { children: React.ReactNode
 
     useEffect(() => {
         const here = pathname.replace(/\/$/, "") || "/";
-        const el = ref.current;
+        const el = wipe.current;
         if (pending.current !== here || !el) return;
         pending.current = null;
         window.scrollTo(0, 0);
-        el.getAnimations().forEach((a) => a.cancel());
-        el.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], IN).finished.finally(() => {
-            busy.current = false;
+        // Give the new page a frame to paint under the panel, then carry on down.
+        requestAnimationFrame(() => {
+            el.getAnimations().forEach((a) => a.cancel());
+            el.animate([{ transform: "translateY(0%)" }, { transform: "translateY(calc(100% + 10px))" }], { ...REVEAL, fill: "forwards" })
+                .finished.finally(() => {
+                    el.style.visibility = "hidden";
+                    el.getAnimations().forEach((a) => a.cancel());
+                    busy.current = false;
+                });
         });
     }, [pathname]);
 
     return (
-        <div id="page" ref={ref} className="page-enter">
+        <>
             {children}
-        </div>
+            <div ref={wipe} aria-hidden className="pointer-events-none invisible fixed inset-0 z-[100]" style={{ transform: "translateY(-100%)" }}>
+                <div className="h-full bg-[#262626]" />
+                <div className="h-[10px] bg-[#7a1712]" />
+            </div>
+        </>
     );
 }
