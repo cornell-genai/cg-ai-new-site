@@ -63,7 +63,7 @@ const business: Member[] = [
 const alumni: Member[] = [
     { name: "Erik Pedersen", image: "/team/erik.webp", linkedIn: "https://www.linkedin.com/in/erikzhangpedersen/" },
     { name: "Alex Kozik", image: "/team/alex.webp", linkedIn: "https://www.linkedin.com/in/alex-kozik/" },
-    { name: "Jacob Phelam", role: "YC Founder" },
+    { name: "Jacob Phelan", role: "YC Founder", linkedIn: "https://www.linkedin.com/in/jacob-phelan-9359222a5" },
 ].map((m) => ({ ...m, team: "Alumni" as const }));
 
 export const MEMBERS: Member[] = [...board, ...members, ...business, ...alumni];
