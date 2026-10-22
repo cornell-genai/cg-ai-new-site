@@ -69,7 +69,9 @@ export default function Life({ className }: { className?: string }) {
         let pal = PALETTES.dark;
         let styles: string[][] = [];
         const setPalette = (t: Theme) => {
-            pal = PALETTES[t];
+            // Paint the board in the page's own background so the hero runs into the body seamlessly.
+            const night = getComputedStyle(document.documentElement).getPropertyValue("--color-night").trim();
+            pal = { ...PALETTES[t], bg: night || PALETTES[t].bg };
             styles = [pal.ink, pal.red].map(([r, g, b]) =>
                 Array.from({ length: LEVELS }, (_, l) => `rgba(${r},${g},${b},${(pal.floor + ((1 - pal.floor) * (l + 1)) / LEVELS).toFixed(3)})`),
             );
