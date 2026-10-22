@@ -17,7 +17,7 @@ export default function Home() {
                         Cornell&apos;s student-run community for building with AI.
                     </p>
                     <p className="mt-4 max-w-[22rem] text-[15px] leading-relaxed text-bone/55">
-                        We research, build for clients, and ship our own projects, and we have a lot of fun doing it.
+                        Applied AI research, production systems for clients, and open-source contributions.
                     </p>
                 </div>
 
@@ -37,7 +37,7 @@ export default function Home() {
                 <section className="pt-28 md:pt-44">
                     <Reveal className="mx-auto max-w-3xl text-center">
                         <p className="text-[clamp(1.75rem,3.6vw,3rem)] font-semibold leading-[1.08] tracking-[-0.035em] text-white">
-                            {CURRENT_MEMBERS.length} engineers, researchers, and designers who love building things that work.
+                            {CURRENT_MEMBERS.length} engineers, researchers, and designers building with AI.
                         </p>
                     </Reveal>
                     <Reveal delay={0.1} className="mx-auto mt-12 max-w-[1040px] md:mt-16">
@@ -54,7 +54,7 @@ export default function Home() {
                             <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">applied AI projects and research</span>{" "}
                             <span className="whitespace-nowrap"><ProjectIcons />,</span> from agents for long-horizon tasks to systems that act in the real world. We{" "}
                             <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">build for clients</span> <span className="whitespace-nowrap"><ClientStack />,</span>
-                            helping teams bring real AI products to life. And we{" "}
+                            shipping production systems from agentic red teaming at Cisco to ESG news monitoring at Investcorp. And we{" "}
                             <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">contribute to open source</span>{" "}
                             <span className="whitespace-nowrap"><OpenSourceStack />.</span>
                         </p>

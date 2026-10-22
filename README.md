@@ -10,20 +10,22 @@ npm run build    # static site in ./out
 
 ## Content
 
-Everything editable lives in `src/lib/data.ts`: members, projects, and the recruiting cycle
-(timeline dates, application forms, FAQ). The Get Involved page opens and closes applications
-from the timeline dates, so a new cycle only needs new dates and form links.
+Everything editable lives in `src/lib/data.ts`: members (board, members, business, alumni) and
+project descriptions (`CURRENT`, `PAST`), which the Projects page will use once write-ups are ready.
 
 Headshots go in `public/team/` as ~720px WebP; they appear when hovering a name on the Team page.
+Client marks for the home page circles are in `public/logos/mark-*`.
 
 ## Pieces
 
 - `Swarm`: the homepage. Schools of ASCII agents on a character grid flee the cursor, leave red
   wakes, and ripple on click; 81 of them assemble the mark in the lockup (`[data-swarm-mark]`).
   Anything marked `[data-swarm-avoid]` (nav, copy) is swum around. Canvas 2D, fixed timestep.
-- `PageTransition`: the pixel-dissolve curtain for the first load and every internal link. It
+- `PageTransition`: a dark-red sheet rises over the page, then the new page rises over it. It
   catches `<a>` clicks in the capture phase, so plain `<Link>`s need no wrapper.
-- `Scramble`: text that decodes from ASCII noise as the curtain lifts.
+- `Scramble`: section labels that decode from ASCII noise on hover.
+- `TeamPhoto` / `AsciiHover`: ASCII layers over the team and campus photos that react to the cursor.
+- `Glow`: the warm dot field in the footer, which spells out the wordmark.
 - `Mark`: the red square with a pixel spark; also `src/app/icon.svg`.
 
 Everything pauses offscreen and respects `prefers-reduced-motion`.

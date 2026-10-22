@@ -26,7 +26,7 @@ export function ProjectIcons() {
     return (
         <Stack>
             {CURRENT.map((p) => (
-                <Link key={p.slug} href={`/projects#${p.slug}`} aria-label={p.title} className={cn(circle, "bg-[#2a2a2a] text-bone hover:bg-red")}>
+                <Link key={p.slug} href="/projects" aria-label={p.title} className={cn(circle, "bg-[#2a2a2a] text-bone hover:bg-red")}>
                     <svg viewBox="0 0 7 7" className="h-[0.4em] w-[0.4em]" shapeRendering="crispEdges" aria-hidden>
                         {(ICONS[p.slug] ?? ICONS["long-horizon-agents"]).flatMap((r, y) =>
                             [...r].map((c, x) => (c === "#" ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="currentColor" /> : null)),

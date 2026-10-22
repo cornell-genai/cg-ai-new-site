@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Team" };
 
 export default function TeamPage() {
     return (
-        <SubPage title="Team" intro={`The ${CURRENT_MEMBERS.length} people who make it all happen, plus the alumni who got us here.`}>
+        <SubPage title="Team" intro={`Our ${CURRENT_MEMBERS.length} current members, and the alumni who helped build the club.`}>
             <TeamList groups={TEAMS.map((t) => ({ title: t, members: MEMBERS.filter((m) => m.team === t) }))} />
         </SubPage>
     );

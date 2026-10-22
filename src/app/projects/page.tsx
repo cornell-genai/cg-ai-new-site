@@ -1,22 +1,17 @@
 import type { Metadata } from "next";
-import SubPage, { Group, Row } from "@/components/SubPage";
-import { CURRENT, PAST } from "@/lib/data";
+import SubPage from "@/components/SubPage";
 
 export const metadata: Metadata = { title: "Projects" };
 
+// Project write-ups and demos are on the way. The descriptions live in
+// src/lib/data.ts (CURRENT, PAST) for when this page is built out.
 export default function ProjectsPage() {
     return (
-        <SubPage title="Projects" intro="A look at what we've been building: research, client work, and our own projects. We'll share demos from this semester as they come together!">
-            <Group title="This semester">
-                {CURRENT.map((p) => (
-                    <Row key={p.slug} id={p.slug} left={p.title} right={p.partner} sub={p.summary} href={p.link} />
-                ))}
-            </Group>
-            <Group title="Past work">
-                {PAST.map((p) => (
-                    <Row key={p.slug} id={p.slug} left={p.title} right={p.link ? `${p.partner} · Write-up ↗` : p.partner} sub={p.summary} href={p.link} />
-                ))}
-            </Group>
+        <SubPage title="Projects">
+            <p className="text-[clamp(1.5rem,2.6vw,2.2rem)] font-semibold tracking-[-0.03em] text-white">Coming soon.</p>
+            <p className="mt-3 max-w-lg text-[17px] leading-relaxed text-bone/60">
+                Write-ups of our past work and demos from this semester are on the way.
+            </p>
         </SubPage>
     );
 }
