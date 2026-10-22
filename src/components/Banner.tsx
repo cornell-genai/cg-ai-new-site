@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import AsciiHover from "./AsciiHover";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -15,15 +16,10 @@ export default function Banner({ src, alt, title }: { src: string; alt: string; 
             transition={{ duration: 1.3, ease, delay: 0.15 }}
             className="relative h-[72svh] min-h-[440px] overflow-hidden"
         >
-            <motion.img
-                src={src}
-                alt={alt}
-                initial={{ scale: 1.18 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 1.6, ease, delay: 0.15 }}
-                className="absolute inset-0 h-full w-full object-cover object-[60%_40%]"
-            />
-            <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-night via-night/20 to-night/40" />
+            <motion.div initial={{ scale: 1.18 }} animate={{ scale: 1 }} transition={{ duration: 1.6, ease, delay: 0.15 }} className="absolute inset-0">
+                <AsciiHover src={src} alt={alt} className="h-full w-full" imgClassName="object-[60%_40%]" />
+            </motion.div>
+            <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-night via-night/20 to-night/40" />
             <motion.h1
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
