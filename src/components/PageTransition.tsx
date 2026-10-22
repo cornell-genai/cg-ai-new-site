@@ -52,7 +52,9 @@ export default function PageTransition({ children }: { children: React.ReactNode
         const el = sheet.current, pg = page.current;
         if (pending.current !== here || !el || !pg) return;
         pending.current = null;
-        window.scrollTo(0, 0);
+        const target = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+        if (target) target.scrollIntoView({ block: "start" });
+        else window.scrollTo(0, 0);
         requestAnimationFrame(() => {
             pg.style.zIndex = "46"; // above the sheet while it rises
             pg.animate([{ transform: "translateY(100vh)" }, { transform: "translateY(0)" }], RISE).finished.finally(() => {
