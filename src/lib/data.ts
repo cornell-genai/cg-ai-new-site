@@ -134,7 +134,21 @@ export const PAST: Project[] = [
     },
 ];
 
-export const PARTNERS = ["Cisco", "Investcorp", "QuickFi", "NYSFP", "Pollen Robotics", "Charter", "Vero", "Gradial"];
+export type Partner = { name: string; logo?: string; /** Logo height in px; wide wordmarks sit smaller. */ h?: number; /** Show the name beside a mark-only logo. */ label?: boolean };
+
+export const PARTNERS: Partner[] = [
+    { name: "Cisco", logo: "/logos/cisco.png", h: 30 },
+    { name: "Investcorp", logo: "/logos/investcorp.png", h: 15 },
+    { name: "QuickFi", logo: "/logos/quickfi.png", h: 26 },
+    { name: "Pollen Robotics", logo: "/logos/pollen.svg", h: 30, label: true },
+    { name: "Bridge", logo: "/logos/bridge.png", h: 24 },
+    { name: "Charter", logo: "/logos/charter.png", h: 26 },
+    { name: "Vero", logo: "/logos/vero.png", h: 26 },
+    { name: "Gradial" },
+    { name: "NYSFP" },
+];
+
+export const partner = (name: string) => PARTNERS.find((p) => p.name === name);
 
 export const RECRUITING = {
     cycle: "Spring 2026",
