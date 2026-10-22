@@ -51,7 +51,7 @@ export default function Home() {
                     <Reveal>
                         <p className="text-[clamp(1.45rem,2.6vw,2.3rem)] font-medium leading-[1.45] tracking-[-0.025em] text-bone/45">
                             <span className="text-white">We do applied AI research and build AI systems</span> for <InlineLogo name="Cisco" />,{" "}
-                            <InlineLogo name="Investcorp" />, and <InlineLogo name="QuickFi" />. Now: RL on <InlineLogo name="Pollen Robotics" />&apos; Microduck,
+                            <InlineLogo name="Investcorp" />, and <InlineLogo name="QuickFi" />. Now: RL on Microduck with <InlineLogo name="Pollen Robotics" />,
                             and a trading agent going live.
                         </p>
                     </Reveal>
