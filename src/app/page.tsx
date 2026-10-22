@@ -47,16 +47,16 @@ export default function Home() {
                     </Reveal>
                 </section>
 
-                <section className="mx-auto max-w-[56rem] pt-20 md:pt-28">
+                <section className="mx-auto max-w-[78rem] pt-24 md:pt-40">
                     <Reveal>
-                        <p className="text-[clamp(1.45rem,2.6vw,2.3rem)] font-medium leading-[1.45] tracking-[-0.025em] text-bone/45">
+                        <p className="text-[clamp(2rem,5vw,4.75rem)] font-semibold leading-[1.12] tracking-[-0.04em] text-bone/35">
                             <span className="text-white">We do applied AI research and build AI systems</span> for <InlineLogo name="Cisco" />,{" "}
                             <InlineLogo name="Investcorp" />, and <InlineLogo name="QuickFi" />. Now: RL on Microduck with <InlineLogo name="Pollen Robotics" />,
                             and a trading agent going live.
                         </p>
                     </Reveal>
                     <Reveal delay={0.08}>
-                        <p className="mt-8 text-[clamp(1.1rem,1.7vw,1.45rem)] font-medium leading-[1.6] tracking-[-0.015em] text-bone/40">
+                        <p className="mt-12 text-[clamp(1.25rem,2vw,1.75rem)] font-medium leading-[1.6] tracking-[-0.02em] text-bone/40">
                             Also with <InlineLogo name="Charter" /> <InlineLogo name="Vero" /> <InlineLogo name="Bridge" /> <span className="text-white">NYSFP</span>{" "}
                             <span className="text-white">Gradial</span>
                         </p>
