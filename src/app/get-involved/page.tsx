@@ -7,15 +7,15 @@ export const metadata: Metadata = { title: "Get involved" };
 
 const WAYS = [
     {
-        title: "Sponsor us!",
-        body: "We'd be so grateful for your support. Sponsorship goes straight into compute, events, and the projects our members dream up. As a sponsor, you'd get early access to our recruiting, a seat at our events, and a direct line to a bunch of students who love building with AI.",
-        cta: "Let's talk sponsorship",
+        title: "Sponsor us",
+        body: "Sponsorship funds the compute, events, and projects our members take on, and we'd be grateful for your support. Sponsors get early access to our recruiting, invitations to our events, and a direct line to students building with AI.",
+        cta: "Talk to us about sponsorship",
         subject: "Sponsorship",
     },
     {
-        title: "Let's build something together!",
-        body: "Got a problem you think AI could crack? We'd love to hear about it. Each semester we team up with a few partners, and a group of our engineers and researchers works alongside you to ship something real by the end of the term.",
-        cta: "Tell us about your idea",
+        title: "Partner on a project",
+        body: "Have a problem AI could help solve? We'd like to hear about it. Each semester we partner with a few organizations, and a team of our engineers and researchers works with you to ship a working system by the end of the term.",
+        cta: "Propose a project",
         subject: "Project collaboration",
     },
 ];
@@ -25,9 +25,9 @@ export default function GetInvolvedPage() {
         <SubPage title="Get involved" banner={<Banner src="/brand/campus.webp" alt="Cornell campus in the fall" title="Get involved" />}>
             <div className="border-l-2 border-red pl-5">
                 <p className="text-[clamp(1.4rem,2.4vw,2rem)] font-semibold leading-snug tracking-[-0.03em] text-white">
-                    Thanks for your interest! Recruiting for F26 has wrapped up.
+                    Recruiting for the F26 cycle is closed.
                 </p>
-                <p className="mt-2 text-[17px] text-bone/60">We open applications again next semester and would love to see you then.</p>
+                <p className="mt-2 text-[17px] text-bone/60">Applications reopen next semester, and we&apos;d love to hear from you then.</p>
             </div>
 
             <div className="mt-20 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-10">
@@ -46,7 +46,7 @@ export default function GetInvolvedPage() {
             </div>
 
             <p className="mt-20 text-[15px] text-bone/45">
-                Questions, ideas, or just want to say hi? <a href={`mailto:${CONTACT_EMAIL}`} className="text-bone/80 underline decoration-bone/25 underline-offset-4 hover:text-white">{CONTACT_EMAIL}</a>
+                Questions or ideas? <a href={`mailto:${CONTACT_EMAIL}`} className="text-bone/80 underline decoration-bone/25 underline-offset-4 hover:text-white">{CONTACT_EMAIL}</a>
             </p>
         </SubPage>
     );
