@@ -29,12 +29,8 @@ export default function Mark({ className }: { className?: string }) {
 export function Lockup({ className, markClassName }: { className?: string; markClassName?: string }) {
     return (
         <span className={cn("flex items-center gap-2", className)}>
-            <Mark className={cn("size-7", markClassName)} />
-            <span className="text-[14px] font-medium leading-[0.95] tracking-[-0.02em]">
-                Cornell
-                <br />
-                GenAI
-            </span>
+            <Mark className={cn("size-[22px]", markClassName)} />
+            <span className="whitespace-nowrap text-[16px] font-semibold tracking-[-0.03em]">Cornell GenAI</span>
         </span>
     );
 }

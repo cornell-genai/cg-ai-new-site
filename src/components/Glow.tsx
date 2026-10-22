@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 // the page. Dot size follows a soft noise field; colour runs from deep red
 // at the base through amber to cream. The cursor brightens and swells the
 // dots near it. Canvas 2D, about one circle per 9px cell, paused offscreen.
+// Redraws at up to 30fps and at most 1.5x density: soft dots don't need more.
 
 const STOPS: [number, [number, number, number]][] = [
     [0.0, [255, 236, 214]],
@@ -51,7 +52,7 @@ export default function Glow({ text, className }: { text?: string; className?: s
         if (!ctx) return;
         const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const P = 9;
-        let W = 0, H = 0, dpr = 1, raf = 0, running = false, t = 0, last = 0;
+        let W = 0, H = 0, dpr = 1, raf = 0, running = false, t = 0, last = 0, drawn = 0;
         const m = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4, a: 0, ta: 0 };
         const colors = Array.from({ length: 48 }, (_, i) => {
             const [r, g, b] = ramp(i / 47);
@@ -81,7 +82,7 @@ export default function Glow({ text, className }: { text?: string; className?: s
         const resize = () => {
             const r = canvas.getBoundingClientRect();
             W = r.width; H = r.height;
-            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            dpr = Math.min(window.devicePixelRatio || 1, 1.5);
             canvas.width = Math.round(W * dpr);
             canvas.height = Math.round(H * dpr);
             buildMask();
@@ -120,7 +121,7 @@ export default function Glow({ text, className }: { text?: string; className?: s
             m.x += (m.tx - m.x) * k;
             m.y += (m.ty - m.y) * k;
             m.a += (m.ta - m.a) * Math.min(1, dt * 4);
-            draw();
+            if (now - drawn >= 32) { drawn = now; draw(); }
             raf = requestAnimationFrame(frame);
         };
         const start = () => {

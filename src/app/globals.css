@@ -17,8 +17,8 @@
 
 /* Light theme: same token names, so every utility flips with them. */
 :root[data-theme="light"] {
-  --color-night: #f6f4ef;
-  --color-night-2: #ebe8e1;
+  --color-night: #f7f7f5;
+  --color-night-2: #ececea;
   --color-bone: #161514;
   --color-bone-2: #6b6760;
   --color-red: #d01f17;
@@ -58,10 +58,6 @@
 @keyframes page-enter {
   from { opacity: 0; transform: translateY(10px); }
 }
-
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-stopped { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
