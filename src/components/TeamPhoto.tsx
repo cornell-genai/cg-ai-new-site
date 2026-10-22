@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 // The team photo under a dense layer of white ASCII that always covers the
 // people. A slow, smooth noise field drifts across them, gathering glyphs
 // into soft pockets that swell, shimmer, and dissolve together. The cursor
-// stirs the field near it.
+// leaves a slowly fading trail through the field.
 
 const RAMP = ".:-=+*cxo3%#8@";
 const CELL = 8;
@@ -36,7 +36,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
         const font = getComputedStyle(document.body).getPropertyValue("--font-geist-mono").trim() || "monospace";
 
         let W = 0, H = 0, cols = 0, rows = 0, dpr = 1;
-        let lum = new Float32Array(0), on = new Uint8Array(0), seed = new Float32Array(0);
+        let lum = new Float32Array(0), on = new Uint8Array(0), seed = new Float32Array(0), heat = new Float32Array(0);
         const m = { x: -1e4, y: -1e4, a: 0, ta: 0 };
         const styles = Array.from({ length: LEVELS }, (_, l) => `rgba(255,255,255,${(0.18 + (0.82 * l) / (LEVELS - 1)).toFixed(3)})`);
         const buckets: number[][] = Array.from({ length: LEVELS }, () => []);
@@ -56,7 +56,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
             o.drawImage(photo, 0, 0, cols, rows);
             const d = o.getImageData(0, 0, cols, rows).data;
             const n = cols * rows;
-            lum = new Float32Array(n); on = new Uint8Array(n); seed = new Float32Array(n);
+            lum = new Float32Array(n); on = new Uint8Array(n); seed = new Float32Array(n); heat = new Float32Array(n);
             for (let i = 0; i < n; i++) {
                 lum[i] = (d[i * 4] * 0.299 + d[i * 4 + 1] * 0.587 + d[i * 4 + 2] * 0.114) / 255;
                 on[i] = d[i * 4 + 3] > 200 ? 1 : 0;
@@ -86,7 +86,11 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
                     const n = noise(x / 90 + t * 0.12, y / 70 - t * 0.08) * 0.7 + noise(x / 34 - t * 0.3, y / 30 + t * 0.2) * 0.3;
                     const pocket = Math.max(0, (n - 0.36) / 0.64);
                     const dx = x - m.x, dy = y - m.y;
-                    const stir = Math.exp(-(dx * dx + dy * dy) / 5000) * m.a;
+                    // The cursor heats a small radius; heat fades slowly, leaving a trail.
+                    const d2 = dx * dx + dy * dy;
+                    if (m.ta > 0 && d2 < 1600) heat[i] = Math.max(heat[i], 1 - Math.sqrt(d2) / 40);
+                    heat[i] *= 0.978;
+                    const stir = heat[i];
                     const e = Math.min(1, pocket * pocket * 1.6 + stir * 0.9);
                     // Base layer covers most of each person; pockets brighten it.
                     const base = seed[i] < 0.86 ? 0.3 + 0.35 * lum[i] : 0;
