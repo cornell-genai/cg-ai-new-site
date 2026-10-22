@@ -28,7 +28,18 @@
 }
 :root[data-theme="dark"] { color-scheme: dark; }
 
-@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+/* A light section inside either theme (the Team page is always white). */
+[data-theme-scope="light"] {
+  --color-night: #ffffff;
+  --color-night-2: #f1f1ef;
+  --color-bone: #161514;
+  --color-bone-2: #6b6760;
+  --color-red: #d01f17;
+  --color-fg: #0b0b0b;
+  color-scheme: light;
+}
+
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *, [data-theme-scope="light"], [data-theme-scope="light"] *));
 
 /* Colour changes ease over when the theme is toggled. */
 .theme-fade, .theme-fade * {
@@ -40,6 +51,10 @@
     background: var(--color-night);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  [data-theme-scope="light"] {
+    background: var(--color-night);
+    color: var(--color-bone);
   }
   ::selection {
     background: var(--color-red);
