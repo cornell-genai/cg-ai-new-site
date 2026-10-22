@@ -29,17 +29,13 @@
   }
 }
 
-/* Server-rendered black curtain under the transition canvas. It fades on its
-   own after a few seconds in case scripts never run. */
-.curtain {
-  position: fixed;
-  inset: 0;
-  z-index: 99;
-  background: var(--color-night);
-  pointer-events: none;
-  animation: curtain-fallback 0.4s ease 3s forwards;
+/* First paint: the page settles in gently. Pure CSS, so it never blocks. */
+.page-enter {
+  animation: page-enter 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
 }
-@keyframes curtain-fallback { to { opacity: 0; visibility: hidden; } }
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(10px); }
+}
 
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }

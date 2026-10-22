@@ -295,7 +295,7 @@ export default function Swarm({ className }: { className?: string }) {
                 a.vx += ax * dt;
                 a.vy += ay * dt;
                 const sp = Math.hypot(a.vx, a.vy);
-                const max = 90 * (1 + 2 * a.alarm) + (a.target >= 0 ? 560 : 0);
+                const max = 90 * (1 + 2 * a.alarm) + (a.target >= 0 ? 340 : 0);
                 if (sp > max) { a.vx *= max / sp; a.vy *= max / sp; }
                 a.x += a.vx * dt;
                 a.y += a.vy * dt;
@@ -474,7 +474,7 @@ export default function Swarm({ className }: { className?: string }) {
         <canvas
             ref={ref}
             aria-hidden
-            className={`absolute inset-0 h-full w-full opacity-0 transition-opacity duration-700 data-[ready=true]:opacity-100 ${className ?? ""}`}
+            className={`absolute inset-0 h-full w-full opacity-0 transition-opacity duration-[1600ms] ease-out data-[ready=true]:opacity-100 ${className ?? ""}`}
         />
     );
 }
