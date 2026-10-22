@@ -74,7 +74,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
             <div
                 ref={sheet}
                 aria-hidden
-                className="pointer-events-none invisible fixed inset-0 z-[45] bg-[#5e1714]"
+                className="pointer-events-none invisible fixed inset-0 z-[45] bg-sheet"
                 style={{ transform: "translateY(100%)" }}
             />
         </>

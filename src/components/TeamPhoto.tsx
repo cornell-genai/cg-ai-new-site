@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { onTheme } from "@/lib/theme";
 
 // The team photo under a dense layer of white ASCII that always covers the
 // people. A slow, smooth noise field drifts across them, gathering glyphs
@@ -38,7 +39,13 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
         let W = 0, H = 0, cols = 0, rows = 0, dpr = 1;
         let lum = new Float32Array(0), on = new Uint8Array(0), seed = new Float32Array(0), heat = new Float32Array(0);
         const m = { x: -1e4, y: -1e4, a: 0, ta: 0 };
-        const styles = Array.from({ length: LEVELS }, (_, l) => `rgba(255,255,255,${(0.18 + (0.82 * l) / (LEVELS - 1)).toFixed(3)})`);
+        // White glyphs on dark, ink glyphs on light.
+        let styles: string[] = [];
+        const offTheme = onTheme((th) => {
+            const c = th === "light" ? "18,17,16" : "255,255,255";
+            styles = Array.from({ length: LEVELS }, (_, l) => `rgba(${c},${(0.18 + (0.82 * l) / (LEVELS - 1)).toFixed(3)})`);
+            if (reduced && W) draw(performance.now());
+        });
         const buckets: number[][] = Array.from({ length: LEVELS }, () => []);
         const glyph: string[] = [];
 
@@ -137,6 +144,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
         canvas.addEventListener("pointerleave", onLeave);
         return () => {
             stop();
+            offTheme();
             ro.disconnect();
             canvas.removeEventListener("pointermove", onMove);
             canvas.removeEventListener("pointerleave", onLeave);
@@ -146,7 +154,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
 
     return (
         <div className="relative [mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
-            <img ref={img} src={src} alt={alt} className="block w-full brightness-[0.82]" />
+            <img ref={img} src={src} alt={alt} className="block w-full brightness-[0.82] light:brightness-100" />
             <canvas ref={ref} aria-hidden className="absolute inset-0 h-full w-full" />
         </div>
     );

@@ -59,6 +59,7 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
             ctx.font = `600 ${CELL * 1.15}px ${font}`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
+            const backing = getComputedStyle(document.documentElement).getPropertyValue("--color-night").trim() || "#121212";
             for (let i = 0; i < heat.length; i++) {
                 const x = (i % cols + 0.5) * CELL, y = (Math.floor(i / cols) + 0.5) * CELL;
                 if (m.in) {
@@ -70,7 +71,7 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
                 heat[i] *= 0.975; // long, slow fade so the cursor leaves a trail
                 const h = heat[i];
                 ctx.globalAlpha = Math.min(0.85, h * 1.5);
-                ctx.fillStyle = "#121212";
+                ctx.fillStyle = backing;
                 ctx.fillRect(x - CELL / 2, y - CELL / 2, CELL, CELL);
                 const v = Math.random() < 0.2 * h ? Math.random() : lum[i];
                 ctx.globalAlpha = Math.min(1, h * 2);

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Lockup } from "./Mark";
+import ThemeToggle from "./ThemeToggle";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
@@ -43,7 +44,8 @@ export default function Nav() {
                             {l.label}
                         </Link>
                     ))}
-                    <Link href="/get-involved" className="bg-red px-4 py-2 text-[15px] font-medium text-bone transition-colors hover:bg-bone hover:text-night">
+                    <ThemeToggle className="text-bone/55 hover:text-bone" />
+                    <Link href="/get-involved" className="bg-red px-4 py-2 text-[15px] font-medium text-white transition-colors hover:bg-bone hover:text-night">
                         Get involved
                     </Link>
                 </div>
@@ -66,6 +68,7 @@ export default function Nav() {
                                 {l.label}
                             </Link>
                         ))}
+                        <ThemeToggle label className="mt-8 text-[17px] text-bone/60" />
                     </motion.div>
                 )}
             </AnimatePresence>

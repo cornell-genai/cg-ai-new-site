@@ -13,7 +13,7 @@ function Stack({ children, className }: { children: React.ReactNode; className?:
 }
 
 const circle =
-    "relative inline-flex size-[0.82em] shrink-0 items-center justify-center rounded-full ring-[0.06em] ring-night transition-transform duration-300 ease-out hover:z-10 hover:-translate-y-[0.08em]";
+    "relative inline-flex size-[0.82em] shrink-0 items-center justify-center rounded-full ring-[0.06em] ring-night transition-transform duration-300 ease-out hover:z-10 hover:-translate-y-[0.08em] light:shadow-[inset_0_0_0_0.03em_rgba(0,0,0,0.12)]";
 
 // 7×7 pixel icons, one per project.
 const ICONS: Record<string, string[]> = {
@@ -26,7 +26,7 @@ export function ProjectIcons() {
     return (
         <Stack>
             {CURRENT.map((p) => (
-                <Link key={p.slug} href="/projects" aria-label={p.title} className={cn(circle, "bg-[#2a2a2a] text-bone hover:bg-red")}>
+                <Link key={p.slug} href="/projects" aria-label={p.title} className={cn(circle, "bg-[#2a2a2a] text-bone hover:bg-red light:bg-[#e4e1da] light:hover:bg-red light:hover:text-white")}>
                     <svg viewBox="0 0 7 7" className="h-[0.4em] w-[0.4em]" shapeRendering="crispEdges" aria-hidden>
                         {(ICONS[p.slug] ?? ICONS["long-horizon-agents"]).flatMap((r, y) =>
                             [...r].map((c, x) => (c === "#" ? <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill="currentColor" /> : null)),

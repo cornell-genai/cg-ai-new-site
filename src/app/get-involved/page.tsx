@@ -24,7 +24,7 @@ export default function GetInvolvedPage() {
     return (
         <SubPage title="Get involved" banner={<Banner src="/brand/campus.webp" alt="Cornell campus in the fall" title="Get involved" />}>
             <div className="border-l-2 border-red pl-5">
-                <p className="text-[clamp(1.4rem,2.4vw,2rem)] font-semibold leading-snug tracking-[-0.03em] text-white">
+                <p className="text-[clamp(1.4rem,2.4vw,2rem)] font-semibold leading-snug tracking-[-0.03em] text-fg">
                     Recruiting for the F26 cycle is closed.
                 </p>
                 <p className="mt-2 text-[17px] text-bone/60">Applications reopen next semester, and we&apos;d love to hear from you then.</p>
@@ -33,11 +33,11 @@ export default function GetInvolvedPage() {
             <div className="mt-20 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-10">
                 {WAYS.map((w) => (
                     <section key={w.title}>
-                        <h2 className="text-[clamp(1.6rem,2.6vw,2.2rem)] font-semibold tracking-[-0.035em] text-white">{w.title}</h2>
+                        <h2 className="text-[clamp(1.6rem,2.6vw,2.2rem)] font-semibold tracking-[-0.035em] text-fg">{w.title}</h2>
                         <p className="mt-4 text-[17px] leading-relaxed text-bone/65">{w.body}</p>
                         <a
                             href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(w.subject)}`}
-                            className="group mt-6 inline-flex items-center gap-2 border-b border-red pb-1 text-[16px] font-medium text-white transition-colors hover:text-red"
+                            className="group mt-6 inline-flex items-center gap-2 border-b border-red pb-1 text-[16px] font-medium text-fg transition-colors hover:text-red"
                         >
                             {w.cta} <span className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
                         </a>
@@ -46,7 +46,7 @@ export default function GetInvolvedPage() {
             </div>
 
             <p className="mt-20 text-[15px] text-bone/45">
-                Questions or ideas? <a href={`mailto:${CONTACT_EMAIL}`} className="text-bone/80 underline decoration-bone/25 underline-offset-4 hover:text-white">{CONTACT_EMAIL}</a>
+                Questions or ideas? <a href={`mailto:${CONTACT_EMAIL}`} className="text-bone/80 underline decoration-bone/25 underline-offset-4 hover:text-fg">{CONTACT_EMAIL}</a>
             </p>
         </SubPage>
     );

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { MARK } from "./Mark";
+import { onTheme, type Theme } from "@/lib/theme";
 
 // A school of ASCII agents on a character grid.
 //
@@ -18,9 +19,11 @@ import { MARK } from "./Mark";
 // colour so each bucket is a single fillStyle.
 
 const STEP = 1 / 60;
-const BG = "#161616";
-const BONE: [number, number, number] = [241, 238, 232];
-const RED: [number, number, number] = [215, 38, 30];
+type RGB = [number, number, number];
+const PALETTES: Record<Theme, { bg: string; grid: string; ink: RGB; red: RGB; light: string }> = {
+    dark: { bg: "#161616", grid: "rgba(241,238,232,0.07)", ink: [241, 238, 232], red: [215, 38, 30], light: "#f1eee8" },
+    light: { bg: "#f1efe9", grid: "rgba(22,21,20,0.08)", ink: [92, 88, 82], red: [208, 31, 23], light: "#f6f4ef" },
+};
 const LEVELS = 6;
 
 type Agent = {
@@ -69,9 +72,26 @@ export default function Swarm({ className }: { className?: string }) {
         let heads = new Int32Array(0);
         let next = new Int32Array(0);
 
-        const styles: string[][] = [BONE, RED].map(([r, g, b]) =>
-            Array.from({ length: LEVELS }, (_, l) => `rgba(${r},${g},${b},${((l + 1) / LEVELS).toFixed(3)})`),
-        );
+        let pal = PALETTES.dark;
+        let styles: string[][] = [];
+        const setPalette = (t: Theme) => {
+            pal = PALETTES[t];
+            styles = [pal.ink, pal.red].map(([r, g, b]) =>
+                Array.from({ length: LEVELS }, (_, l) => `rgba(${r},${g},${b},${((l + 1) / LEVELS).toFixed(3)})`),
+            );
+        };
+
+        // Dot grid behind the glyphs, cached on an offscreen canvas.
+        const paintGrid = () => {
+            const g = bg.getContext("2d")!;
+            g.fillStyle = pal.bg;
+            g.fillRect(0, 0, bg.width, bg.height);
+            g.fillStyle = pal.grid;
+            const d = Math.max(1, Math.round(dpr));
+            for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+                g.fillRect(Math.round((x + 0.5) * cs * dpr), Math.round((y + 0.5) * cs * dpr), d, d);
+            }
+        };
 
         const measure = () => {
             const r = canvas.getBoundingClientRect();
@@ -138,14 +158,7 @@ export default function Swarm({ className }: { className?: string }) {
             bg.width = canvas.width;
             bg.height = canvas.height;
 
-            const g = bg.getContext("2d")!;
-            g.fillStyle = BG;
-            g.fillRect(0, 0, bg.width, bg.height);
-            g.fillStyle = "rgba(241,238,232,0.07)";
-            const d = Math.max(1, Math.round(dpr));
-            for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-                g.fillRect(Math.round((x + 0.5) * cs * dpr), Math.round((y + 0.5) * cs * dpr), d, d);
-            }
+            paintGrid();
 
             energy = new Float32Array(cols * rows);
             tmp = new Float32Array(cols * rows);
@@ -342,7 +355,7 @@ export default function Swarm({ className }: { className?: string }) {
                 if (a.target < 0) continue;
                 const t = targets[a.target];
                 if (Math.abs(a.x - t.x) < cs * 0.3 && Math.abs(a.y - t.y) < cs * 0.3) {
-                    ctx.fillStyle = t.light ? "#f1eee8" : "#d7261e";
+                    ctx.fillStyle = t.light ? pal.light : `rgb(${pal.red})`;
                     ctx.fillRect(t.x - cs / 2 + gap / 2, t.y - cs / 2 + gap / 2, cs - gap, cs - gap);
                     const c = cellAt(t.x, t.y);
                     if (c >= 0) stamp[c] = frameId;
@@ -443,6 +456,12 @@ export default function Swarm({ className }: { className?: string }) {
         const onVis = () => (document.hidden ? stop() : start());
 
         let disposed = false;
+        const offTheme = onTheme((t) => {
+            setPalette(t);
+            if (W === 0) return;
+            paintGrid();
+            if (!running) { if (reduced) still(); else draw(); }
+        });
         document.fonts.load(`600 16px ${font}`).finally(() => {
             if (disposed) return;
             resize();
@@ -459,6 +478,7 @@ export default function Swarm({ className }: { className?: string }) {
 
         return () => {
             disposed = true;
+            offTheme();
             stop();
             ro.disconnect();
             io.disconnect();

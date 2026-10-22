@@ -3,6 +3,7 @@ import { Host_Grotesk, Geist_Mono } from "next/font/google";
 import SmoothScroll from "@/components/SmoothScroll";
 import PageTransition from "@/components/PageTransition";
 import Nav from "@/components/Nav";
+import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const sans = Host_Grotesk({ subsets: ["latin"], variable: "--font-host" });
@@ -21,11 +22,19 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = { themeColor: "#121212" };
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#121212" },
+    { media: "(prefers-color-scheme: light)", color: "#f6f4ef" },
+  ],
+};
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+    <html lang="en" data-theme="dark" className={`${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="bg-night font-sans text-bone antialiased">
         <SmoothScroll />
         <Nav />
