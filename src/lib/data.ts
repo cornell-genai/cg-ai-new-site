@@ -3,60 +3,86 @@
 export const CONTACT_EMAIL = "admin@cornellgenai.dev";
 export const GITHUB_URL = "https://github.com/Cornell-Gen-AI";
 
-export type Team = "E-Board" | "Admin" | "Engineering";
+export type Team = "Board" | "Members" | "Business" | "Alumni";
 
 export type Member = {
     name: string;
-    role: string;
+    role?: string;
     team: Team;
     image?: string;
     linkedIn?: string;
 };
 
-export const MEMBERS: Member[] = [
-    { name: "Daniel Sachs", role: "Founding President", team: "E-Board", image: "/team/daniel.webp", linkedIn: "https://www.linkedin.com/in/daniel-m-sachs/" },
-    { name: "Erik Pedersen", role: "Vice President", team: "E-Board", image: "/team/erik.webp", linkedIn: "https://www.linkedin.com/in/erikzhangpedersen/" },
-    { name: "Morgan Stuart", role: "Lead Engineer + NME Chair", team: "E-Board", image: "/team/morgan.webp", linkedIn: "https://www.linkedin.com/in/morgan-nstuart/" },
-    { name: "Merek Soriano", role: "Head of Corporate Partnerships", team: "E-Board", image: "/team/merek.webp", linkedIn: "https://www.linkedin.com/in/merek-soriano-0ba570291/" },
-    { name: "David Lee", role: "Head of Product", team: "E-Board", image: "/team/david.webp", linkedIn: "https://www.linkedin.com/in/dave-lee-716318242/" },
+const board: Member[] = [
+    { name: "Morgan Nelson Stuart", role: "President", image: "/team/morgan.webp", linkedIn: "https://www.linkedin.com/in/morgan-nstuart/" },
+    { name: "Asad Abbas Rizvi", role: "Vice President", image: "/team/asad.webp", linkedIn: "https://www.linkedin.com/in/asad-rizvi-02a1782a2" },
+    { name: "Merek Kaden Soriano", role: "Head of Business", image: "/team/merek.webp", linkedIn: "https://www.linkedin.com/in/merek-soriano-0ba570291/" },
+    { name: "Charlie Xue", role: "Head Engineer" },
+    { name: "Saiakhil Chilaka", role: "Head Engineer" },
+    { name: "JD Krasnik", role: "Head of Research" },
+].map((m) => ({ ...m, team: "Board" as const }));
 
-    { name: "Mahdi Choudhury", role: "Treasurer", team: "Admin", image: "/team/mahdi.webp", linkedIn: "https://www.linkedin.com/in/mahdi-choudhury-h/" },
-    { name: "Akul Maheshwari", role: "DEI Chair", team: "Admin", image: "/team/akul.webp", linkedIn: "https://www.linkedin.com/in/akul-maheshwari/" },
+const members: Member[] = [
+    { name: "Surya Chandrakasan" },
+    { name: "Pratyush Saxena" },
+    { name: "Anmol Karan", image: "/team/anmol.webp" },
+    { name: "Yashnil Saha" },
+    { name: "Trishia Khandelwal" },
+    { name: "Bhavan Sai Balusu" },
+    { name: "Arshdeep Kaur", image: "/team/arshdeep.webp", linkedIn: "https://www.linkedin.com/in/arshdeepkaur13/" },
+    { name: "Daniel Sachs", role: "Founding Member", image: "/team/daniel.webp", linkedIn: "https://www.linkedin.com/in/daniel-m-sachs/" },
+    { name: "Krish Jana" },
+    { name: "Mihir Joshi" },
+    { name: "Aritro Ganguly" },
+    { name: "Ashwin Aggarwal" },
+    { name: "Sarah Li" },
+    { name: "Andrew Visconti" },
+    { name: "Aiden Chung" },
+    { name: "Ryan Ginsburg" },
+    { name: "Chris Jia" },
+    { name: "Oduna Akonzee" },
+    { name: "Hendry Xu" },
+    { name: "Avinash Senthil" },
+    { name: "Saanvi Movva" },
+    { name: "Idhant Gode" },
+    { name: "Caden Ruan" },
+    { name: "Andy Do" },
+    { name: "Winston Wang" },
+    { name: "Kona Sullivan" },
+    { name: "Alexei Manuel" },
+    { name: "David Lee", image: "/team/david.webp", linkedIn: "https://www.linkedin.com/in/dave-lee-716318242/" },
+    { name: "Audrey Lewellen", image: "/team/audrey.webp", linkedIn: "https://www.linkedin.com/in/audrey-lewellen-686823355/" },
+].map((m) => ({ ...m, team: "Members" as const }));
 
-    { name: "Bhavan Sai Balusu", role: "Credit Document AI", team: "Engineering" },
-    { name: "Surya Chandrakasan", role: "Credit Document AI", team: "Engineering" },
-    { name: "Trishia Khandelwal", role: "Credit Document AI", team: "Engineering" },
-    { name: "Thurushi Kiyara Rajapakse", role: "Credit Document AI", team: "Engineering", image: "/team/thurushi.webp", linkedIn: "https://www.linkedin.com/in/thurushi-rajapakse" },
-    { name: "Aleks Dzudzevic", role: "Credit Document AI", team: "Engineering", image: "/team/alek.webp" },
-    { name: "Brandon Xu", role: "Vendor Due Diligence AI", team: "Engineering", image: "/team/brandon.webp", linkedIn: "https://www.linkedin.com/in/brandon-xu-284748322/" },
-    { name: "Eddie Hu", role: "Vendor Due Diligence AI", team: "Engineering" },
-    { name: "Audrey Lewellen", role: "Vendor Due Diligence AI", team: "Engineering", image: "/team/audrey.webp", linkedIn: "https://www.linkedin.com/in/audrey-lewellen-686823355/" },
-    { name: "Mateo del Rio Lanse", role: "Vendor Due Diligence AI", team: "Engineering", image: "/team/mateo.webp", linkedIn: "https://www.linkedin.com/in/mdelriolanse" },
-    { name: "Nicole Luo", role: "Invoice AI Analysis", team: "Engineering", image: "/team/nicole.webp", linkedIn: "https://www.linkedin.com/in/nicoleluo7/" },
-    { name: "Pratyush Saxena", role: "Invoice AI Analysis", team: "Engineering" },
-    { name: "Anmol Karan", role: "Invoice AI Analysis", team: "Engineering", image: "/team/anmol.webp" },
-    { name: "Christina Maria Joseph", role: "Invoice AI Analysis", team: "Engineering" },
-    { name: "Lauren Amelie Ah-Hot", role: "Invoice AI Analysis", team: "Engineering" },
-    { name: "Zahrizhal Ali, Jr", role: "QuickFi", team: "Engineering" },
-    { name: "Dhruv Mandalik", role: "Vero", team: "Engineering" },
-    { name: "Zach Riiff", role: "Vero", team: "Engineering", image: "/team/zach.webp", linkedIn: "https://www.linkedin.com/in/zach-riiff-828018325/" },
-    { name: "Alex Kozik", role: "Vero", team: "Engineering", image: "/team/alex.webp", linkedIn: "https://www.linkedin.com/in/alex-kozik/" },
-    { name: "Rei Meguro", role: "Vero", team: "Engineering" },
-    { name: "Yashnil Saha", role: "Bridge", team: "Engineering" },
-    { name: "Asad Abbas Rizvi", role: "Bridge", team: "Engineering", image: "/team/asad.webp", linkedIn: "https://www.linkedin.com/in/asad-rizvi-02a1782a2" },
-    { name: "Tanner Brendan Blake", role: "Bridge", team: "Engineering" },
-    { name: "Arshdeep Kaur", role: "Bridge", team: "Engineering", image: "/team/arshdeep.webp", linkedIn: "https://www.linkedin.com/in/arshdeepkaur13/" },
-];
+const business: Member[] = [
+    { name: "Mohammad Mustafa Shoukat" },
+    { name: "Kaelin Braverman" },
+    { name: "Breanna Eng" },
+].map((m) => ({ ...m, team: "Business" as const }));
 
-export const TEAMS: Team[] = ["E-Board", "Admin", "Engineering"];
+const alumni: Member[] = [
+    { name: "Erik Pedersen", image: "/team/erik.webp", linkedIn: "https://www.linkedin.com/in/erikzhangpedersen/" },
+    { name: "Mahdi Choudhury", image: "/team/mahdi.webp", linkedIn: "https://www.linkedin.com/in/mahdi-choudhury-h/" },
+    { name: "Akul Maheshwari", image: "/team/akul.webp", linkedIn: "https://www.linkedin.com/in/akul-maheshwari/" },
+    { name: "Thurushi Kiyara Rajapakse", image: "/team/thurushi.webp", linkedIn: "https://www.linkedin.com/in/thurushi-rajapakse" },
+    { name: "Aleks Dzudzevic", image: "/team/alek.webp" },
+    { name: "Brandon Xu", image: "/team/brandon.webp", linkedIn: "https://www.linkedin.com/in/brandon-xu-284748322/" },
+    { name: "Eddie Hu" },
+    { name: "Mateo del Rio Lanse", image: "/team/mateo.webp", linkedIn: "https://www.linkedin.com/in/mdelriolanse" },
+    { name: "Nicole Luo", image: "/team/nicole.webp", linkedIn: "https://www.linkedin.com/in/nicoleluo7/" },
+    { name: "Christina Maria Joseph" },
+    { name: "Lauren Amelie Ah-Hot" },
+    { name: "Zahrizhal Ali, Jr" },
+    { name: "Dhruv Mandalik" },
+    { name: "Zach Riiff", image: "/team/zach.webp", linkedIn: "https://www.linkedin.com/in/zach-riiff-828018325/" },
+    { name: "Alex Kozik", image: "/team/alex.webp", linkedIn: "https://www.linkedin.com/in/alex-kozik/" },
+    { name: "Rei Meguro" },
+    { name: "Tanner Brendan Blake" },
+].map((m) => ({ ...m, team: "Alumni" as const }));
 
-// Active build teams, derived from engineering roles so the two never drift.
-export const ACTIVE_BUILDS = Array.from(
-    MEMBERS.filter((m) => m.team === "Engineering").reduce((acc, m) => {
-        acc.set(m.role, [...(acc.get(m.role) ?? []), m]);
-        return acc;
-    }, new Map<string, Member[]>()),
-).map(([name, members]) => ({ name, members }));
+export const MEMBERS: Member[] = [...board, ...members, ...business, ...alumni];
+export const CURRENT_MEMBERS = MEMBERS.filter((m) => m.team !== "Alumni");
+export const TEAMS: Team[] = ["Board", "Members", "Business", "Alumni"];
 
 export type Project = {
     slug: string;

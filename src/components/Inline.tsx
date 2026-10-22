@@ -38,25 +38,32 @@ export function ProjectIcons() {
     );
 }
 
-// Each client as a circle in its brand colour with a monogram.
-const CLIENTS = [
-    { name: "Cisco", bg: "#049fd9", mark: "C" },
-    { name: "Investcorp", bg: "#13294b", mark: "I" },
-    { name: "QuickFi", bg: "#76bc21", mark: "Q" },
-    { name: "Charter", bg: "#0071bc", mark: "Ch" },
-    { name: "Vero", bg: "#16b6e8", mark: "V" },
-    { name: "Bridge", bg: "#f3f0ea", mark: "B", ink: "#121212" },
+// Each client as a circle: its square app icon, or a mark cropped from its
+// logo, on a background that suits it.
+const CLIENTS: { name: string; bg: string; src?: string; size?: string; mark?: string }[] = [
+    { name: "Cisco", bg: "#ffffff", src: "/logos/mark-cisco.png", size: "0.6em" },
+    { name: "Investcorp", bg: "#ffffff", src: "/logos/mark-investcorp.png", size: "0.82em" },
+    { name: "QuickFi", bg: "#ffffff", src: "/logos/mark-quickfi.svg", size: "0.6em" },
+    { name: "Charter", bg: "#ffffff", src: "/logos/mark-charter.png", size: "0.42em" },
+    { name: "Vero", bg: "#0e0e0e", src: "/logos/mark-vero.png", size: "0.48em" },
+    { name: "Bridge", bg: "#ffffff", src: "/logos/mark-bridge.svg", size: "0.56em" },
+    { name: "Gradial", bg: "#f6c9d4", src: "/logos/mark-gradial.svg", size: "0.38em" },
     { name: "NYSFP", bg: "#5b2c83", mark: "N" },
-    { name: "Gradial", bg: "#f598b0", mark: "G", ink: "#121212" },
 ];
 
 export function ClientStack() {
     return (
         <Stack>
             {CLIENTS.map((c) => (
-                <span key={c.name} title={c.name} className={circle} style={{ background: c.bg, color: c.ink ?? "#fff" }}>
-                    <span className="text-[0.36em] font-semibold leading-none tracking-[-0.04em]">{c.mark}</span>
-                    <span className="sr-only">{c.name}</span>
+                <span key={c.name} title={c.name} className={cn(circle, "overflow-hidden")} style={{ background: c.bg }}>
+                    {c.src ? (
+                        <img src={c.src} alt={c.name} style={{ maxWidth: c.size, maxHeight: c.size }} className="object-contain" />
+                    ) : (
+                        <>
+                            <span className="text-[0.36em] font-semibold leading-none tracking-[-0.04em] text-white">{c.mark}</span>
+                            <span className="sr-only">{c.name}</span>
+                        </>
+                    )}
                 </span>
             ))}
         </Stack>
@@ -76,12 +83,3 @@ export function OpenSourceStack() {
     );
 }
 
-export function ClientDot({ name, className }: { name: string; className?: string }) {
-    const c = CLIENTS.find((x) => x.name === name);
-    if (!c) return null;
-    return (
-        <span className={cn("inline-flex size-9 shrink-0 items-center justify-center rounded-full", className)} style={{ background: c.bg, color: c.ink ?? "#fff" }}>
-            <span className="text-[13px] font-semibold tracking-[-0.04em]">{c.mark}</span>
-        </span>
-    );
-}
