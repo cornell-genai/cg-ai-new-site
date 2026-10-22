@@ -62,22 +62,7 @@ const business: Member[] = [
 
 const alumni: Member[] = [
     { name: "Erik Pedersen", image: "/team/erik.webp", linkedIn: "https://www.linkedin.com/in/erikzhangpedersen/" },
-    { name: "Mahdi Choudhury", image: "/team/mahdi.webp", linkedIn: "https://www.linkedin.com/in/mahdi-choudhury-h/" },
-    { name: "Akul Maheshwari", image: "/team/akul.webp", linkedIn: "https://www.linkedin.com/in/akul-maheshwari/" },
-    { name: "Thurushi Kiyara Rajapakse", image: "/team/thurushi.webp", linkedIn: "https://www.linkedin.com/in/thurushi-rajapakse" },
-    { name: "Aleks Dzudzevic", image: "/team/alek.webp" },
-    { name: "Brandon Xu", image: "/team/brandon.webp", linkedIn: "https://www.linkedin.com/in/brandon-xu-284748322/" },
-    { name: "Eddie Hu" },
-    { name: "Mateo del Rio Lanse", image: "/team/mateo.webp", linkedIn: "https://www.linkedin.com/in/mdelriolanse" },
-    { name: "Nicole Luo", image: "/team/nicole.webp", linkedIn: "https://www.linkedin.com/in/nicoleluo7/" },
-    { name: "Christina Maria Joseph" },
-    { name: "Lauren Amelie Ah-Hot" },
-    { name: "Zahrizhal Ali, Jr" },
-    { name: "Dhruv Mandalik" },
-    { name: "Zach Riiff", image: "/team/zach.webp", linkedIn: "https://www.linkedin.com/in/zach-riiff-828018325/" },
     { name: "Alex Kozik", image: "/team/alex.webp", linkedIn: "https://www.linkedin.com/in/alex-kozik/" },
-    { name: "Rei Meguro" },
-    { name: "Tanner Brendan Blake" },
 ].map((m) => ({ ...m, team: "Alumni" as const }));
 
 export const MEMBERS: Member[] = [...board, ...members, ...business, ...alumni];
