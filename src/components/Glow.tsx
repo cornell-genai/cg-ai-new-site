@@ -41,7 +41,7 @@ function noise(x: number, y: number) {
     return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
 }
 
-export default function Glow({ className }: { className?: string }) {
+export default function Glow({ text, className }: { text?: string; className?: string }) {
     const ref = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
@@ -58,12 +58,33 @@ export default function Glow({ className }: { className?: string }) {
             return `rgb(${r},${g},${b})`;
         });
 
+        // Optional wordmark: dots inside the letters burn brighter.
+        let mask: Uint8ClampedArray | null = null, mw = 0;
+        const font = getComputedStyle(document.body).getPropertyValue("--font-host").trim() || "sans-serif";
+        const buildMask = () => {
+            if (!text) return;
+            const off = document.createElement("canvas");
+            mw = Math.ceil(W / P); const mh = Math.ceil(H / P);
+            off.width = mw; off.height = mh;
+            const o = off.getContext("2d", { willReadFrequently: true })!;
+            let size = mh * 0.62;
+            o.font = `600 ${size}px ${font}`;
+            const tw = o.measureText(text).width;
+            if (tw > mw * 0.92) size *= (mw * 0.92) / tw;
+            o.font = `600 ${size}px ${font}`;
+            o.fillStyle = "#fff";
+            o.textBaseline = "alphabetic";
+            o.fillText(text, mw * 0.04, mh * 0.9);
+            mask = o.getImageData(0, 0, mw, mh).data;
+        };
+
         const resize = () => {
             const r = canvas.getBoundingClientRect();
             W = r.width; H = r.height;
             dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = Math.round(W * dpr);
             canvas.height = Math.round(H * dpr);
+            buildMask();
         };
 
         const draw = () => {
@@ -78,10 +99,12 @@ export default function Glow({ className }: { className?: string }) {
                     const near = Math.exp(-(dx * dx + dy * dy) / (R * R)) * m.a;
                     // Field rises from the bottom; noise breaks up its upper edge.
                     let v = depth * 1.25 - 0.35 + (n - 0.5) * 0.7 + near * 0.55;
+                    const inText = mask ? mask[(Math.floor(y / P) * mw + Math.floor(x / P)) * 4 + 3] > 120 : false;
+                    if (inText) v = Math.max(v, 0.25) + 0.55 + (n - 0.5) * 0.3;
                     if (v <= 0.04) continue;
                     v = Math.min(1, v);
                     const r = P * 0.46 * Math.sqrt(v);
-                    ctx.fillStyle = colors[Math.min(47, Math.max(0, Math.round((1 - v * 0.9 + depth * 0.25 - near * 0.5) * 47)))];
+                    ctx.fillStyle = inText ? colors[Math.max(0, Math.round((0.1 - near * 0.1) * 47))] : colors[Math.min(47, Math.max(0, Math.round((1 - v * 0.9 + depth * 0.25 - near * 0.5) * 47)))];
                     ctx.beginPath();
                     ctx.arc(x, y, r, 0, Math.PI * 2);
                     ctx.fill();
@@ -119,6 +142,7 @@ export default function Glow({ className }: { className?: string }) {
 
         resize();
         draw();
+        document.fonts.ready.then(() => { buildMask(); if (!running) draw(); });
         const ro = new ResizeObserver(() => { resize(); if (!running) draw(); });
         const io = new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()));
         ro.observe(canvas);
@@ -130,7 +154,7 @@ export default function Glow({ className }: { className?: string }) {
             io.disconnect();
             window.removeEventListener("pointermove", onMove);
         };
-    }, []);
+    }, [text]);
 
     return <canvas ref={ref} aria-hidden className={cn("absolute inset-0 h-full w-full", className)} />;
 }

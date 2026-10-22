@@ -3,8 +3,8 @@ import Swarm from "@/components/Swarm";
 import Footer from "@/components/Footer";
 import { Reveal } from "@/components/Reveal";
 import TeamPhoto from "@/components/TeamPhoto";
-import { ClientCycler, OrbLogo, ProjectIcons } from "@/components/Inline";
-import { MEMBERS } from "@/lib/data";
+import { ClientDot, ClientStack, OpenSourceStack, ProjectIcons } from "@/components/Inline";
+import { MEMBERS, PAST } from "@/lib/data";
 
 export default function Home() {
     return (
@@ -33,31 +33,51 @@ export default function Home() {
                 </h1>
             </section>
 
-            <main className="px-5 md:px-6">
-                <section className="pt-24 md:pt-36">
+            <main className="px-7 md:px-[8vw]">
+                <section className="pt-28 md:pt-44">
                     <Reveal className="mx-auto max-w-3xl text-center">
                         <p className="text-[clamp(1.75rem,3.6vw,3rem)] font-semibold leading-[1.08] tracking-[-0.035em] text-white">
                             {MEMBERS.length} engineers, researchers, and designers who like building things that work.
                         </p>
                     </Reveal>
-                    <Reveal delay={0.1} className="mx-auto mt-12 max-w-[1200px] md:mt-16">
+                    <Reveal delay={0.1} className="mx-auto mt-12 max-w-[1040px] md:mt-16">
                         <Link href="/team" aria-label="Meet the team">
                             <TeamPhoto src="/brand/team.webp" alt="The Cornell GenAI team" />
                         </Link>
                     </Reveal>
                 </section>
 
-                <section className="mx-auto max-w-[78rem] pt-24 md:pt-40">
+                <section className="mx-auto max-w-[54rem] py-28 md:py-48">
                     <Reveal>
-                        <p className="text-[clamp(1.9rem,4.4vw,4.1rem)] font-semibold leading-[1.18] tracking-[-0.04em] text-bone/35">
-                            We&apos;re Cornell engineers and researchers who build with AI.{" "}
-                            <span className="text-white">We run applied AI projects and research</span> <ProjectIcons />, from agents that hold up over
-                            long, multi-step tasks to systems that act in the real world.{" "}
-                            <span className="text-white">We build for clients</span> <ClientCycler />, shipping production AI for teams that need it to
-                            work. <span className="text-white">And we build in the open</span>, contributing to{" "}
-                            <OrbLogo src="/logos/mlx.png" name="MLX" /> and <OrbLogo src="/logos/pollen.svg" name="Pollen Robotics" /> Pollen Robotics.
+                        <p className="text-[clamp(1.6rem,3.3vw,3rem)] font-semibold leading-[1.28] tracking-[-0.035em] text-white">
+                            We&apos;re Cornell engineers and researchers who build with AI. We run{" "}
+                            <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">applied AI projects and research</span>{" "}
+                            <span className="whitespace-nowrap"><ProjectIcons />,</span> from agents for long-horizon tasks to systems that act in the real world. We{" "}
+                            <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">build for clients</span> <span className="whitespace-nowrap"><ClientStack />,</span>
+                            shipping production AI for teams that need it to work. And we{" "}
+                            <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">contribute to open source</span>{" "}
+                            <span className="whitespace-nowrap"><OpenSourceStack />.</span>
                         </p>
                     </Reveal>
+                </section>
+
+                <section className="mx-auto max-w-[54rem]">
+                    <h2 className="font-mono text-[12px] uppercase tracking-[0.08em] text-bone/45">Selected work</h2>
+                    <ul className="mt-6 border-t border-bone/10">
+                        {PAST.filter((p) => ["cisco-red-teaming", "investcorp-esg", "quickfi-insurance"].includes(p.slug)).map((p) => (
+                            <li key={p.slug} className="border-b border-bone/10">
+                                <Link href={`/projects#${p.slug}`} className="group flex items-center gap-5 py-5">
+                                    <ClientDot name={p.partner} />
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block text-[19px] font-semibold tracking-[-0.02em] text-white transition-colors group-hover:text-red">{p.title}</span>
+                                        <span className="block text-[15px] text-bone/55">{p.summary}</span>
+                                    </span>
+                                    <span className="hidden text-[14px] text-bone/40 sm:block">{p.partner}</span>
+                                    <span className="text-bone/40 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-white">→</span>
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
                 </section>
             </main>
 

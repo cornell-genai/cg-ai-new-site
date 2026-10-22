@@ -2,22 +2,26 @@
 
 import { useEffect, useRef } from "react";
 
-// The team photo with a sparse layer of white ASCII over it. The layer is
-// stirred by many small, short-lived pulses scattered across the people
-// (never one sweeping wave); each pulse brightens and reshuffles the glyphs
-// it passes. Moving the cursor sets off pulses where it goes. Glyphs only
-// sit on the people, using the photo's alpha and brightness.
+// The team photo under a dense layer of white ASCII that always covers the
+// people. A slow, smooth noise field drifts across them, gathering glyphs
+// into soft pockets that swell, shimmer, and dissolve together. The cursor
+// stirs the field near it.
 
 const RAMP = ".:-=+*cxo3%#8@";
 const CELL = 8;
 const LEVELS = 6;
 
-type Pulse = { x: number; y: number; t0: number; life: number; size: number; amp: number };
-
 const hash = (i: number) => {
     const s = Math.sin(i * 12.9898) * 43758.5453;
     return s - Math.floor(s);
 };
+const h2 = (x: number, y: number) => hash(x * 157 + y * 113);
+function noise(x: number, y: number) {
+    const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+    const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+    const a = h2(xi, yi), b = h2(xi + 1, yi), c = h2(xi, yi + 1), d = h2(xi + 1, yi + 1);
+    return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+}
 
 export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
     const img = useRef<HTMLImageElement>(null);
@@ -33,7 +37,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
 
         let W = 0, H = 0, cols = 0, rows = 0, dpr = 1;
         let lum = new Float32Array(0), on = new Uint8Array(0), seed = new Float32Array(0);
-        const pulses: Pulse[] = [];
+        const m = { x: -1e4, y: -1e4, a: 0, ta: 0 };
         const styles = Array.from({ length: LEVELS }, (_, l) => `rgba(255,255,255,${(0.18 + (0.82 * l) / (LEVELS - 1)).toFixed(3)})`);
         const buckets: number[][] = Array.from({ length: LEVELS }, () => []);
         const glyph: string[] = [];
@@ -60,9 +64,6 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
             }
         };
 
-        const spawn = (x: number, y: number, now: number, size = 26 + Math.random() * 30, amp = 0.7 + Math.random() * 0.5) =>
-            pulses.push({ x, y, t0: now, life: 0.9 + Math.random() * 0.8, size, amp });
-
         const draw = (now: number) => {
             const t = now / 1000;
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -72,10 +73,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
             ctx.textBaseline = "middle";
             for (const b of buckets) b.length = 0;
 
-            // Keep a few ambient pulses going.
-            for (let i = pulses.length - 1; i >= 0; i--) if (t - pulses[i].t0 > pulses[i].life) pulses.splice(i, 1);
-            if (!reduced && pulses.length < 14 && Math.random() < 0.35) spawn(Math.random() * W, H * (0.1 + Math.random() * 0.8), t);
-
+            m.a += (m.ta - m.a) * 0.08;
             const ch = H / rows;
             for (let r = 0; r < rows; r++) {
                 const y = (r + 0.5) * ch;
@@ -83,20 +81,19 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
                     const i = r * cols + c;
                     if (!on[i]) continue;
                     const x = (c + 0.5) * CELL;
-                    let e = 0;
-                    for (const p of pulses) {
-                        const age = (t - p.t0) / p.life;
-                        const d = Math.hypot(x - p.x, y - p.y);
-                        const ring = d - age * p.size * 2.2;
-                        if (ring > p.size || ring < -p.size) continue;
-                        e += Math.exp(-(ring * ring) / (p.size * p.size * 0.12)) * (1 - age) * p.amp;
-                    }
-                    // Base layer: about a third of cells, faint; pulses fill in and brighten.
-                    const base = seed[i] < 0.34 ? 0.22 + 0.25 * lum[i] : 0;
-                    const v = Math.min(1, base + e * 0.9);
+                    // Two octaves of drifting noise make the pockets; a fast, faint
+                    // third adds the vibration inside them.
+                    const n = noise(x / 90 + t * 0.12, y / 70 - t * 0.08) * 0.7 + noise(x / 34 - t * 0.3, y / 30 + t * 0.2) * 0.3;
+                    const pocket = Math.max(0, (n - 0.36) / 0.64);
+                    const dx = x - m.x, dy = y - m.y;
+                    const stir = Math.exp(-(dx * dx + dy * dy) / 5000) * m.a;
+                    const e = Math.min(1, pocket * pocket * 1.6 + stir * 0.9);
+                    // Base layer covers most of each person; pockets brighten it.
+                    const base = seed[i] < 0.86 ? 0.3 + 0.35 * lum[i] : 0;
+                    const v = Math.min(1, base + e * 0.85 + (e > 0.05 ? 0.1 : 0));
                     if (v < 0.12) continue;
-                    const flick = e > 0.25 && seed[(i * 7 + Math.floor(t * 18)) % seed.length] < 0.5;
-                    const k = flick ? Math.floor(seed[(i + Math.floor(t * 30)) % seed.length] * RAMP.length) : Math.floor(lum[i] * (RAMP.length - 1));
+                    const flick = e > 0.3 && seed[(i * 7 + Math.floor(t * 9)) % seed.length] < 0.35;
+                    const k = flick ? Math.floor(seed[(i + Math.floor(t * 30)) % seed.length] * RAMP.length) : 2 + Math.floor(lum[i] * (RAMP.length - 3));
                     glyph[i] = RAMP[k];
                     buckets[Math.min(LEVELS - 1, Math.floor(v * LEVELS))].push(i);
                 }
@@ -108,7 +105,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
             }
         };
 
-        let raf = 0, running = false, lastSpawn = 0;
+        let raf = 0, running = false;
         const loop = (now: number) => { draw(now); raf = requestAnimationFrame(loop); };
         const start = () => { if (running || reduced) return; running = true; raf = requestAnimationFrame(loop); };
         const stop = () => { running = false; cancelAnimationFrame(raf); };
@@ -116,11 +113,10 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
         const onMove = (e: PointerEvent) => {
             if (e.pointerType !== "mouse") return;
             const r = canvas.getBoundingClientRect();
-            const x = e.clientX - r.left, y = e.clientY - r.top;
-            if (x < 0 || y < 0 || x > r.width || y > r.height) return;
-            const now = performance.now() / 1000;
-            if (now - lastSpawn > 0.05) { lastSpawn = now; spawn(x + (Math.random() - 0.5) * 20, y + (Math.random() - 0.5) * 20, now, 22 + Math.random() * 18, 1.1); }
+            m.x = e.clientX - r.left; m.y = e.clientY - r.top;
+            m.ta = 1;
         };
+        const onLeave = () => { m.ta = 0; };
 
         const ready = () => {
             sample();
@@ -134,10 +130,12 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
         const ro = new ResizeObserver(sample);
         ro.observe(canvas);
         canvas.addEventListener("pointermove", onMove);
+        canvas.addEventListener("pointerleave", onLeave);
         return () => {
             stop();
             ro.disconnect();
             canvas.removeEventListener("pointermove", onMove);
+            canvas.removeEventListener("pointerleave", onLeave);
             cleanup.forEach((f) => f());
         };
     }, [src]);
