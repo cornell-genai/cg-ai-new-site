@@ -12,21 +12,27 @@ export default function Home() {
             <section className="relative h-svh min-h-[600px] overflow-hidden">
                 <Swarm />
 
-                {/* Centred lockup: the school swims all the way around it. */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center px-5 pt-10 text-center">
-                    <h1 className="flex flex-col items-center gap-[calc(var(--swarm-cell,12px)*2)]">
-                        <span data-swarm-mark aria-hidden className="block size-[calc(var(--swarm-cell,12px)*9)] shrink-0" />
-                        <span
-                            data-swarm-avoid
-                            className="block whitespace-nowrap text-[clamp(3rem,14vw,6rem)] font-medium leading-[0.8] tracking-[-0.05em] md:text-[calc(var(--swarm-cell,12px)*10.5)]"
-                        >
-                            Cornell GenAI
-                        </span>
-                    </h1>
-                    <p data-swarm-avoid className="mt-9 max-w-[30rem] text-[clamp(1rem,1.3vw,1.15rem)] leading-relaxed text-bone/60 md:mt-11">
-                        Cornell students shipping AI: applied research, production systems for clients, and open source.
+                <div data-swarm-avoid className="absolute left-5 top-24 max-w-[19rem] md:left-6 md:top-28 md:max-w-[26rem]">
+                    <p className="text-[clamp(1.5rem,2.3vw,2.1rem)] font-semibold leading-[1.08] tracking-[-0.03em] text-fg">
+                        Cornell students shipping AI.
+                    </p>
+                    <p className="mt-4 max-w-[22rem] text-[15px] leading-relaxed text-bone/55">
+                        Applied research, production systems for clients, and open source.
                     </p>
                 </div>
+
+                {/* Centred lockup, mark to the left: the school swims all the way around it. Below lg the
+                    wordmark stacks onto two lines sized to the mark's height (9 cells = 2 × 0.8 leading × 5.6). */}
+                <h1 className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-end justify-center gap-[calc(var(--swarm-cell,12px)*1.4)] px-5 pt-16">
+                    <span data-swarm-mark aria-hidden className="block size-[calc(var(--swarm-cell,12px)*9)] shrink-0" />
+                    <span
+                        data-swarm-avoid
+                        className="-mb-[0.06em] block text-[calc(var(--swarm-cell,12px)*5.6)] font-medium leading-[0.8] tracking-[-0.05em] lg:whitespace-nowrap lg:text-[calc(var(--swarm-cell,12px)*11.5)]"
+                    >
+                        Cornell <br className="lg:hidden" />
+                        GenAI
+                    </span>
+                </h1>
             </section>
 
             <main className="px-7 md:px-[8vw]">
