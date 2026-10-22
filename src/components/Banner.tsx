@@ -20,11 +20,13 @@ export default function Banner({ src, alt, title }: { src: string; alt: string; 
                 <AsciiHover src={src} alt={alt} className="h-full w-full" imgClassName="object-[60%_40%]" />
             </motion.div>
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-night via-night/20 to-night/40" />
+            {/* Keeps the nav legible over the photo. */}
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-night/85 to-transparent" />
             <motion.h1
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, ease, delay: 0.7 }}
-                className="absolute bottom-6 left-5 text-[clamp(3.5rem,10vw,9rem)] font-medium leading-[0.85] tracking-[-0.055em] text-white md:bottom-10 md:left-6"
+                className="absolute bottom-6 left-5 text-[clamp(3.5rem,10vw,9rem)] font-medium leading-[0.85] tracking-[-0.055em] text-fg md:bottom-10 md:left-6"
             >
                 {title}
             </motion.h1>
