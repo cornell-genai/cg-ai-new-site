@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Swarm from "@/components/Swarm";
+import Life from "@/components/Life";
 import Footer from "@/components/Footer";
 import { Reveal } from "@/components/Reveal";
 import TeamPhoto from "@/components/TeamPhoto";
@@ -10,7 +10,7 @@ export default function Home() {
     return (
         <>
             <section className="relative h-svh min-h-[600px] overflow-hidden">
-                <Swarm />
+                <Life />
 
                 <div data-swarm-avoid className="absolute left-5 top-24 max-w-[19rem] md:left-6 md:top-28 md:max-w-[26rem]">
                     <p className="text-[clamp(1.5rem,2.3vw,2.1rem)] font-semibold leading-[1.08] tracking-[-0.03em] text-fg">
@@ -21,7 +21,7 @@ export default function Home() {
                     </p>
                 </div>
 
-                {/* Centred lockup, mark to the left: the school swims all the way around it. Below lg the
+                {/* Centred lockup, mark to the left: life never grows over it. Below lg the
                     wordmark stacks onto two lines sized to the mark's height (9 cells = 2 × 0.8 leading × 5.6). */}
                 <h1 className="absolute inset-x-0 top-1/2 flex -translate-y-1/2 items-end justify-center gap-[calc(var(--swarm-cell,12px)*1.4)] px-5 pt-16">
                     <span data-swarm-mark aria-hidden className="block size-[calc(var(--swarm-cell,12px)*9)] shrink-0" />
