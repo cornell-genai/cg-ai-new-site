@@ -1,5 +1,4 @@
 import { Reveal } from "./Reveal";
-import { cn } from "@/lib/utils";
 import type { Member } from "@/lib/data";
 
 // Square portraits in a hairline frame, name and role underneath. Members
@@ -25,20 +24,5 @@ export function TeamCard({ m, index = 0 }: { m: Member; index?: number }) {
                 )}
             </Reveal>
         </li>
-    );
-}
-
-/** Overlapping avatars of members with photos, then a count of everyone else. */
-export function AvatarStack({ members, show = 5 }: { members: Member[]; show?: number }) {
-    const pics = members.filter((m) => m.image).slice(0, show);
-    return (
-        <div className="flex items-center gap-3">
-            <div className="flex">
-                {pics.map((m, i) => (
-                    <img key={m.name} src={m.image} alt="" className={cn("size-9 rounded-full object-cover ring-2 ring-night", i > 0 && "-ml-2.5")} />
-                ))}
-            </div>
-            <span className="text-[14px] text-bone/55">+{members.length - pics.length} more</span>
-        </div>
     );
 }
