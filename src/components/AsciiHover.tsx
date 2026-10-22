@@ -26,9 +26,10 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
 
         // Sample the photo as it is drawn (object-cover), one pixel per cell.
         const sample = () => {
-            const r = canvas.getBoundingClientRect();
-            if (r.width < 1 || r.height < 1 || !photo.naturalWidth) return;
-            W = r.width; H = r.height;
+            // Layout size, not getBoundingClientRect: the banner animates a scale
+            // transform on load, and the visual size would be off once it settles.
+            if (canvas.offsetWidth < 1 || canvas.offsetHeight < 1 || !photo.naturalWidth) return;
+            W = canvas.offsetWidth; H = canvas.offsetHeight;
             dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = Math.round(W * dpr);
             canvas.height = Math.round(H * dpr);
@@ -51,7 +52,7 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
         };
 
         const frame = () => {
-            const R = 110;
+            const R = 64;
             let live = false;
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             ctx.clearRect(0, 0, W, H);
@@ -66,7 +67,7 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
                 }
                 if (heat[i] < 0.02) { heat[i] = 0; continue; }
                 live = true;
-                heat[i] *= 0.94;
+                heat[i] *= 0.975; // long, slow fade so the cursor leaves a trail
                 const h = heat[i];
                 ctx.globalAlpha = Math.min(0.85, h * 1.5);
                 ctx.fillStyle = "#121212";
@@ -82,8 +83,10 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
 
         const onMove = (e: PointerEvent) => {
             const r = canvas.getBoundingClientRect();
-            m.x = e.clientX - r.left; m.y = e.clientY - r.top;
-            m.in = e.pointerType === "mouse" && m.x >= 0 && m.y >= 0 && m.x <= r.width && m.y <= r.height;
+            // Map from the (possibly transformed) visual box back to layout pixels.
+            m.x = ((e.clientX - r.left) * W) / r.width;
+            m.y = ((e.clientY - r.top) * H) / r.height;
+            m.in = e.pointerType === "mouse" && m.x >= 0 && m.y >= 0 && m.x <= W && m.y <= H;
             if (m.in && !raf) raf = requestAnimationFrame(frame);
         };
         const ready = () => { sample(); window.addEventListener("pointermove", onMove, { passive: true }); };
