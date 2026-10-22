@@ -4,8 +4,10 @@ import { FlatCompat } from "@eslint/eslintrc";
 
 const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) });
 
-export default [
+const config = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   { ignores: ["node_modules/**", ".next/**", "out/**", "next-env.d.ts"] },
   { rules: { "@next/next/no-img-element": "off" } },
 ];
+
+export default config;
