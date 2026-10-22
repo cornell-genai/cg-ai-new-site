@@ -3,18 +3,20 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-// Page wipe: a dark grey panel with a thin dark-red band on its leading edge
-// slides down over the page (accelerating), the route changes underneath,
-// then the panel carries on down and off the screen (decelerating).
+// Page wipe in two full-screen moves:
+//   1. a muted dark-red sheet rises from the bottom until it covers the page;
+//   2. the route changes, and the new page (on the page background) rises up
+//      over the red sheet, which is then removed.
+// The nav sits above both and never moves.
 //
 // Internal <a> clicks are caught in the capture phase, ahead of <Link>'s own
 // handler, so plain <Link>s get the transition. Back/forward stays instant.
 
-const COVER = { duration: 520, easing: "cubic-bezier(0.7, 0, 0.84, 0)" }; // ease-in
-const REVEAL = { duration: 620, easing: "cubic-bezier(0.16, 1, 0.3, 1)" }; // ease-out
+const RISE = { duration: 640, easing: "cubic-bezier(0.76, 0, 0.24, 1)" };
 
 export default function PageTransition({ children }: { children: React.ReactNode }) {
-    const wipe = useRef<HTMLDivElement>(null);
+    const sheet = useRef<HTMLDivElement>(null);
+    const page = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const pathname = usePathname();
     const pending = useRef<string | null>(null);
@@ -30,7 +32,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
             if (url.origin !== location.origin) return;
             const there = url.pathname.replace(/\/$/, "") || "/";
             if ((location.pathname.replace(/\/$/, "") || "/") === there) return;
-            const el = wipe.current;
+            const el = sheet.current;
             if (!el) return;
             e.preventDefault();
             e.stopPropagation();
@@ -39,7 +41,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
             router.prefetch(url.pathname);
             const go = () => router.push(url.pathname + url.search + url.hash);
             el.style.visibility = "visible";
-            el.animate([{ transform: "translateY(-100%)" }, { transform: "translateY(0%)" }], { ...COVER, fill: "forwards" }).finished.then(go, go);
+            el.animate([{ transform: "translateY(100%)" }, { transform: "translateY(0%)" }], { ...RISE, fill: "forwards" }).finished.then(go, go);
         };
         document.addEventListener("click", onClick, true);
         return () => document.removeEventListener("click", onClick, true);
@@ -47,29 +49,32 @@ export default function PageTransition({ children }: { children: React.ReactNode
 
     useEffect(() => {
         const here = pathname.replace(/\/$/, "") || "/";
-        const el = wipe.current;
-        if (pending.current !== here || !el) return;
+        const el = sheet.current, pg = page.current;
+        if (pending.current !== here || !el || !pg) return;
         pending.current = null;
         window.scrollTo(0, 0);
-        // Give the new page a frame to paint under the panel, then carry on down.
         requestAnimationFrame(() => {
-            el.getAnimations().forEach((a) => a.cancel());
-            el.animate([{ transform: "translateY(0%)" }, { transform: "translateY(calc(100% + 10px))" }], { ...REVEAL, fill: "forwards" })
-                .finished.finally(() => {
-                    el.style.visibility = "hidden";
-                    el.getAnimations().forEach((a) => a.cancel());
-                    busy.current = false;
-                });
+            pg.style.zIndex = "46"; // above the sheet while it rises
+            pg.animate([{ transform: "translateY(100vh)" }, { transform: "translateY(0)" }], RISE).finished.finally(() => {
+                pg.style.zIndex = "";
+                el.getAnimations().forEach((a) => a.cancel());
+                el.style.visibility = "hidden";
+                busy.current = false;
+            });
         });
     }, [pathname]);
 
     return (
         <>
-            {children}
-            <div ref={wipe} aria-hidden className="pointer-events-none invisible fixed inset-0 z-[100]" style={{ transform: "translateY(-100%)" }}>
-                <div className="h-full bg-[#262626]" />
-                <div className="h-[10px] bg-[#7a1712]" />
+            <div ref={page} className="relative bg-night">
+                {children}
             </div>
+            <div
+                ref={sheet}
+                aria-hidden
+                className="pointer-events-none invisible fixed inset-0 z-[45] bg-[#5e1714]"
+                style={{ transform: "translateY(100%)" }}
+            />
         </>
     );
 }
