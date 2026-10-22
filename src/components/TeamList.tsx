@@ -2,11 +2,13 @@
 
 import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
 import { useState } from "react";
-import { Group } from "./SubPage";
+import Scramble from "./Scramble";
+import { cn } from "@/lib/utils";
 import type { Member } from "@/lib/data";
 
-// Name / role rows. Hovering a member with a photo floats it beside the cursor.
-export default function TeamList({ groups }: { groups: { title?: string; members: Member[]; showRole?: boolean }[] }) {
+// Members as a grid of names: the board large with roles, everyone else in
+// dense columns. Hovering a member with a photo floats it beside the cursor.
+export default function TeamList({ groups }: { groups: { title: string; members: Member[]; featured?: boolean }[] }) {
     const [img, setImg] = useState<string | null>(null);
     const x = useMotionValue(0);
     const y = useMotionValue(0);
@@ -19,25 +21,31 @@ export default function TeamList({ groups }: { groups: { title?: string; members
             onPointerLeave={() => setImg(null)}
         >
             {groups.map((g) => (
-                <Group key={g.title ?? "lead"} title={g.title}>
-                    {g.members.map((m) => {
-                        const Tag = m.linkedIn ? "a" : "div";
-                        return (
-                            <li key={m.name} className="border-b border-bone/12" onPointerEnter={() => setImg(m.image ?? null)}>
-                                <Tag
-                                    {...(m.linkedIn ? { href: m.linkedIn, target: "_blank", rel: "noopener noreferrer" } : {})}
-                                    className="group flex items-baseline justify-between gap-6 py-5"
-                                >
-                                    <span className="text-[19px] tracking-[-0.015em] transition-colors group-hover:text-red">
-                                        {m.name}
-                                        {m.linkedIn && <span className="ml-2 text-[13px] text-bone/50 opacity-0 transition-opacity group-hover:opacity-100">LinkedIn ↗</span>}
-                                    </span>
-                                    {g.showRole !== false && <span className="shrink-0 text-right text-[15px] text-bone/50">{m.role}</span>}
-                                </Tag>
-                            </li>
-                        );
-                    })}
-                </Group>
+                <section key={g.title} className="mb-20 last:mb-0">
+                    <h2 className="mb-5 flex items-baseline gap-3 font-mono text-[12px] uppercase tracking-[0.08em] text-bone/45">
+                        <Scramble text={g.title} duration={380} />
+                        <span className="text-bone/30">{String(g.members.length).padStart(2, "0")}</span>
+                    </h2>
+                    <ul className={cn("grid gap-x-8", g.featured ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3" : "grid-cols-2 md:grid-cols-4")}>
+                        {g.members.map((m) => {
+                            const Tag = m.linkedIn ? "a" : "div";
+                            return (
+                                <li key={m.name} className="border-t border-bone/12" onPointerEnter={() => setImg(m.image ?? null)}>
+                                    <Tag
+                                        {...(m.linkedIn ? { href: m.linkedIn, target: "_blank", rel: "noopener noreferrer" } : {})}
+                                        className={cn("group block", g.featured ? "py-6" : "py-3.5")}
+                                    >
+                                        <span className={cn("block tracking-[-0.015em] transition-colors group-hover:text-red", g.featured ? "text-[22px] font-medium" : "text-[16px]")}>
+                                            {m.name}
+                                            {m.linkedIn && <span className="ml-1.5 text-[0.75em] text-bone/40 opacity-0 transition-opacity group-hover:opacity-100">↗</span>}
+                                        </span>
+                                        {m.role && <span className={cn("block text-bone/50", g.featured ? "mt-1 text-[15px]" : "text-[13px]")}>{m.role}</span>}
+                                    </Tag>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </section>
             ))}
             <motion.div style={{ x: sx, y: sy }} className="pointer-events-none fixed left-0 top-0 z-40 hidden md:block">
                 <AnimatePresence>

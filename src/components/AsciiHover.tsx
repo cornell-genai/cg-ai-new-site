@@ -23,6 +23,7 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
         let W = 0, H = 0, cols = 0, rows = 0, dpr = 1, raf = 0;
         let col: string[] = [], lum = new Float32Array(0), heat = new Float32Array(0);
         const m = { x: -1e4, y: -1e4, in: false };
+        let backing = "#121212"; // page background, re-read when a hover starts (theme may have changed)
 
         // Sample the photo as it is drawn (object-cover), one pixel per cell.
         const sample = () => {
@@ -59,7 +60,6 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
             ctx.font = `600 ${CELL * 1.15}px ${font}`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            const backing = getComputedStyle(document.documentElement).getPropertyValue("--color-night").trim() || "#121212";
             for (let i = 0; i < heat.length; i++) {
                 const x = (i % cols + 0.5) * CELL, y = (Math.floor(i / cols) + 0.5) * CELL;
                 if (m.in) {
@@ -88,7 +88,10 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
             m.x = ((e.clientX - r.left) * W) / r.width;
             m.y = ((e.clientY - r.top) * H) / r.height;
             m.in = e.pointerType === "mouse" && m.x >= 0 && m.y >= 0 && m.x <= W && m.y <= H;
-            if (m.in && !raf) raf = requestAnimationFrame(frame);
+            if (m.in && !raf) {
+                backing = getComputedStyle(document.documentElement).getPropertyValue("--color-night").trim() || backing;
+                raf = requestAnimationFrame(frame);
+            }
         };
         const ready = () => { sample(); window.addEventListener("pointermove", onMove, { passive: true }); };
         if (photo.complete && photo.naturalWidth) ready(); else photo.addEventListener("load", ready, { once: true });

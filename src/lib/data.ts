@@ -2,6 +2,12 @@
 
 export const CONTACT_EMAIL = "admin@cornellgenai.dev";
 export const GITHUB_URL = "https://github.com/Cornell-Gen-AI";
+/**
+ * Where the mailing-list form posts (a field named "email"), e.g. Buttondown's
+ * "https://buttondown.com/api/emails/embed-subscribe/<username>". Until it is
+ * set, the form opens a pre-filled email to CONTACT_EMAIL instead.
+ */
+export const NEWSLETTER_URL = "";
 
 export type Team = "Board" | "Members" | "Business" | "Alumni";
 

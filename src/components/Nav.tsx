@@ -30,7 +30,7 @@ export default function Nav() {
         <header
             className={cn(
                 "fixed inset-x-0 top-0 z-50 text-bone transition-colors duration-300",
-                scrolled || open ? "bg-night/85 backdrop-blur-md" : "bg-transparent",
+                scrolled || open ? "bg-night/95" : "bg-transparent",
             )}
         >
             <nav className="flex h-16 items-center justify-between px-5 md:px-6">

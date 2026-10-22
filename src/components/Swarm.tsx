@@ -20,9 +20,10 @@ import { onTheme, type Theme } from "@/lib/theme";
 
 const STEP = 1 / 60;
 type RGB = [number, number, number];
-const PALETTES: Record<Theme, { bg: string; grid: string; ink: RGB; red: RGB; light: string }> = {
-    dark: { bg: "#161616", grid: "rgba(241,238,232,0.07)", ink: [241, 238, 232], red: [215, 38, 30], light: "#f1eee8" },
-    light: { bg: "#f1efe9", grid: "rgba(22,21,20,0.08)", ink: [92, 88, 82], red: [208, 31, 23], light: "#f6f4ef" },
+// `floor` lifts the faintest level so the school reads on a light ground.
+const PALETTES: Record<Theme, { bg: string; grid: string; ink: RGB; red: RGB; light: string; floor: number }> = {
+    dark: { bg: "#161616", grid: "rgba(241,238,232,0.07)", ink: [241, 238, 232], red: [215, 38, 30], light: "#f1eee8", floor: 0 },
+    light: { bg: "#f2f2f0", grid: "rgba(22,21,20,0.11)", ink: [28, 27, 26], red: [214, 30, 22], light: "#f7f7f5", floor: 0.32 },
 };
 const LEVELS = 6;
 
@@ -63,6 +64,7 @@ export default function Swarm({ className }: { className?: string }) {
         let energy = new Float32Array(0);
         let tmp = new Float32Array(0);
         let stamp = new Uint32Array(0);
+        let quiet = new Uint8Array(0); // cells under [data-swarm-avoid] text: never drawn, so copy stays legible
         let frameId = 0;
         let time = 0;
         const pointer = { x: -1e4, y: -1e4, active: false };
@@ -77,7 +79,7 @@ export default function Swarm({ className }: { className?: string }) {
         const setPalette = (t: Theme) => {
             pal = PALETTES[t];
             styles = [pal.ink, pal.red].map(([r, g, b]) =>
-                Array.from({ length: LEVELS }, (_, l) => `rgba(${r},${g},${b},${((l + 1) / LEVELS).toFixed(3)})`),
+                Array.from({ length: LEVELS }, (_, l) => `rgba(${r},${g},${b},${(pal.floor + ((1 - pal.floor) * (l + 1)) / LEVELS).toFixed(3)})`),
             );
         };
 
@@ -100,6 +102,12 @@ export default function Swarm({ className }: { className?: string }) {
                 return { x0: e.left - r.left - pad, y0: e.top - r.top - pad, x1: e.right - r.left + pad, y1: e.bottom - r.top + pad };
             };
             avoid = [...document.querySelectorAll("[data-swarm-avoid]")].map((el) => rel(el, cs));
+            quiet = new Uint8Array(cols * rows);
+            for (const el of document.querySelectorAll("[data-swarm-avoid]")) {
+                const q = rel(el, cs * 0.5);
+                for (let r = Math.max(0, Math.floor(q.y0 / cs)); r < Math.min(rows, Math.ceil(q.y1 / cs)); r++)
+                    for (let c = Math.max(0, Math.floor(q.x0 / cs)); c < Math.min(cols, Math.ceil(q.x1 / cs)); c++) quiet[r * cols + c] = 1;
+            }
 
             const markEl = root.querySelector("[data-swarm-mark]");
             targets = [];
@@ -368,7 +376,7 @@ export default function Swarm({ className }: { className?: string }) {
             const pos: number[] = [];
             for (const a of agents) {
                 const c = cellAt(a.x, a.y);
-                if (c < 0 || stamp[c] === frameId) continue;
+                if (c < 0 || stamp[c] === frameId || quiet[c]) continue;
                 stamp[c] = frameId;
                 let red = a.alarm > 0.55;
                 const sp = Math.hypot(a.vx, a.vy);
@@ -391,7 +399,7 @@ export default function Swarm({ className }: { className?: string }) {
             // Wake: dim red dots that brighten where the water is busiest.
             for (let i = 0; i < energy.length; i++) {
                 const e = energy[i];
-                if (e < 0.1 || stamp[i] === frameId) continue;
+                if (e < 0.1 || stamp[i] === frameId || quiet[i]) continue;
                 const level = Math.min(LEVELS - 1, Math.floor((e - 0.1) * 7));
                 const k = pos.length / 2;
                 glyphs.push(e > 0.8 ? "+" : e > 0.38 ? ":" : "·");
@@ -414,7 +422,9 @@ export default function Swarm({ className }: { className?: string }) {
             let n = 0;
             while (acc >= STEP && n < 4) { step(STEP); acc -= STEP; n++; }
             if (n === 4) acc = 0;
-            draw();
+            // Only redraw when the simulation moved: caps drawing at 60fps on
+            // 120Hz+ displays instead of rendering identical frames.
+            if (n > 0) draw();
             raf = requestAnimationFrame(frame);
         };
         const start = () => {

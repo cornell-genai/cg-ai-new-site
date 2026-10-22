@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SubPage from "@/components/SubPage";
 import Banner from "@/components/Banner";
+import Newsletter from "@/components/Newsletter";
 import { CONTACT_EMAIL } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Get involved" };
@@ -23,14 +24,18 @@ const WAYS = [
 export default function GetInvolvedPage() {
     return (
         <SubPage title="Get involved" banner={<Banner src="/brand/campus.webp" alt="Cornell campus in the fall" title="Get involved" />}>
-            <div className="border-l-2 border-red pl-5">
-                <p className="text-[clamp(1.4rem,2.4vw,2rem)] font-semibold leading-snug tracking-[-0.03em] text-fg">
-                    Recruiting for the F26 cycle is closed.
-                </p>
-                <p className="mt-2 text-[17px] text-bone/60">Applications reopen next semester, and we&apos;d love to hear from you then.</p>
-            </div>
+            <section className="grid gap-8 md:grid-cols-2 md:gap-10">
+                <div>
+                    <h2 className="text-[clamp(1.6rem,2.6vw,2.2rem)] font-semibold tracking-[-0.035em] text-fg">Join the mailing list</h2>
+                    <p className="mt-4 text-[17px] leading-relaxed text-bone/65">
+                        Recruiting for F26 is closed. Get on the list and we&apos;ll email you when applications open, along with new projects and
+                        write-ups. A few emails a semester.
+                    </p>
+                </div>
+                <div className="md:pt-14"><Newsletter /></div>
+            </section>
 
-            <div className="mt-20 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-10">
+            <div className="mt-20 grid grid-cols-1 gap-12 border-t border-bone/12 pt-20 md:grid-cols-2 md:gap-10">
                 {WAYS.map((w) => (
                     <section key={w.title}>
                         <h2 className="text-[clamp(1.6rem,2.6vw,2.2rem)] font-semibold tracking-[-0.035em] text-fg">{w.title}</h2>

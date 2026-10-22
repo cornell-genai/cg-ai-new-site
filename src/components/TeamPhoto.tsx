@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { onTheme } from "@/lib/theme";
 
 // The team photo under a dense layer of white ASCII that always covers the
 // people. A slow, smooth noise field drifts across them, gathering glyphs
 // into soft pockets that swell, shimmer, and dissolve together. The cursor
-// leaves a slowly fading trail through the field.
+// leaves a slowly fading trail through the field. Redraws at 30fps: the
+// field drifts slowly, so more is wasted work.
 
 const RAMP = ".:-=+*cxo3%#8@";
 const CELL = 8;
@@ -39,13 +39,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
         let W = 0, H = 0, cols = 0, rows = 0, dpr = 1;
         let lum = new Float32Array(0), on = new Uint8Array(0), seed = new Float32Array(0), heat = new Float32Array(0);
         const m = { x: -1e4, y: -1e4, a: 0, ta: 0 };
-        // White glyphs on dark, ink glyphs on light.
-        let styles: string[] = [];
-        const offTheme = onTheme((th) => {
-            const c = th === "light" ? "18,17,16" : "255,255,255";
-            styles = Array.from({ length: LEVELS }, (_, l) => `rgba(${c},${(0.18 + (0.82 * l) / (LEVELS - 1)).toFixed(3)})`);
-            if (reduced && W) draw(performance.now());
-        });
+        const styles = Array.from({ length: LEVELS }, (_, l) => `rgba(255,255,255,${(0.18 + (0.82 * l) / (LEVELS - 1)).toFixed(3)})`);
         const buckets: number[][] = Array.from({ length: LEVELS }, () => []);
         const glyph: string[] = [];
 
@@ -80,7 +74,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
             ctx.textBaseline = "middle";
             for (const b of buckets) b.length = 0;
 
-            m.a += (m.ta - m.a) * 0.08;
+            m.a += (m.ta - m.a) * 0.15;
             const ch = H / rows;
             for (let r = 0; r < rows; r++) {
                 const y = (r + 0.5) * ch;
@@ -96,7 +90,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
                     // The cursor heats a small radius; heat fades slowly, leaving a trail.
                     const d2 = dx * dx + dy * dy;
                     if (m.ta > 0 && d2 < 1600) heat[i] = Math.max(heat[i], 1 - Math.sqrt(d2) / 40);
-                    heat[i] *= 0.978;
+                    heat[i] *= 0.957; // ≈0.978 per 60fps frame
                     const stir = heat[i];
                     const e = Math.min(1, pocket * pocket * 1.6 + stir * 0.9);
                     // Base layer covers most of each person; pockets brighten it.
@@ -116,8 +110,11 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
             }
         };
 
-        let raf = 0, running = false;
-        const loop = (now: number) => { draw(now); raf = requestAnimationFrame(loop); };
+        let raf = 0, running = false, last = 0;
+        const loop = (now: number) => {
+            if (now - last >= 32) { last = now; draw(now); }
+            raf = requestAnimationFrame(loop);
+        };
         const start = () => { if (running || reduced) return; running = true; raf = requestAnimationFrame(loop); };
         const stop = () => { running = false; cancelAnimationFrame(raf); };
 
@@ -144,7 +141,6 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
         canvas.addEventListener("pointerleave", onLeave);
         return () => {
             stop();
-            offTheme();
             ro.disconnect();
             canvas.removeEventListener("pointermove", onMove);
             canvas.removeEventListener("pointerleave", onLeave);
@@ -154,7 +150,7 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
 
     return (
         <div className="relative [mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
-            <img ref={img} src={src} alt={alt} className="block w-full brightness-[0.82] light:brightness-100" />
+            <img ref={img} src={src} alt={alt} className="block w-full brightness-[0.82]" />
             <canvas ref={ref} aria-hidden className="absolute inset-0 h-full w-full" />
         </div>
     );

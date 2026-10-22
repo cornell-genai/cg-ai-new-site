@@ -1,6 +1,6 @@
 # cornellgenai.dev
 
-Website for Generative AI at Cornell. Next.js 15 (static export), Tailwind 4, Framer Motion, Lenis.
+Website for Generative AI at Cornell. Next.js 15 (static export), Tailwind 4, Framer Motion.
 
 ```bash
 npm install
