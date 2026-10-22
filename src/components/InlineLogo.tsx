@@ -12,7 +12,7 @@ export default function InlineLogo({ name }: { name: string }) {
                 src={p.logo}
                 alt={p.label ? "" : p.name}
                 style={{ height: `${0.82 * scale}em` }}
-                className="inline-block w-auto brightness-0 invert"
+                className="inline-block w-auto"
             />
             {p.label && <span>{p.name}</span>}
         </span>

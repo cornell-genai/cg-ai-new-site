@@ -2,12 +2,22 @@
 
 import { useEffect, useRef } from "react";
 
-// The team photo, with an ASCII layer that only shows near the cursor: cells
-// in a small radius flicker into glyphs sampled from the photo's brightness,
-// then fade back to the picture.
+// The team photo with a sparse layer of white ASCII over it. The layer is
+// stirred by many small, short-lived pulses scattered across the people
+// (never one sweeping wave); each pulse brightens and reshuffles the glyphs
+// it passes. Moving the cursor sets off pulses where it goes. Glyphs only
+// sit on the people, using the photo's alpha and brightness.
 
-const RAMP = " .:-=+*#%@";
-const CELL = 9;
+const RAMP = ".:-=+*cxo3%#8@";
+const CELL = 8;
+const LEVELS = 6;
+
+type Pulse = { x: number; y: number; t0: number; life: number; size: number; amp: number };
+
+const hash = (i: number) => {
+    const s = Math.sin(i * 12.9898) * 43758.5453;
+    return s - Math.floor(s);
+};
 
 export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
     const img = useRef<HTMLImageElement>(null);
@@ -17,90 +27,125 @@ export default function TeamPhoto({ src, alt }: { src: string; alt: string }) {
         const canvas = ref.current, photo = img.current;
         if (!canvas || !photo) return;
         const ctx = canvas.getContext("2d");
-        if (!ctx || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-        let W = 0, H = 0, cols = 0, rows = 0, dpr = 1, raf = 0;
-        let lum = new Float32Array(0), alpha = new Float32Array(0), heat = new Float32Array(0);
-        const m = { x: -1e4, y: -1e4, in: false };
+        if (!ctx) return;
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const font = getComputedStyle(document.body).getPropertyValue("--font-geist-mono").trim() || "monospace";
+
+        let W = 0, H = 0, cols = 0, rows = 0, dpr = 1;
+        let lum = new Float32Array(0), on = new Uint8Array(0), seed = new Float32Array(0);
+        const pulses: Pulse[] = [];
+        const styles = Array.from({ length: LEVELS }, (_, l) => `rgba(255,255,255,${(0.18 + (0.82 * l) / (LEVELS - 1)).toFixed(3)})`);
+        const buckets: number[][] = Array.from({ length: LEVELS }, () => []);
+        const glyph: string[] = [];
 
         const sample = () => {
             const r = canvas.getBoundingClientRect();
-            if (r.width < 1 || r.height < 1) return;
+            if (r.width < 1 || r.height < 1 || !photo.naturalWidth) return;
             W = r.width; H = r.height;
             dpr = Math.min(window.devicePixelRatio || 1, 2);
             canvas.width = Math.round(W * dpr);
             canvas.height = Math.round(H * dpr);
-            cols = Math.ceil(W / CELL); rows = Math.ceil(H / CELL);
+            cols = Math.ceil(W / CELL); rows = Math.ceil(H / (CELL * 1.25));
             const off = document.createElement("canvas");
             off.width = cols; off.height = rows;
             const o = off.getContext("2d", { willReadFrequently: true })!;
             o.drawImage(photo, 0, 0, cols, rows);
             const d = o.getImageData(0, 0, cols, rows).data;
-            lum = new Float32Array(cols * rows);
-            alpha = new Float32Array(cols * rows);
-            heat = new Float32Array(cols * rows);
-            for (let i = 0; i < cols * rows; i++) {
+            const n = cols * rows;
+            lum = new Float32Array(n); on = new Uint8Array(n); seed = new Float32Array(n);
+            for (let i = 0; i < n; i++) {
                 lum[i] = (d[i * 4] * 0.299 + d[i * 4 + 1] * 0.587 + d[i * 4 + 2] * 0.114) / 255;
-                alpha[i] = d[i * 4 + 3] / 255;
+                on[i] = d[i * 4 + 3] > 200 ? 1 : 0;
+                seed[i] = hash(i);
             }
         };
 
-        const frame = () => {
-            const R = 70;
-            let live = false;
+        const spawn = (x: number, y: number, now: number, size = 26 + Math.random() * 30, amp = 0.7 + Math.random() * 0.5) =>
+            pulses.push({ x, y, t0: now, life: 0.9 + Math.random() * 0.8, size, amp });
+
+        const draw = (now: number) => {
+            const t = now / 1000;
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             ctx.clearRect(0, 0, W, H);
-            ctx.font = `600 ${CELL * 1.1}px ${font}`;
+            ctx.font = `500 ${CELL * 1.15}px ${font}`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            for (let i = 0; i < heat.length; i++) {
-                const x = (i % cols + 0.5) * CELL, y = (Math.floor(i / cols) + 0.5) * CELL;
-                if (m.in) {
-                    const d = Math.hypot(x - m.x, y - m.y);
-                    if (d < R) heat[i] = Math.max(heat[i], 1 - d / R);
+            for (const b of buckets) b.length = 0;
+
+            // Keep a few ambient pulses going.
+            for (let i = pulses.length - 1; i >= 0; i--) if (t - pulses[i].t0 > pulses[i].life) pulses.splice(i, 1);
+            if (!reduced && pulses.length < 14 && Math.random() < 0.35) spawn(Math.random() * W, H * (0.1 + Math.random() * 0.8), t);
+
+            const ch = H / rows;
+            for (let r = 0; r < rows; r++) {
+                const y = (r + 0.5) * ch;
+                for (let c = 0; c < cols; c++) {
+                    const i = r * cols + c;
+                    if (!on[i]) continue;
+                    const x = (c + 0.5) * CELL;
+                    let e = 0;
+                    for (const p of pulses) {
+                        const age = (t - p.t0) / p.life;
+                        const d = Math.hypot(x - p.x, y - p.y);
+                        const ring = d - age * p.size * 2.2;
+                        if (ring > p.size || ring < -p.size) continue;
+                        e += Math.exp(-(ring * ring) / (p.size * p.size * 0.12)) * (1 - age) * p.amp;
+                    }
+                    // Base layer: about a third of cells, faint; pulses fill in and brighten.
+                    const base = seed[i] < 0.34 ? 0.22 + 0.25 * lum[i] : 0;
+                    const v = Math.min(1, base + e * 0.9);
+                    if (v < 0.12) continue;
+                    const flick = e > 0.25 && seed[(i * 7 + Math.floor(t * 18)) % seed.length] < 0.5;
+                    const k = flick ? Math.floor(seed[(i + Math.floor(t * 30)) % seed.length] * RAMP.length) : Math.floor(lum[i] * (RAMP.length - 1));
+                    glyph[i] = RAMP[k];
+                    buckets[Math.min(LEVELS - 1, Math.floor(v * LEVELS))].push(i);
                 }
-                if (heat[i] < 0.02 || alpha[i] < 0.3) { heat[i] = 0; continue; }
-                live = true;
-                heat[i] *= 0.93;
-                const h = heat[i];
-                ctx.fillStyle = "#121212";
-                ctx.globalAlpha = Math.min(1, h * 1.6);
-                ctx.fillRect(x - CELL / 2, y - CELL / 2, CELL, CELL);
-                const flicker = Math.random() < 0.25 * h ? Math.random() : lum[i];
-                const g = RAMP[Math.min(RAMP.length - 1, Math.floor(flicker * RAMP.length))];
-                ctx.fillStyle = Math.random() < 0.08 * h ? "#d7261e" : "#f3f0ea";
-                ctx.fillText(g, x, y + 1);
             }
-            ctx.globalAlpha = 1;
-            raf = live || m.in ? requestAnimationFrame(frame) : 0;
+            for (let l = 0; l < LEVELS; l++) {
+                if (!buckets[l].length) continue;
+                ctx.fillStyle = styles[l];
+                for (const i of buckets[l]) ctx.fillText(glyph[i], (i % cols + 0.5) * CELL, (Math.floor(i / cols) + 0.5) * ch + 1);
+            }
         };
 
+        let raf = 0, running = false, lastSpawn = 0;
+        const loop = (now: number) => { draw(now); raf = requestAnimationFrame(loop); };
+        const start = () => { if (running || reduced) return; running = true; raf = requestAnimationFrame(loop); };
+        const stop = () => { running = false; cancelAnimationFrame(raf); };
+
         const onMove = (e: PointerEvent) => {
+            if (e.pointerType !== "mouse") return;
             const r = canvas.getBoundingClientRect();
-            m.x = e.clientX - r.left; m.y = e.clientY - r.top;
-            m.in = e.pointerType === "mouse" && m.x >= 0 && m.y >= 0 && m.x <= r.width && m.y <= r.height;
-            if (m.in && !raf) raf = requestAnimationFrame(frame);
+            const x = e.clientX - r.left, y = e.clientY - r.top;
+            if (x < 0 || y < 0 || x > r.width || y > r.height) return;
+            const now = performance.now() / 1000;
+            if (now - lastSpawn > 0.05) { lastSpawn = now; spawn(x + (Math.random() - 0.5) * 20, y + (Math.random() - 0.5) * 20, now, 22 + Math.random() * 18, 1.1); }
         };
 
         const ready = () => {
             sample();
-            window.addEventListener("pointermove", onMove, { passive: true });
+            if (reduced) draw(performance.now());
+            const io = new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()));
+            io.observe(canvas);
+            cleanup.push(() => io.disconnect());
         };
+        const cleanup: (() => void)[] = [];
         if (photo.complete && photo.naturalWidth) ready(); else photo.addEventListener("load", ready, { once: true });
-        const ro = new ResizeObserver(() => photo.naturalWidth && sample());
+        const ro = new ResizeObserver(sample);
         ro.observe(canvas);
+        canvas.addEventListener("pointermove", onMove);
         return () => {
-            cancelAnimationFrame(raf);
+            stop();
             ro.disconnect();
-            window.removeEventListener("pointermove", onMove);
+            canvas.removeEventListener("pointermove", onMove);
+            cleanup.forEach((f) => f());
         };
     }, [src]);
 
     return (
-        <div className="relative">
-            <img ref={img} src={src} alt={alt} className="block w-full brightness-[0.78] saturate-[0.9]" />
-            <canvas ref={ref} aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />
+        <div className="relative [mask-image:linear-gradient(to_bottom,black_80%,transparent)]">
+            <img ref={img} src={src} alt={alt} className="block w-full brightness-[0.82]" />
+            <canvas ref={ref} aria-hidden className="absolute inset-0 h-full w-full" />
         </div>
     );
 }

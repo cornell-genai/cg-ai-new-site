@@ -42,25 +42,23 @@ export default function Home() {
                     </Reveal>
                     <Reveal delay={0.1} className="mx-auto mt-12 max-w-[1200px] md:mt-16">
                         <Link href="/team" aria-label="Meet the team">
-                            <TeamPhoto src="/brand/team-dots.webp" alt="The Cornell GenAI team" />
+                            <TeamPhoto src="/brand/team.webp" alt="The Cornell GenAI team" />
                         </Link>
                     </Reveal>
                 </section>
 
-                <section className="mx-auto max-w-[62rem] pb-8 pt-24 md:pt-36">
+                <section className="mx-auto max-w-[56rem] pt-20 md:pt-28">
                     <Reveal>
-                        <p className="text-[clamp(1.45rem,2.6vw,2.3rem)] font-medium leading-[1.42] tracking-[-0.025em] text-bone/45">
-                            <span className="text-white">We do applied AI research</span>, starting with how agents hold up over long, multi-step tasks.{" "}
-                            <span className="text-white">We build AI systems for clients</span>: agentic red teaming for <InlineLogo name="Cisco" />, ESG news
-                            monitoring for <InlineLogo name="Investcorp" />, insurance and vendor agents for <InlineLogo name="QuickFi" />, and a data aggregator
-                            for <InlineLogo name="NYSFP" />. <span className="text-white">And we take on frontier projects</span>, like reinforcement learning on the Microduck robot from{" "}
-                            <InlineLogo name="Pollen Robotics" />, and a trading agent we&apos;re taking live.
+                        <p className="text-[clamp(1.45rem,2.6vw,2.3rem)] font-medium leading-[1.45] tracking-[-0.025em] text-bone/45">
+                            <span className="text-white">We do applied AI research and build AI systems</span> for <InlineLogo name="Cisco" />,{" "}
+                            <InlineLogo name="Investcorp" />, and <InlineLogo name="QuickFi" />. Now: RL on <InlineLogo name="Pollen Robotics" />&apos; Microduck,
+                            and a trading agent going live.
                         </p>
                     </Reveal>
                     <Reveal delay={0.08}>
-                        <p className="mt-10 text-[clamp(1.45rem,2.6vw,2.3rem)] font-medium leading-[1.42] tracking-[-0.025em] text-bone/45">
-                            We&apos;ve also worked with <InlineLogo name="Charter" />, <InlineLogo name="Vero" />, <InlineLogo name="Bridge" />, and{" "}
-                            <InlineLogo name="Gradial" />.
+                        <p className="mt-8 text-[clamp(1.1rem,1.7vw,1.45rem)] font-medium leading-[1.6] tracking-[-0.015em] text-bone/40">
+                            Also with <InlineLogo name="Charter" /> <InlineLogo name="Vero" /> <InlineLogo name="Bridge" /> <span className="text-white">NYSFP</span>{" "}
+                            <span className="text-white">Gradial</span>
                         </p>
                     </Reveal>
                 </section>
