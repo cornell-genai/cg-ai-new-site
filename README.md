@@ -10,8 +10,11 @@ npm run build    # static site in ./out
 
 ## Content
 
-Everything editable lives in `src/lib/data.ts`: members (board, members, business, alumni) and
-project descriptions (`CURRENT`, `PAST`), which the Projects page will use once write-ups are ready.
+Members (board, members, business, alumni) live in `src/lib/data.ts`. Project write-ups live in
+`src/lib/work.ts`: each post is a list of blocks (paragraphs, headings, flow diagrams, stats, figures,
+illustrations), rendered on `/projects` and `/projects/<slug>`. Real screenshots or charts go in
+`public/work/<slug>/` and are added as a `figure` block. Cover art is generated from the motifs in
+`src/lib/covers.ts`, drawn in each partner's colours.
 
 Headshots go in `public/team/` as ~720px WebP; they appear when hovering a name on the Team page.
 Client marks for the home page circles are in `public/logos/mark-*`.
