@@ -1,0 +1,370 @@
+// Project write-ups for the Projects page. Each post is a list of blocks; a
+// plain string is a paragraph and may hold [links](https://...).
+
+import type { MotifName } from "./covers";
+
+export type Palette = {
+    bg: string;
+    /** Inks for the cover: faint, main, highlight. */
+    ink: [string, string, string];
+    /** The partner's colour for diagrams and rules on the white page. */
+    accent: string;
+};
+
+export type SketchName = "bridge-review" | "investcorp-digest" | "treasury-chat" | "nysfp-chat" | "quickfi-insurance" | "quickfi-vendor";
+
+export type Block =
+    | string
+    | { h: string }
+    | { list: string[] }
+    | { quote: string; by: string }
+    | { flow: { label: string; note?: string }[]; caption?: string }
+    | { stats: { value: string; label: string }[] }
+    | { rows: { label: string; body: string }[]; caption?: string }
+    | { figure: string; alt: string; caption: string }
+    | { sketch: SketchName; caption: string }
+    | { people: { name: string; did: string }[] }
+    | { links: { label: string; href: string; note?: string }[] };
+
+export type Post = {
+    slug: string;
+    title: string;
+    partner: string;
+    when: string;
+    tag: string;
+    dek: string;
+    team: string[];
+    motif: MotifName;
+    palette: Palette;
+    logos: { src: string; alt: string; bg?: string }[];
+    body: Block[];
+};
+
+const CLUB: Palette = { bg: "#121212", ink: ["#4a4a4a", "#f3f0ea", "#d7261e"], accent: "#d01f17" };
+
+export const POSTS: Post[] = [
+    {
+        slug: "nysfp",
+        title: "A directory that keeps itself honest, for New York's food processors",
+        partner: "Associated New York State Food Processors",
+        when: "Spring 2026 – now",
+        tag: "client",
+        dek: "An events calendar, a members-only supply-chain directory, an assistant that only answers from it, and an agent that checks every month that the listings still exist.",
+        team: ["Arshdeep Kaur", "Trishia Khandelwal", "Christina Maria Joseph", "Anmol Karan"],
+        motif: "orchard",
+        palette: { bg: "#0f0f0f", ink: ["#f3f0ea", "#e2231a", "#6db33f"], accent: "#e2231a" },
+        logos: [{ src: "/logos/mark-nysfp.png", alt: "Associated New York State Food Processors" }],
+        body: [
+            "The Associated New York State Food Processors has been around since 1885, which makes it the oldest food industry association in the state. Its members make the things you find in a grocery store: cheese, sauces, baked goods, seasonings. They all depend on a long chain of co-packers, distributors and suppliers to do it.",
+            "When we first met the association's president, Tom Seymour, he described the problem in two words: tribal knowledge. Who co-packs gluten-free baked goods in Rhode Island? Which packaging events are worth the drive to Rochester? The answers existed, but they were spread across members' heads, a few spreadsheets, a Cornell list of co-packers and some paid directories. If you were new to the industry, good luck.",
+            "So the job was to put all of it in one place that members would actually use, and to keep it from going stale the moment we handed it over.",
+            { h: "What we built" },
+            {
+                rows: [
+                    { label: "Calendar", body: "Industry events from across the state, open to everyone, in month, week and list views." },
+                    { label: "Directory", body: "A members-only, searchable list of co-packers, distributors and suppliers, filterable by category and region." },
+                    { label: "Assistant", body: "A chat window that answers questions about the directory and the calendar, and nothing else." },
+                    { label: "Checker", body: "An agent that runs every month to find new resources and flag listings whose websites have gone quiet." },
+                    { label: "Dashboard", body: "Where the association reviews what the agent found, edits entries and manages who can see what." },
+                ],
+            },
+            { h: "AI finds things, people decide" },
+            "The fastest way to ruin a directory is to let a robot write to it unsupervised. One bad scrape and a member calls a co-packer that closed two years ago. So nothing the agent finds goes live on its own. It lands in a review queue, a board member approves or rejects it, and every decision is logged.",
+            {
+                flow: [
+                    { label: "Monthly check", note: "visits every listed website, looks for new resources" },
+                    { label: "Review queue", note: "new and changed entries wait here, each with the reason it was flagged" },
+                    { label: "Board approves", note: "approve, edit or reject; nothing publishes itself" },
+                    { label: "Directory", note: "members see the update, and the change is logged" },
+                ],
+                caption: "How a listing gets into the directory.",
+            },
+            "We ended up writing the roles down in one line: the admin owns the system, the board owns the data, and members get the value. It sounds obvious, but agreeing on it settled a lot of arguments about who should be allowed to press which button.",
+            { h: "An assistant that knows what it doesn't know" },
+            "The assistant searches the directory and only the directory. If the answer isn't there, it says so instead of guessing. That was a deliberate choice: a confident made-up supplier is worse than no answer at all.",
+            { sketch: "nysfp-chat", caption: "Illustration of the assistant. The co-packer is a real listing from the association's spreadsheet." },
+            "Every question that comes back empty gets logged too, which turned into one of the most useful features. The board can see what members are looking for and not finding, and that tells them what to add next.",
+            { h: "Things the client taught us" },
+            "Our first dashboard had a button labelled \"scrape queue\". The board, who are food people and not software people, very reasonably asked what that meant. We renamed it and went through the rest of the dashboard swapping engineer words for ordinary ones. We also added an undo and a \"recently deleted\" shelf after someone pointed out that one wrong click could lose a listing for good.",
+            "At one demo a board member asked if we could add an events calendar. The calendar was on the screen at the time. We took that as feedback that it should be harder to miss.",
+            { h: "Where it is now" },
+            "The stack is deliberately boring and cheap to run: React on Vercel, FastAPI on Render, Supabase for the data and logins, and Gemini for the assistant. We estimated about five hours a month of upkeep and under $100 a month in hosting once it leaves the free tiers. By late April it was deployed with the association's branding. The plan from there was a board demo, two weeks of testing through mid-May, a soft launch at the association's July golf tournament ahead of a full launch by the end of 2026. This fall we picked it back up to bring events in automatically, the same way the directory already works.",
+        ],
+    },
+    {
+        slug: "investcorp",
+        title: "Reading the news and the inbox for Investcorp",
+        partner: "Investcorp",
+        when: "Spring 2026",
+        tag: "client",
+        dek: "Two pilots with a global investment firm: an agent that watches the news for its loan portfolio and sorts events by how much they matter to credit, and one that turns a treasury inbox into a database you can ask questions.",
+        team: ["Mateo del Rio Lanse", "Surya Chandrakasan", "Bhavan Sai Balusu", "Yashnil Saha", "Thurushi Kiyara Rajapakse", "Morgan Nelson Stuart", "Sarah Li", "JD Krasnik", "Dhruv Mandalik", "Aleks Dzudzevic", "Eddie Hu", "Andrew Visconti"],
+        motif: "radar",
+        palette: { bg: "#eef2f8", ink: ["#8a9dbd", "#13294b", "#1f6fe0"], accent: "#13294b" },
+        logos: [{ src: "/logos/mark-investcorp.png", alt: "Investcorp" }],
+        body: [
+            "Investcorp is a global alternative investment firm. In February their technical lead walked us through a long list of places AI could help, and we picked two to start with for a very practical reason: each one could stand on its own without weeks of security reviews. Both had to be Python, both run on Investcorp's own Azure cloud, and both had to be useful from a command line before anyone built a dashboard.",
+            "Twelve of us split into two teams.",
+            { h: "Pilot one: which headlines actually matter" },
+            "One of Investcorp's businesses runs CLOs. A CLO is a fund made of loans to a lot of companies at once, usually 75 to 100 of them. If one of those companies gets sued, loses a factory to a flood or watches its CEO walk out, the credit team wants to know before it shows up in the price of the loan. Today, keeping up with all of that is mostly manual.",
+            "The tempting version of this project is a firehose: every ESG headline about every company. Nobody wants that. The thing we kept coming back to was that an event matters here only if it might change whether a company can pay back its debt. A small controversy that dents the share price for a day isn't the same as a lawsuit that could bankrupt the company. So the core of the system is a classifier that sorts every event into one of three tiers by its effect on credit.",
+            {
+                rows: [
+                    { label: "High", body: "A real chance of hurting the company's ability to pay its debt soon: bankruptcy filings, major lawsuits, enforcement actions, supply chain breaks. These come with a short analysis and a suggested next step." },
+                    { label: "Medium", body: "Worth watching but not acting on yet: early litigation, governance worries, sector headwinds. A short summary, and tracked in case it grows." },
+                    { label: "Low", body: "Logged for the record and kept out of everyone's inbox." },
+                ],
+                caption: "The three tiers, measured against credit risk rather than share price or general ESG sentiment.",
+            },
+            "It runs weekly, not in real time. That surprised some of us at first, but credit events tend to build over days and weeks, and a calm weekly report gets read more carefully than a stream of pings.",
+            {
+                flow: [
+                    { label: "News feeds", note: "the sources the credit team already reads" },
+                    { label: "Classifier", note: "High, Medium or Low by effect on credit" },
+                    { label: "Weekly report", note: "analysis for High, summaries for Medium" },
+                    { label: "Memory", note: "every event logged by company and industry" },
+                ],
+                caption: "The pipeline. The memory feeds back into the classifier the following week.",
+            },
+            "That memory is what makes it more than a news alert. If a company shows up with three medium-tier events in a month, none of which would raise an eyebrow alone, the pattern can push it up a tier. We also designed a way for the credit team to correct the classifier when it gets one wrong, so it improves on their judgement rather than ours.",
+            { sketch: "investcorp-digest", caption: "Illustration of the weekly report. The companies and events are made up; the real portfolio stays inside Investcorp." },
+            "Over spring break the team split into six workstreams (requirements, architecture, the materiality framework, news sources, prior art, and the feedback loop) so we came back with a fully scoped first version instead of a pile of open questions. Everything runs through Investcorp's own Azure OpenAI deployment. Their portfolio data never leaves their cloud, and we were fine with that.",
+            { h: "Pilot two: the treasury inbox" },
+            "Every week Investcorp's treasury team emails a list of banks asking for indicative rates. The answers trickle back into a shared inbox: some in the body of the email, some in attachments, some late, some never. Making sense of it meant reading every reply by hand.",
+            "We built an agent that watches the inbox, pulls out the rate each bank quoted and how long it took to reply, and files both into a database. On top of that sits a chat you can ask in plain English, like which banks have been slowest this quarter, and it will draw you the chart. Those two numbers, how fast and at what rate, were the ones the team told us mattered most.",
+            {
+                flow: [
+                    { label: "Weekly outreach", note: "same subject line every time" },
+                    { label: "Replies land", note: "body text or attachments" },
+                    { label: "Agent reads", note: "rate quoted, time to reply" },
+                    { label: "Database", note: "one row per bank per week" },
+                    { label: "Ask in English", note: "answers and charts" },
+                ],
+            },
+            { sketch: "treasury-chat", caption: "Illustration of the treasury chat, on mock data. We built and tested against pretend bank inboxes so no real quotes ever touched our laptops." },
+            { h: "What we took away" },
+            {
+                list: [
+                    "Start narrow. Our first instinct was to cover every market and every signal. Starting from a small set of factors and proving the whole loop end to end was more convincing than half of everything.",
+                    "Define \"important\" before you build anything. Most of the hard thinking in the news pilot went into the materiality tiers, not the code.",
+                    "Work inside the client's walls. Building on their cloud and their models from day one meant there was nothing to migrate at the end.",
+                ],
+            },
+        ],
+    },
+    {
+        slug: "foresight",
+        title: "ForeSight: a small model that guesses your opponent's next move",
+        partner: "Research",
+        when: "Fall 2026",
+        tag: "research",
+        dek: "An AAAI-27 student abstract from one of our head engineers. A 421M-parameter model, trained for 35 minutes on a laptop, forecasts what a Pokémon opponent will do next and drives a lookahead search with no LLM and no API calls.",
+        team: ["Saiakhil Chilaka"],
+        motif: "tree",
+        palette: CLUB,
+        logos: [],
+        body: [
+            "To choose a good move, you have to guess what the other side will do. Chess engines guess with hand-written rules and an exact simulator. LLM agents guess by asking a very large model, which is slow, costs money every turn and isn't great at saying how sure it is. Saiakhil wanted to know if there was something in between.",
+            "ForeSight takes a small \"System One\" decision model ([Laya](https://github.com/NandhaKishorM/laya), 421M parameters), the kind that answers a multiple-choice question in one fast pass instead of writing text, and fine-tunes it to predict the opponent's next action with a probability attached. A depth-two lookahead search then uses those probabilities to weigh every future it imagines.",
+            {
+                flow: [
+                    { label: "Battle state", note: "both sides' Pokémon, HP, moves, the last few turns" },
+                    { label: "Forecast", note: "Laya gives a probability for each opponent action, 36–84 ms" },
+                    { label: "Look ahead", note: "depth-2 expectimax weighs each branch by those odds" },
+                    { label: "Move", note: "about 3 s per turn on a laptop" },
+                ],
+                caption: "One turn of ForeSight.",
+            },
+            "The training data cost nothing. Saiakhil ran a few thousand battles between simple bots on a local Pokémon Showdown server, logged every decision and fine-tuned only the top four of Laya's 28 layers for about 35 minutes on an Apple laptop.",
+            {
+                stats: [
+                    { value: "72–80%", label: "of opponent moves predicted correctly, up from 43% zero-shot" },
+                    { value: "75%", label: "on Abyssal, a benchmark bot it never saw in training" },
+                    { value: "56.5%", label: "wins in 200 games against Abyssal, with no LLM" },
+                    { value: "$0", label: "in API calls" },
+                ],
+            },
+            "The part we like most is that the forecasts are calibrated. When ForeSight says it's 70% sure, it's right about 70% of the time. That's what makes the probabilities usable inside a search instead of just a guess with a number stuck on it.",
+            { figure: "/work/foresight/reliability_laya_gen8.png", alt: "Reliability diagram: forecast probability against observed frequency, close to the diagonal for both held-out bots and Abyssal.", caption: "Calibration of the fine-tuned forecaster. Points near the dashed diagonal mean the stated confidence matches how often it's right." },
+            { h: "The honest scoreboard" },
+            "56.5% against Abyssal matches PokéLLMon (56%), an agent built on a large language model, and trails PokéChamp (64–70%). Looking one extra turn ahead adds 13 to 20 points over one-step play, which is the clearest effect in the whole project.",
+            "There's also a result most papers would quietly leave out. Better forecasts did not turn into more wins. With the same search, a free rule of thumb about damage played at least as well, and even a model that assumed every opponent move was equally likely won 55.5% of its games. The bottleneck turned out to be the rough battle simulator and the shallow search, not the forecaster. We think that's worth knowing, and it's where the next round of work goes.",
+            { figure: "/work/foresight/accuracy_breakdown_laya_gen8.png", alt: "Bar charts of top-1 accuracy by turn number and by number of options, well above chance throughout.", caption: "Forecast accuracy by stage of the game and by how many options the opponent had. The black ticks are chance." },
+            { h: "How it got here" },
+            "ForeSight grew out of a run of small, cheap pilots, each one a single question. Could a small model rerank an LLM agent's moves in the text game ALFWorld? Yes: success went from 34.6% to 48.4%. Could it predict poker actions or human Pokémon players zero-shot? Only partly. Every pilot's result, good or bad, is written up in the repo, along with the cost of every API call they made. None of them cost more than a few dollars.",
+            { links: [
+                { label: "Code and results", href: "https://github.com/akhilc08/aaai-27", note: "every number in the abstract traces to a file" },
+                { label: "The abstract (PDF)", href: "https://github.com/akhilc08/aaai-27/blob/main/paper/paper.pdf" },
+            ] },
+        ],
+    },
+    {
+        slug: "bridge",
+        title: "Teaching a loan application to read a balance sheet",
+        partner: "Bridge",
+        when: "Fall 2025",
+        tag: "client",
+        dek: "Borrowers on Bridge's marketplace used to type their financials in by hand. We built the engine that reads their documents and fills in the form, with a source for every number, and took its accuracy from about half to 85–95%.",
+        team: ["Asad Abbas Rizvi", "Arshdeep Kaur", "Yashnil Saha", "Tanner Brendan Blake"],
+        motif: "bridge",
+        palette: { bg: "#001b2e", ink: ["#2c4a63", "#8fb8d8", "#ffffff"], accent: "#001b2e" },
+        logos: [{ src: "/logos/mark-bridge.svg", alt: "Bridge" }],
+        body: [
+            "[Bridge](https://www.bridge.co) runs a marketplace where businesses ask for financing and lenders respond. Before a lender sees anything, a borrower fills in a long request: company basics, sponsors, and pages of numbers from balance sheets and income statements. Almost all of it is already sitting in documents the borrower has on hand. They just have to type it in again.",
+            "Our question for the fall: could the form fill itself in from those documents, accurately enough that a borrower would trust it?",
+            { h: "How it feels to use" },
+            {
+                flow: [
+                    { label: "Upload", note: "statements, spreadsheets and decks, plus a few basics" },
+                    { label: "Process", note: "the documents are read in the background while the borrower keeps going" },
+                    { label: "Review", note: "every field shows its source and how sure we are" },
+                    { label: "Submit", note: "accept, edit or reject each one, then send" },
+                ],
+            },
+            "We were strict about that review step. A borrower is putting their name to these numbers, so the tool's job is to save typing, not to have opinions. Every value comes with the line in the document it came from and a confidence score, and nothing gets submitted without a person looking at it.",
+            { sketch: "bridge-review", caption: "Illustration of the review screen, with made-up numbers." },
+            { h: "The first version got half of it right" },
+            "Our first pass did what most first passes do. Parse the documents (we used IBM's Docling, which handles PDFs, spreadsheets, Word files and slides), hand the text to a language model and ask for the fields. Measured against hand-checked answers, it scored between 40 and 52 percent.",
+            "Digging through the misses was humbling. The model preferred an old year-end statement over this year's numbers. It copied part of a liability instead of the full amount. When a year-to-date column was empty, it got revenue wrong. And now and then it filled a gap with an \"estimated\" value that wasn't in any document at all.",
+            { h: "What got us to 85–95%" },
+            "The fix wasn't a bigger model. It was using the model for less. Anything that can be read straight off a table now is, and the language model only handles fields that need some reasoning. After that, ordinary arithmetic checks its work.",
+            {
+                flow: [
+                    { label: "Read tables", note: "cash, receivables, revenue and the like, straight from the cells" },
+                    { label: "Ask the model", note: "only for fields that need judgement" },
+                    { label: "Clean up", note: "drop invented estimates, rebuild totals from their parts" },
+                    { label: "Check the math", note: "assets must equal liabilities plus equity, within $1 or 0.1%" },
+                    { label: "Score", note: "confidence goes up when things balance, down sharply when they don't" },
+                    { label: "Tidy", note: "45+ messy fields down to 28 clean ones" },
+                ],
+                caption: "The extraction pipeline after the rewrite.",
+            },
+            "The balance sheet became our best friend. It has to balance, so it's a free test of whether we read it right. If the total doesn't match its parts, we recompute the parts in proportion and the confidence drops, so the borrower knows to look twice. We also taught it to always prefer the most recent document, which fixed a surprising number of errors on its own.",
+            {
+                stats: [
+                    { value: "40–52% → 85–95%", label: "of fields correct against hand-checked answers" },
+                    { value: "67s → ~20s", label: "to process a document" },
+                    { value: "45 → 28", label: "fields in the output, without the duplicates and noise" },
+                ],
+            },
+            { h: "Making it fast" },
+            "The first version took 67 seconds per document because every request sent the whole document to the model. We considered building full retrieval with embeddings, then realised we didn't need it. Financial fields now only see the tables, and company details only see the opening of each document, where names and addresses live. Smaller inputs meant faster answers, and the answers got better too, because the model had less to wade through. It came out three to four times faster with no vector database to run.",
+            { h: "Every number has a receipt" },
+            "Underneath, the work is split cleanly. Supabase edge functions handle who and when: logins, uploads, creating jobs. A FastAPI service handles what and why: reading documents, filling the schema, scoring and tracking where each value came from. Every field carries its source document and a confidence score all the way to the screen.",
+            "We also started filling in gaps from public data, like SEC filings and company records from People Data Labs, while respecting robots.txt and sticking to public sources. We wanted LinkedIn too. LinkedIn had other ideas.",
+            { h: "If you're building something like this" },
+            {
+                list: [
+                    "Read the tables before you write a prompt. A lot of \"AI extraction\" is really just parsing.",
+                    "Let arithmetic grade the model. Financial statements come with built-in checks; use them.",
+                    "Show your sources. People trust a number they can trace, and they fix the ones that look wrong.",
+                ],
+            },
+        ],
+    },
+    {
+        slug: "quickfi",
+        title: "Taking the paperwork out of equipment finance with QuickFi",
+        partner: "QuickFi",
+        when: "Spring 2025 – Spring 2026",
+        tag: "client",
+        dek: "Two agents for QuickFi's lending platform: one that chases, reads and checks borrowers' insurance certificates, and one that vets equipment vendors against public records, sanctions lists and the news.",
+        team: ["Merek Kaden Soriano", "David Lee", "Erik Pedersen", "Brandon Xu", "Alex Kozik", "Nicole Luo", "Audrey Lewellen", "Morgan Nelson Stuart", "Zach Riiff", "Arshdeep Kaur", "Jonathan Zhang", "Mateo del Rio Lanse", "Eddie Hu"],
+        motif: "papers",
+        palette: { bg: "#0d0d0d", ink: ["#5f5f5f", "#e9e9e9", "#81c241"], accent: "#5f9a2a" },
+        logos: [{ src: "/logos/mark-quickfi.svg", alt: "QuickFi" }],
+        body: [
+            "QuickFi builds an embedded lending platform for business equipment finance, used by equipment makers and banks to offer loans right where the equipment is sold. When we met them in early 2025, two chores were eating their operations team's time, and neither got easier as the business grew.",
+            "The first was insurance. Every borrower has to keep commercial insurance on the equipment, and someone had to prove it: email the insurer, wait for a certificate, open the PDF, check it against the contract, update the record, and chase anything missing. The second was vendors. Before QuickFi pays for a piece of equipment, it needs to know the seller is a real, registered business that isn't on a sanctions list or in the news for fraud. That research was slow and different every time.",
+            "We built an agent for each.",
+            { h: "Insurance certificates, start to finish" },
+            {
+                flow: [
+                    { label: "Request", note: "the agent emails the insurer from a template" },
+                    { label: "Watch", note: "a secure inbox is monitored and matched to the borrower" },
+                    { label: "Read", note: "an LLM pulls policy type, coverage, dates and equipment" },
+                    { label: "Check", note: "against that contract's specific requirements" },
+                    { label: "File", note: "stored, the record updated, follow-ups sent if anything's missing" },
+                ],
+                caption: "When a certificate arrives, everything after it happens without a person in the loop.",
+            },
+            { sketch: "quickfi-insurance", caption: "Illustration of a certificate check, with made-up details." },
+            "The hard part was variety. Every insurer formats certificates differently, so the reader needed fallback strategies for when the first approach came back confused. Email is messy too: attachments go missing and replies arrive out of order, so every step had to fail gracefully rather than drop a borrower on the floor. It all runs on Flask and Supabase.",
+            { h: "Vendor checks, all at once" },
+            "For vendors the agent runs a set of independent checks and pulls the results into one risk report for the team to review.",
+            { sketch: "quickfi-vendor", caption: "Illustration of a vendor report, with a made-up vendor." },
+            "Secretary of State websites were our nemesis. Every state's is different, and they change without warning, so each needed its own scraper and some upkeep. Names were the other headache: \"Acme Equipment Inc.\" in one database is \"ACME EQUIPMENT, INCORPORATED\" in another, so we wrote fuzzy matching to decide when two records are the same company. Google and Dun & Bradstreet both have rate limits, which taught us a lot about batching and retries.",
+            "One check we're particularly happy with looks for conflicts of interest, such as a borrower buying equipment from a company they also own.",
+            { h: "Who built what" },
+            {
+                people: [
+                    { name: "Merek Soriano", did: "led the insurance project" },
+                    { name: "Erik Pedersen", did: "built the certificate validator that classifies certificates and checks them against QuickFi's standards; set up storage and the glue between email, validation and the backend" },
+                    { name: "Brandon Xu", did: "built the API endpoints for borrower lookup, certificate upload and expiry dates" },
+                    { name: "Alex Kozik", did: "built the data models and the templated request and follow-up emails" },
+                    { name: "Nicole Luo", did: "built the inbox monitor that matches incoming certificates to borrowers" },
+                    { name: "David Lee", did: "led the vendor project" },
+                    { name: "Audrey Lewellen", did: "built the Google Maps and Search checks and the adverse-news pipeline" },
+                    { name: "Morgan Stuart", did: "built the Dun & Bradstreet integration, conflict-of-interest detection and the risk scoring" },
+                    { name: "Zach Riiff", did: "built the backend for vendor records and the external checks" },
+                    { name: "Arshdeep Kaur", did: "built the APIs that talk to outside data sources" },
+                    { name: "Jonathan Zhang", did: "built the Secretary of State and OFAC lookups" },
+                ],
+            },
+            {
+                quote: "We were delighted to partner with the Generative AI at Cornell team on these two projects which show the tremendous capabilities of these talented Cornell students to use emerging new Agentic AI technology to improve long-standing business models in banking and finance.",
+                by: "Bill Verhelle, CEO of QuickFi (Cornell Law '98)",
+            },
+            { h: "Round two" },
+            "QuickFi asked us back. In spring 2026 Mateo, Brandon and Eddie picked the vendor pipeline up again to keep extending it. It's nice when the thing you built gets used enough that people want more of it.",
+            { links: [{ label: "Read the original case study (PDF)", href: "https://drive.google.com/file/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view" }] },
+        ],
+    },
+    {
+        slug: "everything-else",
+        title: "Everything else: open source, side quests and work in progress",
+        partner: "Cisco, MLX, Pollen Robotics and more",
+        when: "Ongoing",
+        tag: "collection",
+        dek: "Not everything we do fits in a case study. Security research with Cisco, open-source contributions, a robot duck, and the tools we build for ourselves and for Cornell.",
+        team: [],
+        motif: "field",
+        palette: CLUB,
+        logos: [
+            { src: "/logos/mark-cisco.png", alt: "Cisco" },
+            { src: "/logos/mlx.png", alt: "MLX", bg: "#1e1e1e" },
+            { src: "/logos/pollen.svg", alt: "Pollen Robotics", bg: "#f3f0ea" },
+        ],
+        body: [
+            "Some of our favourite work is too small, too early or too open-ended for a full write-up. This is the place for it. We'll keep adding to it as things ship.",
+            { h: "Cisco: securing AI agents" },
+            "This spring a small team started working with Cisco on two questions. The research question: what are the real ways an AI coding agent running in the cloud can be attacked, and what would a defence need to catch? The building question: in Cisco's AI Canvas, could you describe a network problem in plain language and get back the right diagnostic widgets, instead of jumping between half a dozen tools? We're working on the first part as research and the second as a prototype. A proper write-up will follow once there's something to show.",
+            { h: "Open source" },
+            "We contribute to projects we use. That includes [MLX](https://github.com/ml-explore/mlx), Apple's machine learning framework for its own chips, and [Pollen Robotics](https://www.pollen-robotics.com/)' Microduck, a small open-source robot that we're also training with reinforcement learning. Yes, it's a duck. Yes, that's the duck on the cover.",
+            { h: "Research" },
+            "Alongside [ForeSight](/projects/foresight/), we're studying how to keep agents on track over long, multi-step tasks, where small mistakes compound and most agents quietly fall apart.",
+            { h: "Things we build for ourselves" },
+            {
+                rows: [
+                    { label: "Trading agent", body: "An autonomous trading agent we're building to run live." },
+                    { label: "Big Red Macros", body: "Cornell's dining hall menus and locations in one app, so you can find the meal that fits your macros." },
+                    { label: "ClassGPT", body: "Professors set up an AI tutor trained on their own course material, and students in the class can use it straight away." },
+                ],
+            },
+            { h: "Earlier partners" },
+            "Before this site existed we also worked with Charter, Vero and Gradial. We're digging up our notes from those projects, and they'll get proper write-ups here too.",
+            { links: [
+                { label: "Our GitHub", href: "https://github.com/Cornell-Gen-AI" },
+                { label: "ForeSight code and results", href: "https://github.com/akhilc08/aaai-27" },
+                { label: "QuickFi case study (PDF)", href: "https://drive.google.com/file/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view" },
+            ] },
+        ],
+    },
+];
+
+const WPM = 230;
+
+export function readMinutes(post: Post) {
+    const text = [post.dek, ...post.body.map((b) => (typeof b === "string" ? b : JSON.stringify(b)))].join(" ");
+    return Math.max(1, Math.round(text.split(/\s+/).length / WPM));
+}

@@ -28,7 +28,7 @@ export default function Nav() {
 
     return (
         <header
-            data-theme-scope={path === "/team" ? "light" : undefined}
+            data-theme-scope={path === "/team" || path.startsWith("/projects") ? "light" : undefined}
             className={cn(
                 "fixed inset-x-0 top-0 z-50 text-bone transition-colors duration-300",
                 scrolled || open ? "bg-night/95" : "bg-transparent",
