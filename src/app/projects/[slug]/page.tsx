@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
 import Plate from "@/components/work/Plate";
 import Blocks, { slugify } from "@/components/work/Blocks";
-import { POSTS, readMinutes } from "@/lib/work";
+import { POSTS } from "@/lib/work";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -28,9 +28,8 @@ export default async function PostPage({ params }: Params) {
     const next = [POSTS[(i + 1) % POSTS.length], POSTS[(i + 2) % POSTS.length]];
     const sections = post.body.flatMap((b) => (typeof b === "object" && "h" in b ? [b.h] : []));
     const facts = [
-        { k: post.tag === "client" ? "Partner" : "Area", v: post.partner },
+        { k: post.tag === "client" ? "Partner" : "Type", v: post.tag === "client" ? post.partner : post.tag },
         { k: "Timeline", v: post.when },
-        { k: "Type", v: post.tag },
         { k: "Status", v: post.status },
     ];
 
@@ -47,9 +46,9 @@ export default async function PostPage({ params }: Params) {
                         <h1 className="mt-8 max-w-[60rem] text-[clamp(2.5rem,5.6vw,4.75rem)] font-medium leading-[1] tracking-[-0.045em] text-fg">{post.title}</h1>
                         <p className="mt-7 max-w-[44rem] text-[clamp(1.1rem,1.5vw,1.3rem)] leading-[1.45] text-bone/65">{post.dek}</p>
 
-                        <dl className="mt-12 grid grid-cols-2 border-t border-bone/10 md:grid-cols-4">
+                        <dl className="mt-12 grid grid-cols-1 border-t border-bone/10 sm:grid-cols-3">
                             {facts.map((f) => (
-                                <div key={f.k} className="border-b border-bone/10 py-4 pr-4 md:border-b-0">
+                                <div key={f.k} className="border-b border-bone/10 py-4 pr-4 sm:border-b-0">
                                     <dt className={`${label} text-bone/40`}>{f.k}</dt>
                                     <dd className="mt-1.5 text-[15px] text-fg first-letter:uppercase">{f.v}</dd>
                                 </div>
@@ -65,10 +64,10 @@ export default async function PostPage({ params }: Params) {
                                 {sections.length > 0 && (
                                     <nav aria-label="On this page" className="hidden md:block">
                                         <p className={`${label} text-bone/40`}>On this page</p>
-                                        <ul className="mt-4 space-y-2.5 border-l border-bone/10 text-[14px] leading-snug">
+                                        <ul className="mt-4 space-y-2.5 text-[14px] leading-snug">
                                             {sections.map((h) => (
                                                 <li key={h}>
-                                                    <a href={`#${slugify(h)}`} className="-ml-px block border-l border-transparent pl-4 text-bone/55 transition-colors hover:border-bone/60 hover:text-fg">
+                                                    <a href={`#${slugify(h)}`} className="block text-bone/55 transition-colors hover:text-fg">
                                                         {h}
                                                     </a>
                                                 </li>
@@ -90,7 +89,6 @@ export default async function PostPage({ params }: Params) {
                                         ))}
                                     </ul>
                                 </div>
-                                <p className={`${label} text-bone/40`}>{readMinutes(post)} min read</p>
                             </div>
                         </aside>
 
@@ -100,7 +98,7 @@ export default async function PostPage({ params }: Params) {
                     </div>
                 </article>
 
-                <section className="mt-32 border-t border-bone/10 pt-10">
+                <section className="mt-32">
                     <p className={`${label} text-bone/45`}>Keep reading</p>
                     <div className="mt-8 grid gap-x-10 gap-y-14 md:grid-cols-2">
                         {next.map((p) => (

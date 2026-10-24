@@ -1,7 +1,7 @@
 // Single source of truth for site content. Update this file each semester.
 
 export const CONTACT_EMAIL = "admin@cornellgenai.dev";
-export const GITHUB_URL = "https://github.com/Cornell-Gen-AI";
+export const GITHUB_URL = "https://github.com/cornell-genai";
 /**
  * Where the mailing-list form posts (a field named "email"), e.g. Buttondown's
  * "https://buttondown.com/api/emails/embed-subscribe/<username>". Until it is

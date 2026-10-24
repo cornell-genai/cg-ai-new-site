@@ -73,7 +73,7 @@ function BridgeReview({ accent }: P) {
             </div>
             <div className="flex items-center justify-between border-t border-bone/10 px-4 py-3 text-[12.5px] text-bone/50">
                 <span>Balance sheet check: assets = liabilities + equity ✓</span>
-                <span>1 field needs a look</span>
+                <span>1 field needs review</span>
             </div>
         </Frame>
     );
@@ -199,7 +199,7 @@ function Cu25Chat({ accent }: P) {
                 </Bubble>
                 <Bubble me accent={accent}>Gates G01.</Bubble>
                 <Bubble accent={accent}>
-                    <p>The form needs two answers before I can send it:</p>
+                    <p>The form needs two answers before I can preview the request:</p>
                     <ul className="mt-1.5 list-disc space-y-0.5 pl-5 text-[13.5px]">
                         <li>Will food be served at this event?</li>
                         <li>Will anyone under 18 attend?</li>
@@ -207,7 +207,7 @@ function Cu25Chat({ accent }: P) {
                 </Bubble>
                 <Bubble me accent={accent}>Pizza, yes. No minors.</Bubble>
                 <Bubble accent={accent}>
-                    <p>Food unlocked one more question: who&apos;s providing it? Once you tell me, I&apos;ll show you the full request to approve before anything is sent.</p>
+                    <p>Since food will be served, who&apos;s providing it? Once you tell me, I&apos;ll show you the full request to approve before anything is sent.</p>
                     <p className={cn(code, "mt-2")}>cu25 submit request.json  → preview, confirm code 3f9a1c0b2e</p>
                 </Bubble>
             </div>
@@ -223,10 +223,10 @@ function ReckonCheck({ accent }: P) {
                     <span className="mt-1 size-2.5 shrink-0 rounded-full bg-[#d9a21b]" />
                     <div>
                         <p className="font-semibold text-fg">Reckon comprehension <span className="font-normal text-bone/50">· pending, merge blocked</span></p>
-                        <p className="mt-1 text-bone/70">Explain to merge. In your own words, how does this change:</p>
+                        <p className="mt-1 text-bone/70">Before merging, explain in your own words:</p>
                         <ol className="mt-1.5 list-decimal space-y-0.5 pl-5 text-[13.5px] text-bone/70">
-                            <li>decide when a failed delivery is retried, and when it gives up?</li>
-                            <li>keep a retried webhook from being processed twice?</li>
+                            <li>how this change decides when to retry a failed delivery and when to stop</li>
+                            <li>how this change prevents the same webhook from being processed twice</li>
                         </ol>
                     </div>
                 </div>
@@ -236,7 +236,7 @@ function ReckonCheck({ accent }: P) {
                 </div>
                 <div className="px-4 py-3.5">
                     <p className="text-[12.5px] text-bone/45">Reckon</p>
-                    <p className="text-bone/80">Not yet. You&apos;ve covered when it retries. What stops the same delivery being handled twice if the first attempt actually succeeded?</p>
+                    <p className="text-bone/80">You&apos;ve explained the retry timing. What prevents a second delivery from being processed if the first attempt succeeded?</p>
                 </div>
                 <div className="px-4 py-3.5">
                     <p className="text-[12.5px] text-bone/45">reviewer</p>

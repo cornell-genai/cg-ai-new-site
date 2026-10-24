@@ -39,7 +39,7 @@ export default function Home() {
                 <section className="pt-28 md:pt-44">
                     <Reveal className="mx-auto max-w-3xl text-center">
                         <p className="text-[clamp(1.75rem,3.6vw,3rem)] font-semibold leading-[1.08] tracking-[-0.035em] text-fg">
-                            {CURRENT_MEMBERS.length} engineers, researchers, and designers building with AI.
+                            {CURRENT_MEMBERS.length} members across engineering, research, and business.
                         </p>
                     </Reveal>
                     <Reveal delay={0.1} className="mx-auto mt-12 max-w-[1040px] md:mt-16">
