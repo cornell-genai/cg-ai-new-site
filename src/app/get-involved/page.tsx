@@ -9,13 +9,13 @@ export const metadata: Metadata = { title: "Get involved" };
 const WAYS = [
     {
         title: "Sponsor us",
-        body: "Sponsorship funds the compute, events, and projects our members take on, and we'd be grateful for your support. Sponsors get early access to our recruiting, invitations to our events, and a direct line to students building with AI.",
-        cta: "Talk to us about sponsorship",
+        body: "Sponsorship funds compute, events, and student projects. Sponsors get early access to recruiting, invitations to our events, and direct contact with student members.",
+        cta: "Discuss sponsorship",
         subject: "Sponsorship",
     },
     {
         title: "Partner on a project",
-        body: "Have a problem AI could help solve? We'd like to hear about it. Each semester we partner with a few organizations, and a team of our engineers and researchers works with you to ship a working system by the end of the term.",
+        body: "Bring us a problem AI could help solve. Each semester, we partner with a few organizations, and a team of our engineers and researchers works with you to deliver a working system by the end of the term.",
         cta: "Propose a project",
         subject: "Project collaboration",
     },
@@ -28,8 +28,7 @@ export default function GetInvolvedPage() {
                 <div>
                     <h2 className="text-[clamp(1.6rem,2.6vw,2.2rem)] font-semibold tracking-[-0.035em] text-fg">Join the mailing list</h2>
                     <p className="mt-4 text-[17px] leading-relaxed text-bone/65">
-                        Recruiting for F26 is closed. Get on the list and we&apos;ll email you when applications open, along with new projects and
-                        write-ups. A few emails a semester.
+                        Applications for fall 2026 are closed. Join the mailing list and we&apos;ll email you when applications open, along with new project write-ups. We send a few emails each semester.
                     </p>
                 </div>
                 <div className="md:pt-14"><Newsletter /></div>
