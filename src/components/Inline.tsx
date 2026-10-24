@@ -75,13 +75,12 @@ export function ClientStack() {
 export function OpenSourceStack() {
     return (
         <Stack>
-            <span title="MLX" className={cn(circle, "bg-[#1e1e1e]")}>
-                <img src="/logos/mlx.png" alt="MLX" className="max-w-[0.46em] object-contain" />
-            </span>
-            <span title="Pollen Robotics" className={cn(circle, "bg-[#f3f0ea]")}>
-                <img src="/logos/pollen.svg" alt="Pollen Robotics" className="max-h-[0.5em] object-contain" />
-            </span>
+            <a href="https://github.com/jundot/omlx" target="_blank" rel="noopener noreferrer" title="oMLX" aria-label="oMLX on GitHub" className={cn(circle, "bg-[#1e1e1e]")}>
+                <img src="/logos/mlx.png" alt="" className="max-w-[0.46em] object-contain" />
+            </a>
+            <a href="https://pollen-robotics.com" target="_blank" rel="noopener noreferrer" title="Pollen Robotics" aria-label="Pollen Robotics website" className={cn(circle, "bg-[#f3f0ea]")}>
+                <img src="/logos/pollen.svg" alt="" className="max-h-[0.5em] object-contain" />
+            </a>
         </Stack>
     );
 }
-
