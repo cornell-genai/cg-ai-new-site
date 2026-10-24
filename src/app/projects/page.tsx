@@ -1,79 +1,76 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import Plate from "@/components/work/Plate";
 import { POSTS, readMinutes, type Post } from "@/lib/work";
-import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
     title: "Projects",
-    description: "Write-ups of our client work and research, from the people who built it.",
+    description: "Write-ups of our client work, research and open source, from the people who built it.",
 };
 
-// Each post gets its own spot on the page rather than a slot in a grid: the
-// banner's width and column, and whether the words sit beside or below it,
-// change from one to the next. Desktop only; on phones they simply stack.
-const PLACES = [
-    { image: "md:col-span-9", text: "md:col-span-9", beside: false, big: true },
-    { image: "md:col-span-7 md:col-start-6", text: "md:col-span-4 md:col-start-1 md:row-start-1", beside: true, big: false },
-    { image: "md:col-span-6 md:col-start-2", text: "md:col-span-6 md:col-start-2", beside: false, big: false },
-    { image: "md:col-span-8 md:col-start-1", text: "md:col-span-4 md:col-start-9", beside: true, big: false },
-    { image: "md:col-span-6 md:col-start-6", text: "md:col-span-6 md:col-start-6", beside: false, big: false },
-];
+const label = "font-mono text-[11px] uppercase tracking-[0.1em]";
 
-function Entry({ post, n, place }: { post: Post; n: number; place: (typeof PLACES)[number] }) {
+function Meta({ post }: { post: Post }) {
     return (
-        <Link href={`/projects/${post.slug}/`} className="group grid grid-cols-1 gap-x-8 md:grid-cols-12">
-            <div className={cn("overflow-hidden rounded-[3px]", place.image)}>
-                <img
-                    src={post.banner}
-                    alt=""
-                    className="aspect-[1.9/1] w-full object-cover transition-transform duration-[1.2s] ease-out-expo group-hover:scale-[1.025]"
-                />
-            </div>
-            <div className={cn("mt-6", place.text, place.beside && "md:mt-0 md:self-end")}>
-                <p className="font-mono text-[11px] tracking-[0.08em] text-bone/40">
-                    {String(n).padStart(2, "0")} / {String(POSTS.length).padStart(2, "0")}
-                </p>
-                <h2
-                    className={cn(
-                        "mt-3 font-medium leading-[1.1] tracking-[-0.03em] text-fg decoration-[0.06em] underline-offset-[0.14em] group-hover:underline",
-                        place.big ? "text-[clamp(1.8rem,3vw,2.7rem)]" : "text-[clamp(1.5rem,2.1vw,1.95rem)]",
-                    )}
-                    style={{ textDecorationColor: post.accent }}
-                >
-                    {post.title}
-                </h2>
-                {place.big && <p className="mt-4 max-w-[38rem] text-[17px] leading-snug text-bone/60">{post.dek}</p>}
-                <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-[15px]">
-                    <span className="bg-night-2 px-3 py-1 text-bone/70">{post.tag}</span>
-                    <span className="text-bone/45">{post.when}</span>
-                    <span className="text-bone/30">·</span>
-                    <span className="text-bone/45">{readMinutes(post)} min read</span>
-                </div>
-            </div>
-        </Link>
+        <p className={`${label} flex flex-wrap gap-x-3 gap-y-1 text-bone/45`}>
+            <span className="text-bone/75">{post.tag}</span>
+            <span>{post.when}</span>
+            <span>{readMinutes(post)} min</span>
+        </p>
     );
 }
 
-// Always white, like the Team page.
+// One featured write-up, then the rest on an even two-column grid. Every
+// banner is set the same way, so the work does the talking.
 export default function ProjectsPage() {
+    const [lead, ...rest] = POSTS;
     return (
-        <div data-theme-scope="light">
-            <main className="mx-auto min-h-svh max-w-[78rem] px-5 pb-28 pt-32 md:px-8 md:pt-44">
-                <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-                    <h1 className="text-[clamp(3.5rem,9vw,7.5rem)] font-medium leading-[0.85] tracking-[-0.055em]">Projects</h1>
-                    <p className="max-w-sm text-[18px] font-medium leading-snug tracking-[-0.01em] text-bone/60">
-                        What we&apos;ve built with our partners and what we&apos;ve found in research, written by the people who did the work.
-                    </p>
-                </header>
-
-                <div className="mt-20 flex flex-col gap-24 md:mt-28 md:gap-44">
-                    {POSTS.map((p, i) => (
-                        <Entry key={p.slug} post={p} n={i + 1} place={PLACES[i % PLACES.length]} />
-                    ))}
+        <>
+        <main className="mx-auto min-h-svh max-w-[80rem] px-5 pb-20 pt-32 md:px-8 md:pt-44">
+            <header className="grid gap-8 border-b border-bone/10 pb-12 md:grid-cols-12 md:items-end">
+                <div className="md:col-span-8">
+                    <p className={`${label} text-bone/45`}>Projects · {String(POSTS.length).padStart(2, "0")} write-ups</p>
+                    <h1 className="mt-5 text-[clamp(3.5rem,9vw,7.5rem)] font-medium leading-[0.85] tracking-[-0.055em]">Projects</h1>
                 </div>
-            </main>
-            <Footer />
-        </div>
+                <p className="max-w-sm text-[17px] leading-snug text-bone/60 md:col-span-4 md:justify-self-end">
+                    What we&apos;ve built with our partners, found in research and given back to open source. Written by the people who did the work.
+                </p>
+            </header>
+
+            <Link href={`/projects/${lead.slug}/`} className="group mt-14 grid gap-8 md:mt-20 md:grid-cols-12 md:items-end md:gap-10">
+                <Plate src={lead.banner} eager className="md:col-span-8" />
+                <div className="md:col-span-4">
+                    <Meta post={lead} />
+                    <h2 className="mt-4 text-[clamp(1.8rem,2.8vw,2.6rem)] font-medium leading-[1.06] tracking-[-0.035em] text-fg">{lead.title}</h2>
+                    <p className="mt-4 text-[16px] leading-snug text-bone/60">{lead.dek}</p>
+                    <p className="mt-6 text-[15px] text-fg">
+                        Read the write-up <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+                    </p>
+                </div>
+            </Link>
+
+            <div className="mt-24 flex items-center gap-4 md:mt-32">
+                <p className={`${label} shrink-0 text-bone/45`}>All projects</p>
+                <span className="h-px flex-1 bg-bone/10" />
+            </div>
+
+            <div className="mt-10 grid gap-x-10 gap-y-16 md:grid-cols-2 md:gap-y-20">
+                {rest.map((p) => (
+                    <Link key={p.slug} href={`/projects/${p.slug}/`} className="group block">
+                        <Plate src={p.banner} />
+                        <div className="mt-6">
+                            <Meta post={p} />
+                            <h2 className="mt-3 text-[clamp(1.4rem,1.9vw,1.75rem)] font-medium leading-[1.12] tracking-[-0.03em] text-fg decoration-bone/30 decoration-1 underline-offset-[0.18em] group-hover:underline">
+                                {p.title}
+                            </h2>
+                            <p className="mt-3 line-clamp-2 max-w-[34rem] text-[15.5px] leading-snug text-bone/55">{p.dek}</p>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        </main>
+        <Footer />
+        </>
     );
 }

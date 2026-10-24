@@ -1,8 +1,7 @@
 // Project write-ups for the Projects page. Each post is a list of blocks; a
 // plain string is a paragraph and may hold [links](https://...).
 
-
-export type SketchName = "bridge-review" | "investcorp-digest" | "treasury-chat" | "quickfi-insurance" | "quickfi-vendor" | "cu25-chat" | "reckon-check";
+export type SketchName = "bridge-review" | "treasury-chat" | "quickfi-insurance" | "quickfi-vendor" | "cu25-chat" | "reckon-check";
 
 export type Block =
     | string
@@ -12,7 +11,8 @@ export type Block =
     | { flow: { label: string; note?: string }[]; caption?: string }
     | { stats: { value: string; label: string }[] }
     | { rows: { label: string; body: string }[]; caption?: string }
-    | { figure: string; alt: string; caption: string }
+    /** plate: set a light screenshot on a dark plate tinted with the post accent. */
+    | { figure: string; alt: string; caption: string; plate?: boolean }
     | { sketch: SketchName; caption: string }
     | { people: { name: string; did: string }[] }
     | { links: { label: string; href: string; note?: string }[] };
@@ -27,8 +27,11 @@ export type Post = {
     team: string[];
     /** A wide (about 1.9:1) banner in public/work/<slug>/. */
     banner: string;
-    /** The partner's colour for diagrams and rules on the white page. */
+    /** The partner's colour, used for diagrams and rules. Must read on dark. */
     accent: string;
+    /** Where the work stands, in a few words. */
+    status: string;
+    stack: string[];
     body: Block[];
 };
 
@@ -36,7 +39,9 @@ export const POSTS: Post[] = [
     {
         slug: "investcorp",
         banner: "/work/investcorp/banner.webp",
-        accent: "#13294b",
+        accent: "#4d8ef0",
+        status: "In use at Investcorp",
+        stack: ["Python", "LangChain", "Azure OpenAI", "Microsoft Azure"],
         title: "Reading the news and the inbox for Investcorp",
         partner: "Investcorp",
         when: "Spring 2026",
@@ -47,7 +52,7 @@ export const POSTS: Post[] = [
             "Investcorp is a global alternative investment firm. In February their technical lead walked us through a long list of places AI could help, and we picked two to start with for a very practical reason: each one could stand on its own without weeks of security reviews. Both had to be Python, both run on Investcorp's own Azure cloud, and both had to be useful from a command line before anyone built a dashboard.",
             "Twelve of us split into two teams.",
             { h: "Pilot one: which headlines actually matter" },
-            "One of Investcorp's businesses runs CLOs. A CLO is a fund made of loans to a lot of companies at once, usually 75 to 100 of them. If one of those companies gets sued, loses a factory to a flood or watches its CEO walk out, the credit team wants to know before it shows up in the price of the loan. Today, keeping up with all of that is mostly manual.",
+            "One of Investcorp's businesses runs CLOs. A CLO is a fund made of loans to a lot of companies at once, usually 75 to 100 of them. If one of those companies gets sued, loses a factory to a flood or watches its CEO walk out, the credit team wants to know before it shows up in the price of the loan. Before this project, keeping up with all of that was mostly manual.",
             "The tempting version of this project is a firehose: every ESG headline about every company. Nobody wants that. The thing we kept coming back to was that an event matters here only if it might change whether a company can pay back its debt. A small controversy that dents the share price for a day isn't the same as a lawsuit that could bankrupt the company. So the core of the system is a classifier that sorts every event into one of three tiers by its effect on credit.",
             {
                 rows: [
@@ -68,7 +73,11 @@ export const POSTS: Post[] = [
                 caption: "The pipeline. The memory feeds back into the classifier the following week.",
             },
             "That memory is what makes it more than a news alert. If a company shows up with three medium-tier events in a month, none of which would raise an eyebrow alone, the pattern can push it up a tier. We also designed a way for the credit team to correct the classifier when it gets one wrong, so it improves on their judgement rather than ours.",
-            { sketch: "investcorp-digest", caption: "Illustration of the weekly report. The companies and events are made up; the real portfolio stays inside Investcorp." },
+            { h: "What it looks like now" },
+            "The pilot grew into a product the credit team uses. The analyst workspace ranks every company in the portfolio by how quickly its ESG picture is getting worse. Each row shows how fast events are arriving, whether things are escalating or settling down, the worst severity so far and an overall score. Click a company and you get its timeline of events, its exposure across environmental, social and governance issues, and how its risk has moved over the last few months.",
+            { figure: "/work/investcorp/workspace.webp", alt: "The analyst workspace: a table of portfolio companies ranked by ESG deterioration, with velocity, trend, event count, peak severity and score, and below it an event timeline, ESG exposure and risk trajectory for the selected company.", caption: "The analyst workspace. Company names and headlines are blurred.", plate: true },
+            "A second page keeps an eye on the system itself. It shows how many events are classified and how many are waiting, which companies have had no news coverage lately (private companies can go quiet for weeks, and silence isn't the same as safety), how events split across severity and pillar, and how confident the classifier is. Anything it isn't sure about lands in a review queue for a person to check.",
+            { figure: "/work/investcorp/analytics.webp", alt: "The analytics overview: portfolio companies, recent coverage and coverage gaps; pipeline status; event volume over seven days; severity distribution; pillar breakdown; classification confidence and event type breakdown.", caption: "The analytics overview: coverage, pipeline health and how well the classifier is doing.", plate: true },
             "Over spring break the team split into six workstreams (requirements, architecture, the materiality framework, news sources, prior art, and the feedback loop) so we came back with a fully scoped first version instead of a pile of open questions. Everything runs through Investcorp's own Azure OpenAI deployment. Their portfolio data never leaves their cloud, and we were fine with that.",
             { h: "Pilot two: the treasury inbox" },
             "Every week Investcorp's treasury team emails a list of banks asking for indicative rates. The answers trickle back into a shared inbox: some in the body of the email, some in attachments, some late, some never. Making sense of it meant reading every reply by hand.",
@@ -96,7 +105,9 @@ export const POSTS: Post[] = [
     {
         slug: "foresight",
         banner: "/work/foresight/banner.webp",
-        accent: "#d01f17",
+        accent: "#e5483f",
+        status: "AAAI-27 student abstract",
+        stack: ["PyTorch", "Laya (421M)", "Pokémon Showdown", "poke-env"],
         title: "ForeSight: a small model that guesses your opponent's next move",
         partner: "Research",
         when: "Fall 2026",
@@ -141,7 +152,9 @@ export const POSTS: Post[] = [
     {
         slug: "bridge",
         banner: "/work/bridge/banner.webp",
-        accent: "#1c2541",
+        accent: "#6f8fe8",
+        status: "Delivered",
+        stack: ["FastAPI", "IBM Docling", "OpenAI", "Supabase", "Next.js"],
         title: "Teaching a loan application to read a balance sheet",
         partner: "Bridge",
         when: "Fall 2025",
@@ -204,7 +217,9 @@ export const POSTS: Post[] = [
     {
         slug: "quickfi",
         banner: "/work/quickfi/banner.webp",
-        accent: "#4e8a1f",
+        accent: "#81c241",
+        status: "Delivered, extended in 2026",
+        stack: ["Flask", "Supabase", "OpenAI", "Perplexity", "Dun & Bradstreet", "OFAC"],
         title: "Taking the paperwork out of equipment finance with QuickFi",
         partner: "QuickFi",
         when: "Spring 2025 – Spring 2026",
@@ -261,7 +276,9 @@ export const POSTS: Post[] = [
     {
         slug: "for-cornell",
         banner: "/work/for-cornell/banner.webp",
-        accent: "#b31b1b",
+        accent: "#e5483f",
+        status: "Open source, in beta",
+        stack: ["Python", "pydantic", "MCP", "TypeScript", "Probot", "Supabase"],
         title: "Two small tools for the people around us",
         partner: "For the Cornell community",
         when: "Summer – Fall 2026",

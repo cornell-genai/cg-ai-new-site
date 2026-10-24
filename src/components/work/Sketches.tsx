@@ -79,54 +79,6 @@ function BridgeReview({ accent }: P) {
     );
 }
 
-function InvestcorpDigest({ accent }: P) {
-    const tiers = [
-        {
-            t: "High",
-            c: accent,
-            items: [
-                {
-                    co: "Company A · packaging",
-                    e: "Two outlets report the company is preparing a Chapter 11 filing.",
-                    x: "Seen before: two medium-tier events in March (supplier dispute, CFO exit). Suggested next step: review the position and the covenant package this week.",
-                },
-            ],
-        },
-        {
-            t: "Medium",
-            c: "#5b7bb0",
-            items: [
-                { co: "Company F · specialty chemicals", e: "State regulator opens an inquiry into a discharge permit." },
-                { co: "Company K · logistics", e: "Union vote scheduled at the two largest depots." },
-            ],
-        },
-        { t: "Low", c: "#a9b8cf", items: [{ co: "14 events logged", e: "Industry commentary and routine disclosures. No action." }] },
-    ];
-    return (
-        <Frame title="CLO news monitor · Week of 13 April">
-            <div className="divide-y divide-bone/10">
-                {tiers.map((tier) => (
-                    <div key={tier.t} className="grid gap-3 px-4 py-4 md:grid-cols-[6rem_1fr]">
-                        <span className="flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.08em]" style={{ color: tier.c }}>
-                            <span className="size-2" style={{ background: tier.c }} />
-                            {tier.t}
-                        </span>
-                        <div className="space-y-3">
-                            {tier.items.map((it) => (
-                                <div key={it.co}>
-                                    <p className="font-semibold text-fg">{it.co}</p>
-                                    <p className="text-bone/70">{it.e}</p>
-                                    {"x" in it && it.x && <p className="mt-1.5 border-l-2 pl-3 text-[13px] text-bone/55" style={{ borderColor: tier.c }}>{it.x}</p>}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </Frame>
-    );
-}
-
 function Bubble({ me, children, accent }: { me?: boolean; children: React.ReactNode; accent: string }) {
     return (
         <div className={cn("flex", me && "justify-end")}>
@@ -301,7 +253,6 @@ function ReckonCheck({ accent }: P) {
 
 const SKETCHES: Record<SketchName, (p: P) => React.ReactNode> = {
     "bridge-review": BridgeReview,
-    "investcorp-digest": InvestcorpDigest,
     "treasury-chat": TreasuryChat,
     "quickfi-insurance": QuickfiInsurance,
     "quickfi-vendor": QuickfiVendor,
