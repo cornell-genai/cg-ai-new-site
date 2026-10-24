@@ -17,6 +17,7 @@ const PLACES = [
     { image: "md:col-span-7 md:col-start-6", text: "md:col-span-4 md:col-start-1 md:row-start-1", beside: true, big: false },
     { image: "md:col-span-6 md:col-start-2", text: "md:col-span-6 md:col-start-2", beside: false, big: false },
     { image: "md:col-span-8 md:col-start-1", text: "md:col-span-4 md:col-start-9", beside: true, big: false },
+    { image: "md:col-span-6 md:col-start-6", text: "md:col-span-6 md:col-start-6", beside: false, big: false },
 ];
 
 function Entry({ post, n, place }: { post: Post; n: number; place: (typeof PLACES)[number] }) {

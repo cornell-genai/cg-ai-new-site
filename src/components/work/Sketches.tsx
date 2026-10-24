@@ -230,12 +230,83 @@ function QuickfiVendor({ accent }: P) {
     );
 }
 
+function Cu25Chat({ accent }: P) {
+    const code = "font-mono text-[12px] text-bone/55";
+    return (
+        <Frame title="Agent with cu25">
+            <div className="space-y-3 px-4 py-4">
+                <Bubble me accent={accent}>Can you get us a room for our club meeting next Thursday, 5 to 6pm? About 20 people.</Bubble>
+                <Bubble accent={accent}>
+                    <p>That&apos;s an event for an organization, so it goes through 25Live. Three rooms are free for 20+:</p>
+                    <p className={cn(code, "mt-2")}>cu25 rooms 2026-10-29 17:00 18:00 --people 20</p>
+                    <ul className="mt-2 space-y-0.5 text-[13.5px]">
+                        <li>Gates Hall G01 · seats 40</li>
+                        <li>Phillips Hall 203 · seats 24</li>
+                        <li>Upson Hall 116 · seats 30</li>
+                    </ul>
+                </Bubble>
+                <Bubble me accent={accent}>Gates G01.</Bubble>
+                <Bubble accent={accent}>
+                    <p>The form needs two answers before I can send it:</p>
+                    <ul className="mt-1.5 list-disc space-y-0.5 pl-5 text-[13.5px]">
+                        <li>Will food be served at this event?</li>
+                        <li>Will anyone under 18 attend?</li>
+                    </ul>
+                </Bubble>
+                <Bubble me accent={accent}>Pizza, yes. No minors.</Bubble>
+                <Bubble accent={accent}>
+                    <p>Food unlocked one more question: who&apos;s providing it? Once you tell me, I&apos;ll show you the full request to approve before anything is sent.</p>
+                    <p className={cn(code, "mt-2")}>cu25 submit request.json  → preview, confirm code 3f9a1c0b2e</p>
+                </Bubble>
+            </div>
+        </Frame>
+    );
+}
+
+function ReckonCheck({ accent }: P) {
+    return (
+        <Frame title="Pull request #142 · Retry failed webhook deliveries">
+            <div className="divide-y divide-bone/10">
+                <div className="flex items-start gap-3 px-4 py-3.5">
+                    <span className="mt-1 size-2.5 shrink-0 rounded-full bg-[#d9a21b]" />
+                    <div>
+                        <p className="font-semibold text-fg">Reckon comprehension <span className="font-normal text-bone/50">· pending, merge blocked</span></p>
+                        <p className="mt-1 text-bone/70">Explain to merge. In your own words, how does this change:</p>
+                        <ol className="mt-1.5 list-decimal space-y-0.5 pl-5 text-[13.5px] text-bone/70">
+                            <li>decide when a failed delivery is retried, and when it gives up?</li>
+                            <li>keep a retried webhook from being processed twice?</li>
+                        </ol>
+                    </div>
+                </div>
+                <div className="px-4 py-3.5">
+                    <p className="text-[12.5px] text-bone/45">reviewer</p>
+                    <p className="text-bone/80">Failures go into a queue with exponential backoff, up to five tries, then they&apos;re marked dead and we alert.</p>
+                </div>
+                <div className="px-4 py-3.5">
+                    <p className="text-[12.5px] text-bone/45">Reckon</p>
+                    <p className="text-bone/80">Not yet. You&apos;ve covered when it retries. What stops the same delivery being handled twice if the first attempt actually succeeded?</p>
+                </div>
+                <div className="px-4 py-3.5">
+                    <p className="text-[12.5px] text-bone/45">reviewer</p>
+                    <p className="text-bone/80">Each delivery carries its ID, and the handler skips any ID it has already recorded, so a retry of a success is a no-op.</p>
+                </div>
+                <div className="flex items-center gap-3 bg-night-2 px-4 py-3">
+                    <Mark ok accent={accent} />
+                    <p className="text-fg">Reckon comprehension <span className="text-bone/50">· passed, merge unblocked</span></p>
+                </div>
+            </div>
+        </Frame>
+    );
+}
+
 const SKETCHES: Record<SketchName, (p: P) => React.ReactNode> = {
     "bridge-review": BridgeReview,
     "investcorp-digest": InvestcorpDigest,
     "treasury-chat": TreasuryChat,
     "quickfi-insurance": QuickfiInsurance,
     "quickfi-vendor": QuickfiVendor,
+    "cu25-chat": Cu25Chat,
+    "reckon-check": ReckonCheck,
 };
 
 export default function Sketch({ name, accent }: { name: SketchName; accent: string }) {

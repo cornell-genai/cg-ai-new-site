@@ -34,7 +34,7 @@ export default async function PostPage({ params }: Params) {
                         </Link>
                         <h1 className="mt-8 text-[clamp(2.4rem,5.4vw,4.4rem)] font-medium leading-[1.02] tracking-[-0.045em] text-fg">{post.title}</h1>
                         <p className="mt-6 text-[15px] text-bone/50">
-                            {post.when} · {readMinutes(post)} min read · {post.partner === "Research" ? "Research" : `With ${post.partner}`}
+                            {post.when} · {readMinutes(post)} min read · {post.tag === "client" ? `With ${post.partner}` : post.partner}
                         </p>
                         <p className="mt-6 max-w-[40rem] text-[clamp(1.15rem,1.6vw,1.35rem)] leading-snug tracking-[-0.01em] text-bone/75">{post.dek}</p>
                     </header>
