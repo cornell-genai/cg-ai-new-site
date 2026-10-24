@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
-import Blocks from "@/components/work/Blocks";
+import Plate from "@/components/work/Plate";
+import Blocks, { slugify } from "@/components/work/Blocks";
 import { POSTS, readMinutes } from "@/lib/work";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -14,8 +15,10 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
     const { slug } = await params;
     const post = POSTS.find((p) => p.slug === slug);
-    return post ? { title: post.title, description: post.dek } : {};
+    return post ? { title: post.title, description: post.dek, openGraph: { images: [post.banner] } } : {};
 }
+
+const label = "font-mono text-[11px] uppercase tracking-[0.1em]";
 
 export default async function PostPage({ params }: Params) {
     const { slug } = await params;
@@ -23,52 +26,96 @@ export default async function PostPage({ params }: Params) {
     if (i < 0) notFound();
     const post = POSTS[i];
     const next = [POSTS[(i + 1) % POSTS.length], POSTS[(i + 2) % POSTS.length]];
+    const sections = post.body.flatMap((b) => (typeof b === "object" && "h" in b ? [b.h] : []));
+    const facts = [
+        { k: post.tag === "client" ? "Partner" : "Area", v: post.partner },
+        { k: "Timeline", v: post.when },
+        { k: "Type", v: post.tag },
+        { k: "Status", v: post.status },
+    ];
 
     return (
-        <div data-theme-scope="light">
-            <main className="px-5 pb-20 pt-32 md:px-8 md:pt-40">
+        <>
+            <main className="mx-auto max-w-[80rem] px-5 pb-20 pt-32 md:px-8 md:pt-40">
                 <article>
-                    <header className="mx-auto max-w-[52rem]">
-                        <Link href="/projects/" className="text-[15px] text-bone/50 transition-colors hover:text-fg">
-                            ← Projects
-                        </Link>
-                        <h1 className="mt-8 text-[clamp(2.4rem,5.4vw,4.4rem)] font-medium leading-[1.02] tracking-[-0.045em] text-fg">{post.title}</h1>
-                        <p className="mt-6 text-[15px] text-bone/50">
-                            {post.when} · {readMinutes(post)} min read · {post.tag === "client" ? `With ${post.partner}` : post.partner}
+                    <header>
+                        <p className={`${label} text-bone/45`}>
+                            <Link href="/projects/" className="transition-colors hover:text-fg">Projects</Link>
+                            <span className="mx-2 text-bone/25">/</span>
+                            <span className="text-bone/70">{post.partner}</span>
                         </p>
-                        <p className="mt-6 max-w-[40rem] text-[clamp(1.15rem,1.6vw,1.35rem)] leading-snug tracking-[-0.01em] text-bone/75">{post.dek}</p>
+                        <h1 className="mt-8 max-w-[60rem] text-[clamp(2.5rem,5.6vw,4.75rem)] font-medium leading-[1] tracking-[-0.045em] text-fg">{post.title}</h1>
+                        <p className="mt-7 max-w-[44rem] text-[clamp(1.1rem,1.5vw,1.3rem)] leading-[1.45] text-bone/65">{post.dek}</p>
+
+                        <dl className="mt-12 grid grid-cols-2 border-t border-bone/10 md:grid-cols-4">
+                            {facts.map((f) => (
+                                <div key={f.k} className="border-b border-bone/10 py-4 pr-4 md:border-b-0">
+                                    <dt className={`${label} text-bone/40`}>{f.k}</dt>
+                                    <dd className="mt-1.5 text-[15px] text-fg first-letter:uppercase">{f.v}</dd>
+                                </div>
+                            ))}
+                        </dl>
                     </header>
 
-                    <img src={post.banner} alt="" className="mx-auto mt-12 aspect-[1.9/1] w-full max-w-[72rem] rounded-[3px] object-cover md:mt-16" />
+                    <Plate src={post.banner} eager className="mt-8 md:mt-10" />
 
-                    <div className="mt-16 md:mt-20">
-                        <Blocks blocks={post.body} accent={post.accent} />
+                    <div className="mt-16 grid gap-12 md:mt-24 md:grid-cols-12 md:gap-10">
+                        <aside className="md:col-span-3">
+                            <div className="space-y-10 md:sticky md:top-28">
+                                {sections.length > 0 && (
+                                    <nav aria-label="On this page" className="hidden md:block">
+                                        <p className={`${label} text-bone/40`}>On this page</p>
+                                        <ul className="mt-4 space-y-2.5 border-l border-bone/10 text-[14px] leading-snug">
+                                            {sections.map((h) => (
+                                                <li key={h}>
+                                                    <a href={`#${slugify(h)}`} className="-ml-px block border-l border-transparent pl-4 text-bone/55 transition-colors hover:border-bone/60 hover:text-fg">
+                                                        {h}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </nav>
+                                )}
+                                <div>
+                                    <p className={`${label} text-bone/40`}>Built by</p>
+                                    <ul className="mt-4 space-y-1.5 text-[14px] text-bone/70">
+                                        {post.team.map((t) => <li key={t}>{t}</li>)}
+                                    </ul>
+                                </div>
+                                <div>
+                                    <p className={`${label} text-bone/40`}>Stack</p>
+                                    <ul className="mt-4 flex flex-wrap gap-1.5">
+                                        {post.stack.map((s) => (
+                                            <li key={s} className="rounded-[3px] border border-bone/12 px-2 py-1 font-mono text-[11.5px] text-bone/65">{s}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <p className={`${label} text-bone/40`}>{readMinutes(post)} min read</p>
+                            </div>
+                        </aside>
+
+                        <div className="min-w-0 md:col-span-9">
+                            <Blocks blocks={post.body} accent={post.accent} />
+                        </div>
                     </div>
-
-                    {post.team.length > 0 && (
-                        <footer className="mx-auto mt-20 max-w-[40rem] border-t border-bone/12 pt-6 text-[15px] leading-relaxed">
-                            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-bone/45">Built by</p>
-                            <p className="mt-2 text-bone/75">{post.team.join(", ")}</p>
-                        </footer>
-                    )}
                 </article>
 
-                <section className="mx-auto mt-32 max-w-[52rem]">
-                    <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-bone/45">Keep reading</p>
-                    <div className="mt-6 grid gap-12 sm:grid-cols-2">
+                <section className="mt-32 border-t border-bone/10 pt-10">
+                    <p className={`${label} text-bone/45`}>Keep reading</p>
+                    <div className="mt-8 grid gap-x-10 gap-y-14 md:grid-cols-2">
                         {next.map((p) => (
                             <Link key={p.slug} href={`/projects/${p.slug}/`} className="group block">
-                                <div className="overflow-hidden rounded-[3px]">
-                                    <img src={p.banner} alt="" loading="lazy" className="aspect-[1.9/1] w-full object-cover transition-transform duration-[1.2s] ease-out-expo group-hover:scale-[1.025]" />
-                                </div>
-                                <p className="mt-4 text-[20px] font-medium leading-tight tracking-[-0.02em] text-fg group-hover:underline">{p.title}</p>
-                                <p className="mt-2 text-[14px] text-bone/45">{p.when} · {readMinutes(p)} min read</p>
+                                <Plate src={p.banner} />
+                                <p className={`${label} mt-5 text-bone/45`}>
+                                    <span className="text-bone/75">{p.tag}</span> · {p.when}
+                                </p>
+                                <p className="mt-2 text-[22px] font-medium leading-tight tracking-[-0.02em] text-fg decoration-bone/30 decoration-1 underline-offset-[0.18em] group-hover:underline">{p.title}</p>
                             </Link>
                         ))}
                     </div>
                 </section>
             </main>
             <Footer />
-        </div>
+        </>
     );
 }
