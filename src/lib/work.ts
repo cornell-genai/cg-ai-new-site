@@ -1,17 +1,8 @@
 // Project write-ups for the Projects page. Each post is a list of blocks; a
 // plain string is a paragraph and may hold [links](https://...).
 
-import type { MotifName } from "./covers";
 
-export type Palette = {
-    bg: string;
-    /** Inks for the cover: faint, main, highlight. */
-    ink: [string, string, string];
-    /** The partner's colour for diagrams and rules on the white page. */
-    accent: string;
-};
-
-export type SketchName = "bridge-review" | "investcorp-digest" | "treasury-chat" | "nysfp-chat" | "quickfi-insurance" | "quickfi-vendor";
+export type SketchName = "bridge-review" | "investcorp-digest" | "treasury-chat" | "quickfi-insurance" | "quickfi-vendor";
 
 export type Block =
     | string
@@ -34,74 +25,24 @@ export type Post = {
     tag: string;
     dek: string;
     team: string[];
-    motif: MotifName;
-    palette: Palette;
-    logos: { src: string; alt: string; bg?: string }[];
+    /** A wide (about 1.9:1) banner in public/work/<slug>/. */
+    banner: string;
+    /** The partner's colour for diagrams and rules on the white page. */
+    accent: string;
     body: Block[];
 };
 
-const CLUB: Palette = { bg: "#121212", ink: ["#4a4a4a", "#f3f0ea", "#d7261e"], accent: "#d01f17" };
-
 export const POSTS: Post[] = [
     {
-        slug: "nysfp",
-        title: "A directory that keeps itself honest, for New York's food processors",
-        partner: "Associated New York State Food Processors",
-        when: "Spring 2026 – now",
-        tag: "client",
-        dek: "An events calendar, a members-only supply-chain directory, an assistant that only answers from it, and an agent that checks every month that the listings still exist.",
-        team: ["Arshdeep Kaur", "Trishia Khandelwal", "Christina Maria Joseph", "Anmol Karan"],
-        motif: "orchard",
-        palette: { bg: "#0f0f0f", ink: ["#f3f0ea", "#e2231a", "#6db33f"], accent: "#e2231a" },
-        logos: [{ src: "/logos/mark-nysfp.png", alt: "Associated New York State Food Processors" }],
-        body: [
-            "The Associated New York State Food Processors has been around since 1885, which makes it the oldest food industry association in the state. Its members make the things you find in a grocery store: cheese, sauces, baked goods, seasonings. They all depend on a long chain of co-packers, distributors and suppliers to do it.",
-            "When we first met the association's president, Tom Seymour, he described the problem in two words: tribal knowledge. Who co-packs gluten-free baked goods in Rhode Island? Which packaging events are worth the drive to Rochester? The answers existed, but they were spread across members' heads, a few spreadsheets, a Cornell list of co-packers and some paid directories. If you were new to the industry, good luck.",
-            "So the job was to put all of it in one place that members would actually use, and to keep it from going stale the moment we handed it over.",
-            { h: "What we built" },
-            {
-                rows: [
-                    { label: "Calendar", body: "Industry events from across the state, open to everyone, in month, week and list views." },
-                    { label: "Directory", body: "A members-only, searchable list of co-packers, distributors and suppliers, filterable by category and region." },
-                    { label: "Assistant", body: "A chat window that answers questions about the directory and the calendar, and nothing else." },
-                    { label: "Checker", body: "An agent that runs every month to find new resources and flag listings whose websites have gone quiet." },
-                    { label: "Dashboard", body: "Where the association reviews what the agent found, edits entries and manages who can see what." },
-                ],
-            },
-            { h: "AI finds things, people decide" },
-            "The fastest way to ruin a directory is to let a robot write to it unsupervised. One bad scrape and a member calls a co-packer that closed two years ago. So nothing the agent finds goes live on its own. It lands in a review queue, a board member approves or rejects it, and every decision is logged.",
-            {
-                flow: [
-                    { label: "Monthly check", note: "visits every listed website, looks for new resources" },
-                    { label: "Review queue", note: "new and changed entries wait here, each with the reason it was flagged" },
-                    { label: "Board approves", note: "approve, edit or reject; nothing publishes itself" },
-                    { label: "Directory", note: "members see the update, and the change is logged" },
-                ],
-                caption: "How a listing gets into the directory.",
-            },
-            "We ended up writing the roles down in one line: the admin owns the system, the board owns the data, and members get the value. It sounds obvious, but agreeing on it settled a lot of arguments about who should be allowed to press which button.",
-            { h: "An assistant that knows what it doesn't know" },
-            "The assistant searches the directory and only the directory. If the answer isn't there, it says so instead of guessing. That was a deliberate choice: a confident made-up supplier is worse than no answer at all.",
-            { sketch: "nysfp-chat", caption: "Illustration of the assistant. The co-packer is a real listing from the association's spreadsheet." },
-            "Every question that comes back empty gets logged too, which turned into one of the most useful features. The board can see what members are looking for and not finding, and that tells them what to add next.",
-            { h: "Things the client taught us" },
-            "Our first dashboard had a button labelled \"scrape queue\". The board, who are food people and not software people, very reasonably asked what that meant. We renamed it and went through the rest of the dashboard swapping engineer words for ordinary ones. We also added an undo and a \"recently deleted\" shelf after someone pointed out that one wrong click could lose a listing for good.",
-            "At one demo a board member asked if we could add an events calendar. The calendar was on the screen at the time. We took that as feedback that it should be harder to miss.",
-            { h: "Where it is now" },
-            "The stack is deliberately boring and cheap to run: React on Vercel, FastAPI on Render, Supabase for the data and logins, and Gemini for the assistant. We estimated about five hours a month of upkeep and under $100 a month in hosting once it leaves the free tiers. By late April it was deployed with the association's branding. The plan from there was a board demo, two weeks of testing through mid-May, a soft launch at the association's July golf tournament ahead of a full launch by the end of 2026. This fall we picked it back up to bring events in automatically, the same way the directory already works.",
-        ],
-    },
-    {
         slug: "investcorp",
+        banner: "/work/investcorp/banner.webp",
+        accent: "#13294b",
         title: "Reading the news and the inbox for Investcorp",
         partner: "Investcorp",
         when: "Spring 2026",
         tag: "client",
         dek: "Two pilots with a global investment firm: an agent that watches the news for its loan portfolio and sorts events by how much they matter to credit, and one that turns a treasury inbox into a database you can ask questions.",
         team: ["Mateo del Rio Lanse", "Surya Chandrakasan", "Bhavan Sai Balusu", "Yashnil Saha", "Thurushi Kiyara Rajapakse", "Morgan Nelson Stuart", "Sarah Li", "JD Krasnik", "Dhruv Mandalik", "Aleks Dzudzevic", "Eddie Hu", "Andrew Visconti"],
-        motif: "radar",
-        palette: { bg: "#eef2f8", ink: ["#8a9dbd", "#13294b", "#1f6fe0"], accent: "#13294b" },
-        logos: [{ src: "/logos/mark-investcorp.png", alt: "Investcorp" }],
         body: [
             "Investcorp is a global alternative investment firm. In February their technical lead walked us through a long list of places AI could help, and we picked two to start with for a very practical reason: each one could stand on its own without weeks of security reviews. Both had to be Python, both run on Investcorp's own Azure cloud, and both had to be useful from a command line before anyone built a dashboard.",
             "Twelve of us split into two teams.",
@@ -154,15 +95,14 @@ export const POSTS: Post[] = [
     },
     {
         slug: "foresight",
+        banner: "/work/foresight/banner.webp",
+        accent: "#d01f17",
         title: "ForeSight: a small model that guesses your opponent's next move",
         partner: "Research",
         when: "Fall 2026",
         tag: "research",
         dek: "An AAAI-27 student abstract from one of our head engineers. A 421M-parameter model, trained for 35 minutes on a laptop, forecasts what a Pokémon opponent will do next and drives a lookahead search with no LLM and no API calls.",
         team: ["Saiakhil Chilaka"],
-        motif: "tree",
-        palette: CLUB,
-        logos: [],
         body: [
             "To choose a good move, you have to guess what the other side will do. Chess engines guess with hand-written rules and an exact simulator. LLM agents guess by asking a very large model, which is slow, costs money every turn and isn't great at saying how sure it is. Saiakhil wanted to know if there was something in between.",
             "ForeSight takes a small \"System One\" decision model ([Laya](https://github.com/NandhaKishorM/laya), 421M parameters), the kind that answers a multiple-choice question in one fast pass instead of writing text, and fine-tunes it to predict the opponent's next action with a probability attached. A depth-two lookahead search then uses those probabilities to weigh every future it imagines.",
@@ -200,15 +140,14 @@ export const POSTS: Post[] = [
     },
     {
         slug: "bridge",
+        banner: "/work/bridge/banner.webp",
+        accent: "#1c2541",
         title: "Teaching a loan application to read a balance sheet",
         partner: "Bridge",
         when: "Fall 2025",
         tag: "client",
         dek: "Borrowers on Bridge's marketplace used to type their financials in by hand. We built the engine that reads their documents and fills in the form, with a source for every number, and took its accuracy from about half to 85–95%.",
         team: ["Asad Abbas Rizvi", "Arshdeep Kaur", "Yashnil Saha", "Tanner Brendan Blake"],
-        motif: "bridge",
-        palette: { bg: "#001b2e", ink: ["#2c4a63", "#8fb8d8", "#ffffff"], accent: "#001b2e" },
-        logos: [{ src: "/logos/mark-bridge.svg", alt: "Bridge" }],
         body: [
             "[Bridge](https://www.bridge.co) runs a marketplace where businesses ask for financing and lenders respond. Before a lender sees anything, a borrower fills in a long request: company basics, sponsors, and pages of numbers from balance sheets and income statements. Almost all of it is already sitting in documents the borrower has on hand. They just have to type it in again.",
             "Our question for the fall: could the form fill itself in from those documents, accurately enough that a borrower would trust it?",
@@ -264,15 +203,14 @@ export const POSTS: Post[] = [
     },
     {
         slug: "quickfi",
+        banner: "/work/quickfi/banner.webp",
+        accent: "#4e8a1f",
         title: "Taking the paperwork out of equipment finance with QuickFi",
         partner: "QuickFi",
         when: "Spring 2025 – Spring 2026",
         tag: "client",
         dek: "Two agents for QuickFi's lending platform: one that chases, reads and checks borrowers' insurance certificates, and one that vets equipment vendors against public records, sanctions lists and the news.",
         team: ["Merek Kaden Soriano", "David Lee", "Erik Pedersen", "Brandon Xu", "Alex Kozik", "Nicole Luo", "Audrey Lewellen", "Morgan Nelson Stuart", "Zach Riiff", "Arshdeep Kaur", "Jonathan Zhang", "Mateo del Rio Lanse", "Eddie Hu"],
-        motif: "papers",
-        palette: { bg: "#0d0d0d", ink: ["#5f5f5f", "#e9e9e9", "#81c241"], accent: "#5f9a2a" },
-        logos: [{ src: "/logos/mark-quickfi.svg", alt: "QuickFi" }],
         body: [
             "QuickFi builds an embedded lending platform for business equipment finance, used by equipment makers and banks to offer loans right where the equipment is sold. When we met them in early 2025, two chores were eating their operations team's time, and neither got easier as the business grew.",
             "The first was insurance. Every borrower has to keep commercial insurance on the equipment, and someone had to prove it: email the insurer, wait for a certificate, open the PDF, check it against the contract, update the record, and chase anything missing. The second was vendors. Before QuickFi pays for a piece of equipment, it needs to know the seller is a real, registered business that isn't on a sanctions list or in the news for fraud. That research was slow and different every time.",
@@ -318,46 +256,6 @@ export const POSTS: Post[] = [
             { h: "Round two" },
             "QuickFi asked us back. In spring 2026 Mateo, Brandon and Eddie picked the vendor pipeline up again to keep extending it. It's nice when the thing you built gets used enough that people want more of it.",
             { links: [{ label: "Read the original case study (PDF)", href: "https://drive.google.com/file/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view" }] },
-        ],
-    },
-    {
-        slug: "everything-else",
-        title: "Everything else: open source, side quests and work in progress",
-        partner: "Cisco, MLX, Pollen Robotics and more",
-        when: "Ongoing",
-        tag: "collection",
-        dek: "Not everything we do fits in a case study. Security research with Cisco, open-source contributions, a robot duck, and the tools we build for ourselves and for Cornell.",
-        team: [],
-        motif: "field",
-        palette: CLUB,
-        logos: [
-            { src: "/logos/mark-cisco.png", alt: "Cisco" },
-            { src: "/logos/mlx.png", alt: "MLX", bg: "#1e1e1e" },
-            { src: "/logos/pollen.svg", alt: "Pollen Robotics", bg: "#f3f0ea" },
-        ],
-        body: [
-            "Some of our favourite work is too small, too early or too open-ended for a full write-up. This is the place for it. We'll keep adding to it as things ship.",
-            { h: "Cisco: securing AI agents" },
-            "This spring a small team started working with Cisco on two questions. The research question: what are the real ways an AI coding agent running in the cloud can be attacked, and what would a defence need to catch? The building question: in Cisco's AI Canvas, could you describe a network problem in plain language and get back the right diagnostic widgets, instead of jumping between half a dozen tools? We're working on the first part as research and the second as a prototype. A proper write-up will follow once there's something to show.",
-            { h: "Open source" },
-            "We contribute to projects we use. That includes [MLX](https://github.com/ml-explore/mlx), Apple's machine learning framework for its own chips, and [Pollen Robotics](https://www.pollen-robotics.com/)' Microduck, a small open-source robot that we're also training with reinforcement learning. Yes, it's a duck. Yes, that's the duck on the cover.",
-            { h: "Research" },
-            "Alongside [ForeSight](/projects/foresight/), we're studying how to keep agents on track over long, multi-step tasks, where small mistakes compound and most agents quietly fall apart.",
-            { h: "Things we build for ourselves" },
-            {
-                rows: [
-                    { label: "Trading agent", body: "An autonomous trading agent we're building to run live." },
-                    { label: "Big Red Macros", body: "Cornell's dining hall menus and locations in one app, so you can find the meal that fits your macros." },
-                    { label: "ClassGPT", body: "Professors set up an AI tutor trained on their own course material, and students in the class can use it straight away." },
-                ],
-            },
-            { h: "Earlier partners" },
-            "Before this site existed we also worked with Charter, Vero and Gradial. We're digging up our notes from those projects, and they'll get proper write-ups here too.",
-            { links: [
-                { label: "Our GitHub", href: "https://github.com/Cornell-Gen-AI" },
-                { label: "ForeSight code and results", href: "https://github.com/akhilc08/aaai-27" },
-                { label: "QuickFi case study (PDF)", href: "https://drive.google.com/file/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view" },
-            ] },
         ],
     },
 ];

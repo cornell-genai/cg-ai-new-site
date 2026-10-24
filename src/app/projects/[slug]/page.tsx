@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
-import Cover from "@/components/work/Cover";
 import Blocks from "@/components/work/Blocks";
 import { POSTS, readMinutes } from "@/lib/work";
 
@@ -40,10 +39,10 @@ export default async function PostPage({ params }: Params) {
                         <p className="mt-6 max-w-[40rem] text-[clamp(1.15rem,1.6vw,1.35rem)] leading-snug tracking-[-0.01em] text-bone/75">{post.dek}</p>
                     </header>
 
-                    <Cover motif={post.motif} palette={post.palette} logos={post.logos} className="mx-auto mt-12 max-w-[52rem] md:mt-16" />
+                    <img src={post.banner} alt="" className="mx-auto mt-12 aspect-[1.9/1] w-full max-w-[72rem] rounded-[3px] object-cover md:mt-16" />
 
                     <div className="mt-16 md:mt-20">
-                        <Blocks blocks={post.body} accent={post.palette.accent} />
+                        <Blocks blocks={post.body} accent={post.accent} />
                     </div>
 
                     {post.team.length > 0 && (
@@ -59,7 +58,9 @@ export default async function PostPage({ params }: Params) {
                     <div className="mt-6 grid gap-12 sm:grid-cols-2">
                         {next.map((p) => (
                             <Link key={p.slug} href={`/projects/${p.slug}/`} className="group block">
-                                <Cover motif={p.motif} palette={p.palette} logos={p.logos} className="transition-transform duration-700 ease-out-expo group-hover:-translate-y-1" />
+                                <div className="overflow-hidden rounded-[3px]">
+                                    <img src={p.banner} alt="" loading="lazy" className="aspect-[1.9/1] w-full object-cover transition-transform duration-[1.2s] ease-out-expo group-hover:scale-[1.025]" />
+                                </div>
                                 <p className="mt-4 text-[20px] font-medium leading-tight tracking-[-0.02em] text-fg group-hover:underline">{p.title}</p>
                                 <p className="mt-2 text-[14px] text-bone/45">{p.when} · {readMinutes(p)} min read</p>
                             </Link>

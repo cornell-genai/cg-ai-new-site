@@ -169,28 +169,6 @@ function TreasuryChat({ accent }: P) {
     );
 }
 
-function NysfpChat({ accent }: P) {
-    return (
-        <Frame title="NYSFP resource assistant">
-            <div className="space-y-3 px-4 py-4">
-                <Bubble me accent={accent}>Who can co-pack dry seasoning blends in upstate New York?</Bubble>
-                <Bubble accent={accent}>
-                    <p>One match in the directory:</p>
-                    <div className="mt-2 rounded-[8px] border border-bone/12 bg-night px-3 py-2.5">
-                        <p className="font-semibold text-fg">All Seasonings Ingredients</p>
-                        <p className="text-[13px] text-bone/60">Upstate NY · Co-manufacturer, dry blends & spices</p>
-                        <p className="mt-1 text-[13px] text-bone/60">Custom seasonings, private label · bags, pouches, bottles · SQF certified</p>
-                    </div>
-                </Bubble>
-                <Bubble me accent={accent}>What&apos;s the weather in Buffalo tomorrow?</Bubble>
-                <Bubble accent={accent}>
-                    I can only help with the association&apos;s resource directory and events calendar. Try asking about suppliers, co-packers or upcoming events.
-                </Bubble>
-            </div>
-        </Frame>
-    );
-}
-
 function Checks({ title, head, sub, rows, foot, accent }: { title: string; head: string; sub: string; rows: { k: string; v: string; ok: boolean | "warn" }[]; foot: string; accent: string }) {
     return (
         <Frame title={title}>
@@ -256,7 +234,6 @@ const SKETCHES: Record<SketchName, (p: P) => React.ReactNode> = {
     "bridge-review": BridgeReview,
     "investcorp-digest": InvestcorpDigest,
     "treasury-chat": TreasuryChat,
-    "nysfp-chat": NysfpChat,
     "quickfi-insurance": QuickfiInsurance,
     "quickfi-vendor": QuickfiVendor,
 };
