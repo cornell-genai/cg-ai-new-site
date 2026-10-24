@@ -48,7 +48,7 @@ const CLIENTS: { name: string; bg: string; src?: string; size?: string; mark?: s
     { name: "Vero", bg: "#0e0e0e", src: "/logos/mark-vero.png", size: "0.48em" },
     { name: "Bridge", bg: "#ffffff", src: "/logos/mark-bridge.svg", size: "0.56em" },
     { name: "Gradial", bg: "#f6c9d4", src: "/logos/mark-gradial.svg", size: "0.38em" },
-    { name: "NYSFP", bg: "#5b2c83", mark: "N" },
+    { name: "NYSFP", bg: "#ffffff", src: "/logos/mark-nysfp.png", size: "0.56em" },
 ];
 
 export function ClientStack() {
