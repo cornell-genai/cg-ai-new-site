@@ -39,33 +39,35 @@ export function ProjectIcons() {
 }
 
 // Each client as a circle: its square app icon, or a mark cropped from its
-// logo, on a background that suits it.
-const CLIENTS: { name: string; bg: string; src?: string; size?: string; mark?: string }[] = [
-    { name: "Cisco", bg: "#ffffff", src: "/logos/mark-cisco.png", size: "0.6em" },
-    { name: "Investcorp", bg: "#ffffff", src: "/logos/mark-investcorp.png", size: "0.82em" },
-    { name: "QuickFi", bg: "#ffffff", src: "/logos/mark-quickfi.svg", size: "0.6em" },
-    { name: "Charter", bg: "#ffffff", src: "/logos/mark-charter.png", size: "0.42em" },
-    { name: "Vero", bg: "#0e0e0e", src: "/logos/mark-vero.png", size: "0.48em" },
-    { name: "Bridge", bg: "#ffffff", src: "/logos/mark-bridge.svg", size: "0.56em" },
-    { name: "Gradial", bg: "#f6c9d4", src: "/logos/mark-gradial.svg", size: "0.38em" },
-    { name: "NYSFP", bg: "#ffffff", src: "/logos/mark-nysfp.png", size: "0.56em" },
+// logo, on a background that suits it. Clients we've written up link to the
+// write-up; the rest link to their own site.
+const CLIENTS: { name: string; bg: string; src: string; size: string; href: string }[] = [
+    { name: "Cisco", bg: "#ffffff", src: "/logos/mark-cisco.png", size: "0.6em", href: "https://www.cisco.com" },
+    { name: "Investcorp", bg: "#ffffff", src: "/logos/mark-investcorp.png", size: "0.82em", href: "/projects/investcorp/" },
+    { name: "QuickFi", bg: "#ffffff", src: "/logos/mark-quickfi.svg", size: "0.6em", href: "/projects/quickfi/" },
+    { name: "Charter", bg: "#ffffff", src: "/logos/mark-charter.png", size: "0.42em", href: "https://corporate.charter.com" },
+    { name: "Vero", bg: "#0e0e0e", src: "/logos/mark-vero.png", size: "0.48em", href: "https://www.vero-technologies.com" },
+    { name: "Bridge", bg: "#ffffff", src: "/logos/mark-bridge.svg", size: "0.56em", href: "/projects/bridge/" },
+    { name: "Gradial", bg: "#f6c9d4", src: "/logos/mark-gradial.svg", size: "0.38em", href: "https://www.gradial.com" },
+    { name: "NYSFP", bg: "#ffffff", src: "/logos/mark-nysfp.png", size: "0.56em", href: "https://nysfoodprocessors.org" },
 ];
 
 export function ClientStack() {
     return (
         <Stack>
-            {CLIENTS.map((c) => (
-                <span key={c.name} title={c.name} className={cn(circle, "overflow-hidden")} style={{ background: c.bg }}>
-                    {c.src ? (
-                        <img src={c.src} alt={c.name} style={{ maxWidth: c.size, maxHeight: c.size }} className="object-contain" />
-                    ) : (
-                        <>
-                            <span className="text-[0.36em] font-semibold leading-none tracking-[-0.04em] text-white">{c.mark}</span>
-                            <span className="sr-only">{c.name}</span>
-                        </>
-                    )}
-                </span>
-            ))}
+            {CLIENTS.map((c) => {
+                const img = <img src={c.src} alt="" style={{ maxWidth: c.size, maxHeight: c.size }} className="object-contain" />;
+                const cls = cn(circle, "overflow-hidden");
+                return c.href.startsWith("/") ? (
+                    <Link key={c.name} href={c.href} title={`${c.name}: read the write-up`} aria-label={`${c.name} write-up`} className={cls} style={{ background: c.bg }}>
+                        {img}
+                    </Link>
+                ) : (
+                    <a key={c.name} href={c.href} target="_blank" rel="noopener noreferrer" title={c.name} aria-label={`${c.name} website`} className={cls} style={{ background: c.bg }}>
+                        {img}
+                    </a>
+                );
+            })}
         </Stack>
     );
 }
