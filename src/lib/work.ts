@@ -2,7 +2,7 @@
 // plain string is a paragraph and may hold [links](https://...).
 
 
-export type SketchName = "bridge-review" | "investcorp-digest" | "treasury-chat" | "quickfi-insurance" | "quickfi-vendor";
+export type SketchName = "bridge-review" | "investcorp-digest" | "treasury-chat" | "quickfi-insurance" | "quickfi-vendor" | "cu25-chat" | "reckon-check";
 
 export type Block =
     | string
@@ -256,6 +256,56 @@ export const POSTS: Post[] = [
             { h: "Round two" },
             "QuickFi asked us back. In spring 2026 Mateo, Brandon and Eddie picked the vendor pipeline up again to keep extending it. It's nice when the thing you built gets used enough that people want more of it.",
             { links: [{ label: "Read the original case study (PDF)", href: "https://drive.google.com/file/d/1Pu6QSW2ClZg3em3bRcolzeS73srP9z-p/view" }] },
+        ],
+    },
+    {
+        slug: "for-cornell",
+        banner: "/work/for-cornell/banner.webp",
+        accent: "#b31b1b",
+        title: "Two small tools for the people around us",
+        partner: "For the Cornell community",
+        when: "Summer – Fall 2026",
+        tag: "open source",
+        dek: "cu25 lets you (or an agent) book a Cornell room or a library study space from the terminal. Reckon Review won't let a pull request merge until a person can explain what it does. Both are free and open source.",
+        team: ["Asad Abbas Rizvi"],
+        body: [
+            "Not everything we build has a client. Some of it starts with an annoyance on campus or in our own repos. These two started that way, and both are free for anyone to use.",
+            { h: "cu25: booking a room without the form" },
+            "If you've ever run a club at Cornell, you know the room request form. It's long, the questions change depending on your earlier answers (yes, there will be pizza; no, there will not be alcohol), and it wants two days' notice you didn't realise you needed. Meanwhile, booking a study room in Olin is a different website entirely.",
+            "cu25 puts both behind one tool. It's a command line program and an MCP server, so you can run it yourself or hand it to an AI agent. The first thing it does is work out which system you actually need: a library study space for studying or a small group, or a 25Live request for an organization's event.",
+            { sketch: "cu25-chat", caption: "Illustration of an agent using cu25. The room, questions and reference are examples." },
+            "A few rules shaped everything else.",
+            {
+                rows: [
+                    { label: "Read, don't hard-code", body: "The form's fields, questions, follow-up rules and date limits are read live from 25Live, which has 164 form rules at last count. If the form changes, cu25 notices and says so instead of quietly submitting something wrong." },
+                    { label: "Ask, don't guess", body: "When something's missing, cu25 returns the question in the form's own words and options, so the agent asks you. It never invents an answer about food, guests or alcohol." },
+                    { label: "Preview, then confirm", body: "Submitting without a confirmation code only shows you exactly what would be sent. The code is a fingerprint of that exact request, so what you approved is what goes out." },
+                    { label: "Nothing stored", body: "You log in once in your own browser with NetID and Duo. There's no server and no saved password, and requests stay Tentative until a real scheduler approves them." },
+                ],
+            },
+            "Library spaces in Olin, Uris, Catherwood, Mann and Carpenter need no login at all. cu25 lists what's free first, with each space's open times, and books it under your own name and Cornell email.",
+            "To make sure it behaves exactly like the website, the tests replay real, sanitised 25Live and library responses. One test copies a past event, walks it through check, preview and confirm, and checks that the request cu25 sends matches what the browser sent, field for field.",
+            { h: "Reckon Review: explain what you merge" },
+            "More and more of the code we ship is written with AI, in classes, on project teams and in client repos. AI reviewers are good at asking whether the code is right. Nobody was asking whether the person merging it understands it.",
+            "Reckon Review is a GitHub App that does. When a pull request opens, it breaks the change into the two to four decisions that actually matter and blocks the merge. Someone with write access replies in their own words, explaining how it works rather than restating the diff. A separate model grades the answer. If it's there, the check goes green. If not, Reckon names the one gap and you take another pass.",
+            {
+                flow: [
+                    { label: "PR opens", note: "written by anyone, or anything" },
+                    { label: "Find the decisions", note: "2–4 that matter, using a map of how the change fits the codebase" },
+                    { label: "Explain", note: "a reviewer replies in their own words" },
+                    { label: "Graded", note: "pass: merge unblocked. Not yet: it names the one gap" },
+                ],
+            },
+            { sketch: "reckon-check", caption: "Illustration of Reckon on a pull request. The change and the replies are examples." },
+            "It tries hard not to be annoying. Docs, lockfiles and tiny diffs pass on their own, and so do changes that only touch styles, assets, tests or config. Changes to code that lots of other files depend on get graded more strictly. If you push a typo fix after passing and the decisions haven't changed, your pass carries over.",
+            "It also tries hard not to keep anything. To work out what's load-bearing, Reckon reads the repo at the PR's head and builds a map of what references what. That map lives in memory for a few seconds and is thrown away. It stores no source code.",
+            { h: "Use them" },
+            "Both are in beta and we'd love to hear where they trip up. Open an issue, or find us at a meeting.",
+            { links: [
+                { label: "cu25 on GitHub", href: "https://github.com/Archdiner/25live-mcp", note: "pip install, then cu25 login" },
+                { label: "Reckon Review on GitHub", href: "https://github.com/Archdiner/reckon-review" },
+                { label: "Install Reckon Review", href: "https://github.com/apps/reckon-review/installations/new", note: "free during the beta" },
+            ] },
         ],
     },
 ];
