@@ -29,16 +29,11 @@ function Inline({ text }: { text: string }) {
     );
 }
 
-function Caption({ n, children }: { n?: number; children: React.ReactNode }) {
-    return (
-        <figcaption className="mt-4 flex gap-4 text-[14px] leading-snug text-bone/50">
-            {n !== undefined && <span className="shrink-0 font-mono text-[11px] uppercase leading-[1.6] tracking-[0.08em] text-bone/35">Fig. {String(n).padStart(2, "0")}</span>}
-            <span>{children}</span>
-        </figcaption>
-    );
+function Caption({ children }: { children: React.ReactNode }) {
+    return <figcaption className="mt-4 text-[14px] leading-snug text-bone/50">{children}</figcaption>;
 }
 
-function Flow({ steps, caption, accent, n }: { steps: { label: string; note?: string }[]; caption?: string; accent: string; n: number }) {
+function Flow({ steps, caption, accent }: { steps: { label: string; note?: string }[]; caption?: string; accent: string }) {
     const cols = steps.length <= 5 ? steps.length : 3;
     return (
         <figure>
@@ -54,13 +49,12 @@ function Flow({ steps, caption, accent, n }: { steps: { label: string; note?: st
                     ))}
                 </ol>
             </div>
-            {caption && <Caption n={n}>{caption}</Caption>}
+            {caption && <Caption>{caption}</Caption>}
         </figure>
     );
 }
 
 export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: string }) {
-    let fig = 0;
     return (
         <div className="space-y-7 text-[17.5px] leading-[1.7] text-bone/80">
             {blocks.map((b, i) => {
@@ -73,10 +67,9 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                     );
                 if ("list" in b)
                     return (
-                        <ul key={i} className={cn(prose, "space-y-3")}>
+                        <ul key={i} className={cn(prose, "list-disc space-y-3 pl-5")}>
                             {b.list.map((t) => (
-                                <li key={t} className="relative pl-6">
-                                    <span className="absolute left-0 top-[0.7em] h-px w-3 bg-bone/40" />
+                                <li key={t}>
                                     <Inline text={t} />
                                 </li>
                             ))}
@@ -86,13 +79,12 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                     return (
                         <figure key={i} className={cn(prose, "!my-16")}>
                             <blockquote className="text-[clamp(1.3rem,2vw,1.6rem)] font-medium leading-[1.35] tracking-[-0.02em] text-fg">&ldquo;{b.quote}&rdquo;</blockquote>
-                            <figcaption className="mt-5 flex items-center gap-3 text-[15px] text-bone/55">
-                                <span className="h-px w-6" style={{ background: accent }} />
+                            <figcaption className="mt-5 text-[15px] text-bone/55">
                                 {b.by}
                             </figcaption>
                         </figure>
                     );
-                if ("flow" in b) return <div key={i} className="!my-14"><Flow steps={b.flow} caption={b.caption} accent={accent} n={++fig} /></div>;
+                if ("flow" in b) return <div key={i} className="!my-14"><Flow steps={b.flow} caption={b.caption} accent={accent} /></div>;
                 if ("stats" in b)
                     return (
                         <div key={i} className={cn("!my-14 grid gap-px overflow-hidden rounded-[6px] border border-bone/10 bg-bone/10 sm:grid-cols-2", b.stats.length > 3 && "lg:grid-cols-4", b.stats.length === 3 && "lg:grid-cols-3")}>
@@ -105,10 +97,9 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                         </div>
                     );
                 if ("rows" in b) {
-                    const n = b.caption ? ++fig : undefined;
                     return (
                         <figure key={i} className="!my-12">
-                            <dl className="divide-y divide-bone/10 border-y border-bone/10">
+                            <dl className="divide-y divide-bone/10">
                                 {b.rows.map((r) => (
                                     <div key={r.label} className="grid gap-1 py-4 md:grid-cols-[11rem_1fr] md:gap-8">
                                         <dt className="font-mono text-[12px] uppercase leading-[1.9] tracking-[0.08em] text-fg">{r.label}</dt>
@@ -116,7 +107,7 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                                     </div>
                                 ))}
                             </dl>
-                            {b.caption && <Caption n={n}>{b.caption}</Caption>}
+                            {b.caption && <Caption>{b.caption}</Caption>}
                         </figure>
                     );
                 }
@@ -133,19 +124,19 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                             ) : (
                                 <img src={b.figure} alt={b.alt} loading="lazy" className="w-full rounded-[6px] border border-bone/10 bg-white" />
                             )}
-                            <Caption n={++fig}>{b.caption}</Caption>
+                            <Caption>{b.caption}</Caption>
                         </figure>
                     );
                 if ("sketch" in b)
                     return (
                         <figure key={i} className="!my-16">
                             <Sketch name={b.sketch} accent={accent} />
-                            <Caption n={++fig}>{b.caption}</Caption>
+                            <Caption>{b.caption}</Caption>
                         </figure>
                     );
                 if ("people" in b)
                     return (
-                        <ul key={i} className="divide-y divide-bone/10 border-y border-bone/10 text-[15.5px] leading-snug">
+                        <ul key={i} className="divide-y divide-bone/10 text-[15.5px] leading-snug">
                             {b.people.map((p) => (
                                 <li key={p.name} className="grid gap-1 py-3.5 sm:grid-cols-[11rem_1fr] sm:gap-8">
                                     <span className="font-medium text-fg">{p.name}</span>
@@ -155,9 +146,9 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                         </ul>
                     );
                 return (
-                    <ul key={i} className={cn(prose, "!mt-12 border-t border-bone/10")}>
+                    <ul key={i} className={cn(prose, "!mt-12")}>
                         {b.links.map((l) => (
-                            <li key={l.href} className="border-b border-bone/10">
+                            <li key={l.href}>
                                 <a href={l.href} target="_blank" rel="noopener noreferrer" className="group flex items-baseline justify-between gap-4 py-4">
                                     <span>
                                         <span className="font-medium text-fg">{l.label}</span>
