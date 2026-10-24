@@ -13,8 +13,8 @@ npm run build    # static site in ./out
 Members (board, members, business, alumni) live in `src/lib/data.ts`. Project write-ups live in
 `src/lib/work.ts`: each post is a list of blocks (paragraphs, headings, flow diagrams, stats, figures,
 illustrations), rendered on `/projects` and `/projects/<slug>`. Real screenshots or charts go in
-`public/work/<slug>/` and are added as a `figure` block. Cover art is generated from the motifs in
-`src/lib/covers.ts`, drawn in each partner's colours.
+`public/work/<slug>/` and are added as a `figure` block; each post's banner (about 1.9:1) lives there
+as `banner.webp`.
 
 Headshots go in `public/team/` as ~720px WebP; they appear when hovering a name on the Team page.
 Client marks for the home page circles are in `public/logos/mark-*`.
