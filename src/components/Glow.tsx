@@ -3,17 +3,17 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-// A warm, slowly drifting dot field, like dusk coming up from the bottom of
-// the page. Dot size follows a soft noise field; colour runs from deep red
-// at the base through amber to cream. The cursor brightens and swells the
+// A slowly drifting red dot field rising from the bottom of the page. Dot
+// size follows a soft noise field; colour stays red throughout, from light
+// at the frayed top edge to deep at the base. The cursor brightens and swells the
 // dots near it. Canvas 2D, about one circle per 9px cell, paused offscreen.
 // Redraws at up to 30fps and at most 1.5x density: soft dots don't need more.
 
 const STOPS: [number, [number, number, number]][] = [
-    [0.0, [255, 236, 214]],
-    [0.35, [255, 170, 92]],
-    [0.65, [226, 72, 40]],
-    [1.0, [122, 23, 18]],
+    [0.0, [255, 128, 116]],
+    [0.35, [215, 38, 30]],
+    [0.65, [176, 26, 20]],
+    [1.0, [112, 16, 13]],
 ];
 
 function ramp(t: number) {
@@ -102,6 +102,9 @@ export default function Glow({ text, className }: { text?: string; className?: s
                     let v = depth * 1.25 - 0.35 + (n - 0.5) * 0.7 + near * 0.55;
                     const inText = mask ? mask[(Math.floor(y / P) * mw + Math.floor(x / P)) * 4 + 3] > 120 : false;
                     if (inText) v = Math.max(v, 0.25) + 0.55 + (n - 0.5) * 0.3;
+                    // The last rows fill in completely, so the field meets the
+                    // red floor behind the page (globals.css) without a seam.
+                    if (depth > 0.8) v = Math.max(v, Math.min(1, (depth - 0.8) / 0.14));
                     if (v <= 0.04) continue;
                     v = Math.min(1, v);
                     const r = P * 0.46 * Math.sqrt(v);
