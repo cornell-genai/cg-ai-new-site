@@ -47,7 +47,7 @@ export const POSTS: Post[] = [
         when: "Spring 2026",
         tag: "client",
         dek: "An ESG materiality classifier sorts portfolio news by credit impact. A treasury agent extracts rate quotes and response times from bank emails for natural-language queries.",
-        team: ["Mateo del Rio Lanse", "Surya Chandrakasan", "Bhavan Sai Balusu", "Yashnil Saha", "Thurushi Kiyara Rajapakse", "Morgan Nelson Stuart", "Sarah Li", "JD Krasnik", "Dhruv Mandalik", "Aleks Dzudzevic", "Eddie Hu", "Andrew Visconti"],
+        team: ["Mateo del Rio Lanse", "Surya Chandrakasan", "Bhavan Sai Balusu", "Yashnil Saha", "Thurushi Kiyara Rajapakse", "Morgan Nelson Stuart", "Sarah Li", "JD Krasnick", "Dhruv Mandalik", "Aleks Dzudzevic", "Eddie Hu", "Andrew Visconti"],
         body: [
             "Investcorp is a global alternative investment firm. In February, their technical lead walked us through possible uses for AI across the firm. We chose two self-contained pilots that could be built without weeks of security reviews, and twelve of us split into two teams to work on them. Both had to use Python, run on Investcorp's Azure infrastructure, and work from the command line before we built dashboards.",
             { h: "Pilot one: ESG materiality classification" },
