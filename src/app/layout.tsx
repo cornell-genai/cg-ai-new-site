@@ -37,6 +37,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className="bg-night font-sans text-bone antialiased">
+        <div aria-hidden className="overscroll-floor" />
         <Nav />
         <PageTransition>
           <div className="page-enter">{children}</div>
