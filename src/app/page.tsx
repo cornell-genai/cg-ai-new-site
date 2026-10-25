@@ -13,10 +13,10 @@ export default function Home() {
                 <Life />
 
                 <div data-swarm-avoid className="absolute left-5 top-24 max-w-[22rem] md:left-6 md:top-28 md:max-w-[54rem]">
-                    <p className="text-[clamp(2.3rem,3.8vw,3.5rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-fg">
+                    <p className="text-[clamp(2.15rem,3.55vw,3.25rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-fg">
                         Cornell students shipping AI.
                     </p>
-                    <p className="mt-5 max-w-[38rem] text-[19px] leading-relaxed text-bone/55 md:text-[24px]">
+                    <p className="mt-5 max-w-[38rem] text-[18px] leading-relaxed text-bone/55 md:text-[22px]">
                         Applied research, production systems for clients, and open source.
                     </p>
                 </div>
@@ -55,9 +55,9 @@ export default function Home() {
                 <section className="mx-auto max-w-[54rem] py-28 md:py-48">
                     <Reveal>
                         <p className="text-[clamp(1.6rem,3.3vw,3rem)] font-semibold leading-[1.28] tracking-[-0.035em] text-fg">
-                            We&apos;re a project-based Cornell club that builds generative AI systems. We{" "}
+                            We&apos;re a project-based Cornell student organization that builds generative AI systems. We{" "}
                             <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">build for corporate clients</span> <span className="whitespace-nowrap"><ClientStack />,</span>{" "}
-                            shipping RAG systems, agents, and workflow automation that partners use in production. We run{" "}
+                            shipping agents and workflow automation that partners use in production. We run{" "}
                             <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">applied AI projects and research</span>{" "}
                             <span className="whitespace-nowrap"><ProjectIcons />,</span> from agents for long horizon tasks to systems that act in the real world, and we{" "}
                             <span className="underline decoration-red decoration-[0.07em] underline-offset-[0.14em]">contribute to open source</span>{" "}
