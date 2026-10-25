@@ -6,27 +6,42 @@ import { cn } from "@/lib/utils";
 
 type P = { accent: string };
 
+// Picks black or white text for legible contrast against an arbitrary fill
+// colour (WCAG relative luminance). White-on-accent fails contrast for every
+// post's accent, so the text colour is computed rather than hard-coded.
+function readable(hex: string): string {
+    const n = hex.replace("#", "");
+    const [r, g, b] = [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16));
+    const lin = (c: number) => { const v = c / 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+    const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    return L > 0.187 ? "#0b0b0b" : "#ffffff";
+}
+
 function Frame({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
     return (
         <div className={cn("overflow-hidden rounded-[6px] border border-bone/12 bg-night text-[14px] shadow-[0_1px_0_rgba(0,0,0,0.04),0_12px_40px_-24px_rgba(0,0,0,0.25)]", className)}>
-            <div className="flex items-center justify-between border-b border-bone/10 bg-night-2 px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.08em] text-bone/50">
-                <span>{title}</span>
-                <span>Illustration</span>
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-bone/10 bg-night-2 px-4 py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-bone-2">
+                <span className="min-w-0 break-words">{title}</span>
+                <span className="shrink-0">Illustration</span>
             </div>
             {children}
         </div>
     );
 }
 
-const Mark = ({ ok, accent }: { ok: boolean | "warn"; accent: string }) => (
-    <span
-        className="inline-flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-white"
-        style={{ background: ok === true ? accent : ok === "warn" ? "#d9a21b" : "#d01f17" }}
-        aria-label={ok === true ? "pass" : ok === "warn" ? "review" : "fail"}
-    >
-        {ok === true ? "✓" : ok === "warn" ? "!" : "×"}
-    </span>
-);
+const Mark = ({ ok, accent }: { ok: boolean | "warn"; accent: string }) => {
+    const bg = ok === true ? accent : ok === "warn" ? "#d9a21b" : "#d01f17";
+    return (
+        <span
+            role="img"
+            aria-label={ok === true ? "pass" : ok === "warn" ? "review" : "fail"}
+            className="inline-flex size-5 shrink-0 items-center justify-center rounded-full text-[12px] font-semibold"
+            style={{ background: bg, color: readable(bg) }}
+        >
+            <span aria-hidden="true">{ok === true ? "✓" : ok === "warn" ? "!" : "×"}</span>
+        </span>
+    );
+};
 
 function BridgeReview({ accent }: P) {
     const rows = [
@@ -43,16 +58,16 @@ function BridgeReview({ accent }: P) {
                     const low = r.c < 75;
                     return (
                         <div key={r.f} className={cn("grid grid-cols-[1fr_auto] gap-x-4 gap-y-1.5 px-4 py-3.5 md:grid-cols-[10rem_8rem_1fr_auto] md:items-center", low && "bg-[#d9a21b]/[0.07]")}>
-                            <span className="text-bone/60">{r.f}</span>
+                            <span className="text-bone-2">{r.f}</span>
                             <span className="order-first col-span-2 font-mono text-[15px] font-semibold text-fg md:order-none md:col-span-1">{r.v}</span>
                             <span className="col-span-2 min-w-0 md:col-span-1">
                                 <span className="flex items-center gap-2">
                                     <span className="h-1 w-16 shrink-0 overflow-hidden rounded-full bg-bone/10">
                                         <span className="block h-full" style={{ width: `${r.c}%`, background: low ? "#d9a21b" : accent }} />
                                     </span>
-                                    <span className="font-mono text-[12px] text-bone/50">{r.c}%</span>
+                                    <span className="font-mono text-[12px] text-bone-2">{r.c}%</span>
                                 </span>
-                                <span className="mt-1 block truncate text-[12.5px] text-bone/50">
+                                <span className="mt-1 block text-[12.5px] text-bone-2">
                                     {r.s} · <span className="underline decoration-bone/25 underline-offset-2">{r.d}</span>
                                 </span>
                             </span>
@@ -60,8 +75,8 @@ function BridgeReview({ accent }: P) {
                                 {["✓", "✎", "×"].map((g, i) => (
                                     <span
                                         key={g}
-                                        className="flex size-7 items-center justify-center rounded-[4px] border border-bone/12 text-[13px] text-bone/60"
-                                        style={i === 0 && !low ? { background: accent, borderColor: accent, color: "#fff" } : undefined}
+                                        className="flex size-7 items-center justify-center rounded-[4px] border border-bone/12 text-[13px] text-bone-2"
+                                        style={i === 0 && !low ? { background: accent, borderColor: accent, color: readable(accent) } : undefined}
                                     >
                                         {g}
                                     </span>
@@ -71,9 +86,9 @@ function BridgeReview({ accent }: P) {
                     );
                 })}
             </div>
-            <div className="flex items-center justify-between border-t border-bone/10 px-4 py-3 text-[12.5px] text-bone/50">
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-t border-bone/10 px-4 py-3 text-[12.5px] text-bone-2">
                 <span>Balance sheet check: assets = liabilities + equity ✓</span>
-                <span>1 field needs review</span>
+                <span className="shrink-0">1 field needs review</span>
             </div>
         </Frame>
     );
@@ -83,8 +98,8 @@ function Bubble({ me, children, accent }: { me?: boolean; children: React.ReactN
     return (
         <div className={cn("flex", me && "justify-end")}>
             <div
-                className={cn("max-w-[85%] rounded-[14px] px-3.5 py-2.5 leading-snug", me ? "rounded-br-[4px] text-white" : "rounded-bl-[4px] bg-night-2 text-bone")}
-                style={me ? { background: accent } : undefined}
+                className={cn("max-w-[85%] rounded-[14px] px-3.5 py-2.5 leading-normal", me ? "rounded-br-[4px]" : "rounded-bl-[4px] bg-night-2 text-bone")}
+                style={me ? { background: accent, color: readable(accent) } : undefined}
             >
                 {children}
             </div>
@@ -108,7 +123,7 @@ function TreasuryChat({ accent }: P) {
                     <p>Bank 4 took 31 hours on average and missed two of twelve weeks. Bank 2 was next at 22 hours.</p>
                     <div className="mt-3 space-y-1.5">
                         {banks.map((x) => (
-                            <div key={x.b} className="grid grid-cols-[3.5rem_1fr_2.5rem] items-center gap-2 font-mono text-[11.5px] text-bone/60">
+                            <div key={x.b} className="grid grid-cols-[3.5rem_1fr_2.5rem] items-center gap-2 font-mono text-[12px] text-bone-2">
                                 <span>{x.b}</span>
                                 <span className="h-2.5 rounded-[2px]" style={{ width: `${(x.h / 31) * 100}%`, background: accent, opacity: 0.35 + (x.h / 31) * 0.65 }} />
                                 <span className="text-right">{x.h}h</span>
@@ -126,7 +141,7 @@ function Checks({ title, head, sub, rows, foot, accent }: { title: string; head:
         <Frame title={title}>
             <div className="border-b border-bone/10 px-4 py-3.5">
                 <p className="font-semibold text-fg">{head}</p>
-                <p className="text-[13px] text-bone/55">{sub}</p>
+                <p className="text-[13px] text-bone-2">{sub}</p>
             </div>
             <div className="divide-y divide-bone/10">
                 {rows.map((r) => (
@@ -134,7 +149,7 @@ function Checks({ title, head, sub, rows, foot, accent }: { title: string; head:
                         <Mark ok={r.ok} accent={accent} />
                         <div className="min-w-0">
                             <p className="text-fg">{r.k}</p>
-                            <p className="text-[13px] text-bone/55">{r.v}</p>
+                            <p className="text-[13px] text-bone-2">{r.v}</p>
                         </div>
                     </div>
                 ))}
@@ -183,7 +198,7 @@ function QuickfiVendor({ accent }: P) {
 }
 
 function Cu25Chat({ accent }: P) {
-    const code = "font-mono text-[12px] text-bone/55";
+    const code = "font-mono text-[12px] text-bone-2";
     return (
         <Frame title="Agent with cu25">
             <div className="space-y-3 px-4 py-4">
@@ -222,7 +237,7 @@ function ReckonCheck({ accent }: P) {
                 <div className="flex items-start gap-3 px-4 py-3.5">
                     <span className="mt-1 size-2.5 shrink-0 rounded-full bg-[#d9a21b]" />
                     <div>
-                        <p className="font-semibold text-fg">Reckon comprehension <span className="font-normal text-bone/50">· pending, merge blocked</span></p>
+                        <p className="font-semibold text-fg">Reckon comprehension <span className="font-normal text-bone-2">· pending, merge blocked</span></p>
                         <p className="mt-1 text-bone/70">Before merging, explain in your own words:</p>
                         <ol className="mt-1.5 list-decimal space-y-0.5 pl-5 text-[13.5px] text-bone/70">
                             <li>how this change decides when to retry a failed delivery and when to stop</li>
@@ -231,20 +246,20 @@ function ReckonCheck({ accent }: P) {
                     </div>
                 </div>
                 <div className="px-4 py-3.5">
-                    <p className="text-[12.5px] text-bone/45">reviewer</p>
+                    <p className="text-[12.5px] text-bone-2">reviewer</p>
                     <p className="text-bone/80">Failures go into a queue with exponential backoff, up to five tries, then they&apos;re marked dead and we alert.</p>
                 </div>
                 <div className="px-4 py-3.5">
-                    <p className="text-[12.5px] text-bone/45">Reckon</p>
+                    <p className="text-[12.5px] text-bone-2">Reckon</p>
                     <p className="text-bone/80">You&apos;ve explained the retry timing. What prevents a second delivery from being processed if the first attempt succeeded?</p>
                 </div>
                 <div className="px-4 py-3.5">
-                    <p className="text-[12.5px] text-bone/45">reviewer</p>
+                    <p className="text-[12.5px] text-bone-2">reviewer</p>
                     <p className="text-bone/80">Each delivery carries its ID, and the handler skips any ID it has already recorded, so a retry of a success is a no-op.</p>
                 </div>
                 <div className="flex items-center gap-3 bg-night-2 px-4 py-3">
                     <Mark ok accent={accent} />
-                    <p className="text-fg">Reckon comprehension <span className="text-bone/50">· passed, merge unblocked</span></p>
+                    <p className="text-fg">Reckon comprehension <span className="text-bone-2">· passed, merge unblocked</span></p>
                 </div>
             </div>
         </Frame>

@@ -50,9 +50,10 @@ export default function Glow({ text, className }: { text?: string; className?: s
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
-        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let reduced = motion.matches;
         const P = 9;
-        let W = 0, H = 0, dpr = 1, raf = 0, running = false, t = 0, last = 0, drawn = 0;
+        let W = 0, H = 0, dpr = 1, raf = 0, running = false, visible = false, t = 0, last = 0, drawn = 0;
         const m = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4, a: 0, ta: 0 };
         const colors = Array.from({ length: 48 }, (_, i) => {
             const [r, g, b] = ramp(i / 47);
@@ -128,14 +129,24 @@ export default function Glow({ text, className }: { text?: string; className?: s
             raf = requestAnimationFrame(frame);
         };
         const start = () => {
-            if (running || reduced) return;
+            if (running || reduced || !visible) return;
             running = true;
             last = performance.now();
             raf = requestAnimationFrame(frame);
         };
         const stop = () => { running = false; cancelAnimationFrame(raf); };
 
+        // Live prefers-reduced-motion: freeze on a still frame with no cursor swell.
+        const onMotionChange = () => {
+            reduced = motion.matches;
+            if (!reduced) return start();
+            stop();
+            m.a = m.ta = 0;
+            draw();
+        };
+
         const onMove = (e: PointerEvent) => {
+            if (reduced) return;
             const r = canvas.getBoundingClientRect();
             const x = e.clientX - r.left, y = e.clientY - r.top;
             const inside = x >= 0 && y >= 0 && x <= r.width && y <= r.height;
@@ -144,18 +155,22 @@ export default function Glow({ text, className }: { text?: string; className?: s
             m.ta = inside && e.pointerType === "mouse" ? 1 : 0;
         };
 
+        let disposed = false;
         resize();
         draw();
-        document.fonts.ready.then(() => { buildMask(); if (!running) draw(); });
+        document.fonts.ready.then(() => { if (disposed) return; buildMask(); if (!running) draw(); });
         const ro = new ResizeObserver(() => { resize(); if (!running) draw(); });
-        const io = new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()));
+        const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); else stop(); });
         ro.observe(canvas);
         io.observe(canvas);
+        motion.addEventListener("change", onMotionChange);
         window.addEventListener("pointermove", onMove, { passive: true });
         return () => {
+            disposed = true;
             stop();
             ro.disconnect();
             io.disconnect();
+            motion.removeEventListener("change", onMotionChange);
             window.removeEventListener("pointermove", onMove);
         };
     }, [text]);
