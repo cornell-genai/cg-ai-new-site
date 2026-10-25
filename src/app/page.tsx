@@ -37,7 +37,7 @@ export default function Home() {
                     <section aria-labelledby="people-heading" className="pt-20 md:pt-32">
                         <div className="mx-auto max-w-3xl text-center">
                             <h2 id="people-heading" className="text-[clamp(1.75rem,3.6vw,3rem)] font-semibold leading-[1.2] tracking-[-0.035em] text-fg">
-                                {MEMBER_COUNT} vetted members across engineering, research, and business.
+                                {MEMBER_COUNT} members across engineering, research, and business.
                             </h2>
                         </div>
                         <div className="mx-auto mt-12 max-w-[1040px] md:mt-16">
