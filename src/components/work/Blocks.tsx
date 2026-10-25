@@ -8,6 +8,17 @@ import { cn } from "@/lib/utils";
 
 const prose = "max-w-[42rem]";
 
+// Intrinsic pixel sizes for figures so the browser can reserve layout space
+// before they load, instead of shifting the page (CLS). From the actual
+// files in public/work/; update if an image is replaced.
+const FIGURE_SIZE: Record<string, { w: number; h: number }> = {
+    "/work/investcorp/workspace.webp": { w: 2744, h: 2138 },
+    "/work/investcorp/analytics.webp": { w: 2698, h: 2156 },
+    "/work/investcorp/portfolio.webp": { w: 2810, h: 2126 },
+    "/work/foresight/reliability_laya_gen8.png": { w: 1440, h: 640 },
+    "/work/foresight/accuracy_breakdown_laya_gen8.png": { w: 1440, h: 576 },
+};
+
 export const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 // [text](href) inside a paragraph. Site paths stay in-app; the rest open a new tab.
@@ -30,7 +41,7 @@ function Inline({ text }: { text: string }) {
 }
 
 function Caption({ children }: { children: React.ReactNode }) {
-    return <figcaption className="mt-4 text-[14px] leading-snug text-bone/50">{children}</figcaption>;
+    return <figcaption className="mt-4 text-[14px] leading-normal text-bone-2">{children}</figcaption>;
 }
 
 function Flow({ steps, caption, accent }: { steps: { label: string; note?: string }[]; caption?: string; accent: string }) {
@@ -42,9 +53,9 @@ function Flow({ steps, caption, accent }: { steps: { label: string; note?: strin
                     {steps.map((s, i) => (
                         <li key={s.label} className="relative border-l pl-5 md:border-l-0 md:border-t md:pl-0 md:pt-5" style={{ borderColor: accent }}>
                             <span className="absolute -left-[4px] top-0 size-[7px] md:-top-[4px] md:left-0" style={{ background: accent }} />
-                            <span className="font-mono text-[11px] tracking-[0.08em] text-bone/40">{String(i + 1).padStart(2, "0")}</span>
+                            <span className="font-mono text-[12px] tracking-[0.08em] text-bone-2">{String(i + 1).padStart(2, "0")}</span>
                             <p className="mt-1 text-[16px] font-semibold leading-tight tracking-[-0.01em] text-fg">{s.label}</p>
-                            {s.note && <p className="mt-1.5 text-[14px] leading-snug text-bone/55">{s.note}</p>}
+                            {s.note && <p className="mt-1.5 text-[14px] leading-normal text-bone-2">{s.note}</p>}
                         </li>
                     ))}
                 </ol>
@@ -79,7 +90,7 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                     return (
                         <figure key={i} className={cn(prose, "!my-16")}>
                             <blockquote className="text-[clamp(1.3rem,2vw,1.6rem)] font-medium leading-[1.35] tracking-[-0.02em] text-fg">&ldquo;{b.quote}&rdquo;</blockquote>
-                            <figcaption className="mt-5 text-[15px] text-bone/55">
+                            <figcaption className="mt-5 text-[15px] text-bone-2">
                                 {b.by}
                             </figcaption>
                         </figure>
@@ -91,7 +102,7 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                             {b.stats.map((s) => (
                                 <div key={s.label} className="bg-night p-5 md:p-6">
                                     <p className="text-[clamp(1.5rem,2.4vw,2rem)] font-semibold leading-none tracking-[-0.04em] text-fg">{s.value}</p>
-                                    <p className="mt-3 text-[14px] leading-snug text-bone/55">{s.label}</p>
+                                    <p className="mt-3 text-[14px] leading-normal text-bone-2">{s.label}</p>
                                 </div>
                             ))}
                         </div>
@@ -103,7 +114,7 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                                 {b.rows.map((r) => (
                                     <div key={r.label} className="grid gap-1 py-4 md:grid-cols-[11rem_1fr] md:gap-8">
                                         <dt className="font-mono text-[12px] uppercase leading-[1.9] tracking-[0.08em] text-fg">{r.label}</dt>
-                                        <dd className="text-[16px] leading-snug text-bone/70">{r.body}</dd>
+                                        <dd className="text-[16px] leading-normal text-bone/70">{r.body}</dd>
                                     </div>
                                 ))}
                             </dl>
@@ -119,10 +130,10 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                                     className="overflow-hidden rounded-[8px] border border-bone/10 px-[5%] pt-[5%]"
                                     style={{ background: `radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, ${accent} 30%, #121212) 0%, #141414 70%)` }}
                                 >
-                                    <img src={b.figure} alt={b.alt} loading="lazy" className="w-full rounded-t-[6px] shadow-[0_-1px_0_rgba(255,255,255,0.08),0_30px_80px_-20px_rgba(0,0,0,0.6)]" />
+                                    <img src={b.figure} alt={b.alt} loading="lazy" width={FIGURE_SIZE[b.figure]?.w} height={FIGURE_SIZE[b.figure]?.h} className="w-full rounded-t-[6px] shadow-[0_-1px_0_rgba(255,255,255,0.08),0_30px_80px_-20px_rgba(0,0,0,0.6)]" />
                                 </div>
                             ) : (
-                                <img src={b.figure} alt={b.alt} loading="lazy" className="w-full rounded-[6px] border border-bone/10 bg-white" />
+                                <img src={b.figure} alt={b.alt} loading="lazy" width={FIGURE_SIZE[b.figure]?.w} height={FIGURE_SIZE[b.figure]?.h} className="w-full rounded-[6px] border border-bone/10 bg-white" />
                             )}
                             <Caption>{b.caption}</Caption>
                         </figure>
@@ -136,7 +147,7 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                     );
                 if ("people" in b)
                     return (
-                        <ul key={i} className="divide-y divide-bone/10 text-[15.5px] leading-snug">
+                        <ul key={i} className="divide-y divide-bone/10 text-[15.5px] leading-normal">
                             {b.people.map((p) => (
                                 <li key={p.name} className="grid gap-1 py-3.5 sm:grid-cols-[11rem_1fr] sm:gap-8">
                                     <span className="font-medium text-fg">{p.name}</span>
@@ -152,9 +163,9 @@ export default function Blocks({ blocks, accent }: { blocks: Block[]; accent: st
                                 <a href={l.href} target="_blank" rel="noopener noreferrer" className="group flex items-baseline justify-between gap-4 py-4">
                                     <span>
                                         <span className="font-medium text-fg">{l.label}</span>
-                                        {l.note && <span className="block text-[15px] text-bone/50">{l.note}</span>}
+                                        {l.note && <span className="block text-[15px] text-bone-2">{l.note}</span>}
                                     </span>
-                                    <span className="text-bone/40 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-fg">↗</span>
+                                    <span aria-hidden="true" className="text-bone-2 transition-colors group-hover:text-fg">↗</span>
                                 </a>
                             </li>
                         ))}

@@ -33,17 +33,18 @@ export default function Newsletter() {
                         name="email"
                         type="email"
                         autoComplete="email"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck={false}
                         required
                         placeholder="you@cornell.edu"
-                        aria-describedby={!NEWSLETTER_URL ? "newsletter-hint" : undefined}
-                        className="min-w-0 flex-1 bg-transparent py-3 text-[17px] text-fg outline-none placeholder:text-bone/35"
+                        className="min-w-0 flex-1 bg-transparent py-3 text-[17px] text-fg placeholder:text-bone-2"
                     />
-                    <button type="submit" disabled={state === "sending"} className="shrink-0 py-3 pl-4 text-[16px] font-medium text-fg transition-colors hover:text-red disabled:opacity-50">
+                    <button type="submit" disabled={state === "sending"} className="pressable shrink-0 py-3 ps-4 text-[16px] font-medium text-fg transition-colors hover:text-red disabled:opacity-50">
                         {state === "sending" ? "Sending…" : NEWSLETTER_URL ? "Subscribe" : "Email to join"} <span aria-hidden>→</span>
                     </button>
                 </div>
             </form>
-            {!NEWSLETTER_URL && <p id="newsletter-hint" className="mt-3 text-[14px] leading-relaxed text-bone/55">Opens an email draft for you to send.</p>}
             <div role="status" className="text-[14px] leading-relaxed text-bone/65">
                 {state === "draft" && <p className="mt-3">Send the email to join the mailing list. If it didn&apos;t open, email <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-4">{CONTACT_EMAIL}</a>.</p>}
                 {state === "sent" && <p className="mt-3">Signup request sent. We can&apos;t confirm your subscription here.</p>}
