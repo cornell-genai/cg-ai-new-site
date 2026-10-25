@@ -13,10 +13,10 @@ export default function Home() {
                 <Life />
 
                 <div data-swarm-avoid className="absolute left-5 top-24 max-w-[22rem] md:left-6 md:top-28 md:max-w-[54rem]">
-                    <p className="text-[clamp(2.15rem,3.55vw,3.25rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-fg">
+                    <p className="text-[clamp(1.95rem,3.2vw,2.925rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-fg">
                         Cornell students shipping AI.
                     </p>
-                    <p className="mt-5 max-w-[38rem] text-[18px] leading-relaxed text-bone/55 md:text-[22px]">
+                    <p className="mt-5 max-w-[38rem] text-[16px] leading-relaxed text-bone/55 md:text-[20px]">
                         Applied research, production systems for clients, and open source.
                     </p>
                 </div>
