@@ -265,7 +265,7 @@ export const POSTS: Post[] = [
     },
     {
         slug: "evidence-weighting",
-        banner: "/work/evidence-weighting/banner.svg",
+        banner: "/work/evidence-weighting/banner.webp",
         accent: "#e5483f",
         status: "Exploratory research",
         stack: ["Python", "Jev", "Matplotlib"],
@@ -367,8 +367,8 @@ export const POSTS: Post[] = [
     },
     {
         slug: "pi-memory",
-        banner: "/work/pi-memory/banner.svg",
-        accent: "#6f8fe8",
+        banner: "/work/pi-memory/banner.webp",
+        accent: "#e5483f",
         stack: ["TypeScript", "Pi", "MiniSearch", "Markdown"],
         title: "Reducing the overhead of agent memory",
         partner: "Agent infrastructure",
