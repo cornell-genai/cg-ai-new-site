@@ -30,7 +30,7 @@ export default async function PostPage({ params }: Params) {
     const facts = [
         { k: post.tag === "client" ? "Partner" : "Type", v: post.tag === "client" ? post.partner : post.tag },
         { k: "Timeline", v: post.when },
-        { k: "Status", v: post.status },
+        ...(post.status ? [{ k: "Status", v: post.status }] : []),
     ];
 
     return (
@@ -46,7 +46,7 @@ export default async function PostPage({ params }: Params) {
                         <h1 className="mt-8 max-w-[60rem] text-[clamp(2.5rem,5.6vw,4.75rem)] font-medium leading-[1] tracking-[-0.045em] text-fg">{post.title}</h1>
                         <p className="mt-7 max-w-[44rem] text-[clamp(1.1rem,1.5vw,1.3rem)] leading-[1.45] text-bone/65">{post.dek}</p>
 
-                        <dl className="mt-12 grid grid-cols-1 border-t border-bone/10 sm:grid-cols-3">
+                        <dl className={`mt-12 grid grid-cols-1 border-t border-bone/10 ${facts.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
                             {facts.map((f) => (
                                 <div key={f.k} className="border-b border-bone/10 py-4 pr-4 sm:border-b-0">
                                     <dt className={`${label} text-bone/40`}>{f.k}</dt>
