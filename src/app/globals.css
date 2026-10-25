@@ -7,12 +7,11 @@
   --color-bone-2: #9a968f;
   --color-red: #d7261e;
   --color-fg: #ffffff; /* strongest text: headlines, hovers */
-  --color-sheet: #5e1714; /* page transition wipe */
 
   --font-sans: var(--font-host), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /* Light theme: same token names, so every utility flips with them. */
@@ -23,27 +22,20 @@
   --color-bone-2: #6b6760;
   --color-red: #d01f17;
   --color-fg: #0b0b0b;
-  --color-sheet: #d01f17;
   color-scheme: light;
 }
 :root[data-theme="dark"] { color-scheme: dark; }
 
-/* A light section inside either theme (the Team page is always white). */
-[data-theme-scope="light"] {
-  --color-night: #ffffff;
-  --color-night-2: #f1f1ef;
-  --color-bone: #161514;
-  --color-bone-2: #6b6760;
-  --color-red: #d01f17;
-  --color-fg: #0b0b0b;
-  color-scheme: light;
+@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *));
+@custom-variant hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover { @slot; }
+  }
 }
 
-@custom-variant light (&:where([data-theme="light"], [data-theme="light"] *, [data-theme-scope="light"], [data-theme-scope="light"] *));
-
-/* Colour changes ease over when the theme is toggled. */
-.theme-fade, .theme-fade * {
-  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease !important;
+/* A theme change is one update, not hundreds of competing crossfades. */
+.theme-switching *, .theme-switching *::before, .theme-switching *::after {
+  transition: none !important;
 }
 
 @layer base {
@@ -51,17 +43,26 @@
     background: var(--color-night);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
   }
-  [data-theme-scope="light"] {
-    background: var(--color-night);
-    color: var(--color-bone);
+  button, a, summary, input, select, textarea { touch-action: manipulation; }
+  button, summary {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
   }
+  h1, h2, h3 { text-wrap: balance; }
+  h1, h2, h3, p, li, dd { overflow-wrap: break-word; }
+  #main-content { scroll-margin-top: 6rem; }
+  main:focus { outline: none; }
+  input, textarea, select { font: inherit; }
+  a { text-underline-offset: 0.18em; text-decoration-thickness: from-font; }
   ::selection {
     background: var(--color-red);
-    color: var(--color-bone);
+    color: #ffffff;
   }
   :focus-visible {
-    outline: 2px solid var(--color-red);
+    outline: 2px solid var(--color-fg);
     outline-offset: 3px;
   }
 }
@@ -79,12 +80,34 @@
   background-size: 9px 9px;
 }
 
-/* First paint: the page settles in gently. Pure CSS, so it never blocks. */
-.page-enter {
-  animation: page-enter 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+/* Press feedback is local and interruptible. Navigation and reading stay instant. */
+.pressable {
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 150ms var(--ease-out), background-color 150ms ease, color 150ms ease;
 }
-@keyframes page-enter {
-  from { opacity: 0; transform: translateY(10px); }
+@media (prefers-reduced-motion: no-preference) {
+  .pressable:active:not(:focus-visible) { transform: scale(0.96); }
+}
+.pressable:active { opacity: 0.85; }
+.safe-gutters {
+  padding-inline-start: max(var(--gutter, 1.25rem), env(safe-area-inset-left, 0px));
+  padding-inline-end: max(var(--gutter, 1.25rem), env(safe-area-inset-right, 0px));
+}
+.site-nav {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-inline-start: max(var(--gutter, 1.25rem), env(safe-area-inset-left, 0px));
+  padding-inline-end: max(var(--gutter, 1.25rem), env(safe-area-inset-right, 0px));
+}
+.mobile-navigation { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.mobile-navigation::backdrop { background: var(--color-night); }
+@media (max-height: 32rem) {
+  .team-sidebar { position: static; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .site-header { background: var(--color-night); backdrop-filter: none; }
+}
+@media (forced-colors: active) {
+  :focus-visible { outline-color: Highlight; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 
 // A photo that turns into ASCII around the cursor: cells near the pointer
 // are drawn as glyphs in the photo's own colours, flicker, and fade back to
-// the picture once the cursor moves on. Idle when nothing is happening.
+// the picture once the cursor moves on. Idle when nothing is happening, and
+// off (the plain photo) while prefers-reduced-motion is set, live.
 
 const RAMP = " .:-=+*cxo3%#8@";
 const CELL = 11;
@@ -16,9 +17,11 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
 
     useEffect(() => {
         const canvas = ref.current, photo = img.current;
-        if (!canvas || !photo || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        if (!canvas || !photo) return;
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
+        const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let reduced = motion.matches;
         const font = getComputedStyle(document.body).getPropertyValue("--font-geist-mono").trim() || "monospace";
         let W = 0, H = 0, cols = 0, rows = 0, dpr = 1, raf = 0;
         let col: string[] = [], lum = new Float32Array(0), heat = new Float32Array(0);
@@ -27,8 +30,7 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
 
         // Sample the photo as it is drawn (object-cover), one pixel per cell.
         const sample = () => {
-            // Layout size, not getBoundingClientRect: the banner animates a scale
-            // transform on load, and the visual size would be off once it settles.
+            // Layout size, not getBoundingClientRect: an ancestor may be transformed.
             if (canvas.offsetWidth < 1 || canvas.offsetHeight < 1 || !photo.naturalWidth) return;
             W = canvas.offsetWidth; H = canvas.offsetHeight;
             dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -83,6 +85,7 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
         };
 
         const onMove = (e: PointerEvent) => {
+            if (reduced || !W) return;
             const r = canvas.getBoundingClientRect();
             // Map from the (possibly transformed) visual box back to layout pixels.
             m.x = ((e.clientX - r.left) * W) / r.width;
@@ -93,16 +96,37 @@ export default function AsciiHover({ src, alt, className, imgClassName }: { src:
                 raf = requestAnimationFrame(frame);
             }
         };
-        const ready = () => { sample(); window.addEventListener("pointermove", onMove, { passive: true }); };
-        if (photo.complete && photo.naturalWidth) ready(); else photo.addEventListener("load", ready, { once: true });
+        // Reduced motion switched on mid-hover: drop the trail and show the plain photo.
+        const onMotionChange = () => {
+            reduced = motion.matches;
+            if (!reduced) return;
+            cancelAnimationFrame(raf);
+            raf = 0;
+            m.in = false;
+            heat.fill(0);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        };
+
         const ro = new ResizeObserver(sample);
-        ro.observe(canvas);
-        return () => { cancelAnimationFrame(raf); ro.disconnect(); window.removeEventListener("pointermove", onMove); };
+        const ready = () => {
+            ro.observe(canvas); // its first callback samples the photo
+            window.addEventListener("pointermove", onMove, { passive: true });
+        };
+        if (photo.complete && photo.naturalWidth) ready(); else photo.addEventListener("load", ready, { once: true });
+        motion.addEventListener("change", onMotionChange);
+        return () => {
+            cancelAnimationFrame(raf);
+            ro.disconnect();
+            photo.removeEventListener("load", ready);
+            motion.removeEventListener("change", onMotionChange);
+            window.removeEventListener("pointermove", onMove);
+        };
     }, [src]);
 
     return (
         <div className={cn("relative", className)}>
-            <img ref={img} src={src} alt={alt} className={cn("absolute inset-0 h-full w-full object-cover", imgClassName)} />
+            <img ref={img} src={src} alt={alt} width="843" height="474" fetchPriority="high" className={cn("absolute inset-0 h-full w-full object-cover", imgClassName)} />
             <canvas ref={ref} aria-hidden className="pointer-events-none absolute inset-0 h-full w-full" />
         </div>
     );

@@ -22,9 +22,9 @@ import { onTheme, type Theme } from "@/lib/theme";
 // the cell size is published as --swarm-cell.
 //
 // The mark is the club logo, filling the [data-swarm-mark] slot (its size, in
-// whole cells, is set by the hero). It is read from the logo file into a grid
-// of MARK_RES pixels per cell, swept in pixel by pixel, then
-// the pixels cross-fade into the crisp vector. It plays along with the board:
+// whole cells, is set by the hero). The SVG is visible in the DOM from first
+// paint. A grid of MARK_RES pixels per cell takes over only during interaction.
+// It plays along with the board:
 // the cursor shoves its pixels aside (they spring home), pixels knocked past
 // its edge land on the board as hot live cells and regrow in the logo, and a
 // click on it bursts the logo and fires gliders from its corners. Whenever it
@@ -42,7 +42,7 @@ const LEVELS = 6;
 const ERODE_AGE = 90;   // generations before a settled cell starts to erode
 const ERODE = 0.004;    // per-generation chance an old cell dies anyway
 const MARK_RES = 6;     // logo pixels per cell: fine enough to draw the brain's traces
-const CRISP_FADE = 0.35; // seconds for the vector logo to fade in over the pixels
+const CRISP_FADE = 0.15; // seconds for the vector logo to settle after interaction
 const CRISP_DROP = 0.1; // seconds to fall back to pixels when the logo is disturbed
 const CALM_HOLD = 0.12; // seconds the pixels must sit still before the vector returns
 const MARK_SPRING = 70; // pull home (stiffness, 1/s²); damping is set for no overshoot
@@ -66,10 +66,12 @@ export default function Life({ className }: { className?: string }) {
         const canvas = ref.current;
         const root = canvas?.parentElement;
         if (!canvas || !root) return;
+        const vector = root.querySelector<HTMLElement>(".life-mark");
         const ctx = canvas.getContext("2d", { alpha: false });
         if (!ctx) return;
 
-        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let reduced = motion.matches;
         const font = getComputedStyle(document.body).getPropertyValue("--font-geist-mono").trim() || "monospace";
         const bg = document.createElement("canvas");
 
@@ -79,14 +81,14 @@ export default function Life({ className }: { className?: string }) {
         let age = new Uint16Array(0);
         let trail = new Float32Array(0);
         let wall = new Uint8Array(0); // text and mark cells: always dead, never drawn over
-        // Mark pixels: home in logo-grid units; offset and velocity in px;
-        // `delay` (first appearance) and `back` (regrowth after shedding) are seconds after markStart.
-        type MarkPixel = { x: number; y: number; delay: number; ox: number; oy: number; vx: number; vy: number; back: number };
+        // Mark pixels: home in logo-grid units; offset and velocity in px.
+        // `back` is the regrowth time after shedding, in seconds after markStart.
+        type MarkPixel = { x: number; y: number; ox: number; oy: number; vx: number; vy: number; back: number };
         let mark: MarkPixel[] = [];
         // The slot, in cells: top-left corner and size.
         let markAt: { c: number; r: number; w: number; h: number } | null = null;
         let markBuiltFor = "";
-        let markStart = 0, crispAt = Infinity;
+        let markStart = 0;
         let crisp = 0, calmFor = 0, settled = true;
         const logo = new Image();
         let time = 0, genAcc = 0, seedIn = 2, activity = 0;
@@ -130,7 +132,7 @@ export default function Life({ className }: { className?: string }) {
 
             const markEl = root.querySelector("[data-swarm-mark]");
             markAt = null;
-            if (markEl) {
+            if (markEl && markEl.getClientRects().length > 0) {
                 const m = rel(markEl, 0);
                 markAt = {
                     c: Math.round(m.x0 / cs), r: Math.round(m.y0 / cs),
@@ -142,8 +144,7 @@ export default function Life({ className }: { className?: string }) {
             for (let i = 0; i < wall.length; i++) if (wall[i]) { cur[i] = 0; heat[i] = 0; trail[i] = 0; }
         };
 
-        // Reads the logo into a grid of MARK_RES pixels per slot cell (only the
-        // logo's own pixels) and times a diagonal sweep at the old mark's pace.
+        // Read the logo into pixels for pointer interaction, not an entrance.
         // Rebuilt whenever the slot's size in cells changes.
         function buildMark() {
             if (!markAt) return;
@@ -158,15 +159,13 @@ export default function Life({ className }: { className?: string }) {
             mark = [];
             for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
                 if (alpha[(y * gw + x) * 4 + 3] < 128) continue;
-                const delay = 0.4 + ((x + y) / MARK_RES) * 0.05 + Math.random() * 0.25;
-                mark.push({ x, y, delay, ox: 0, oy: 0, vx: 0, vy: 0, back: 0 });
+                mark.push({ x, y, ox: 0, oy: 0, vx: 0, vy: 0, back: 0 });
             }
-            // With reduced motion the mark is simply there, crisp.
-            markStart = reduced ? -Infinity : time;
-            crispAt = Math.max(...mark.map((p) => p.delay)) + 0.1;
-            crisp = reduced ? 1 : 0;
-            calmFor = 0;
-            settled = false;
+            // Start fully present. Pixel motion belongs to interaction, not loading.
+            markStart = time;
+            crisp = 1;
+            calmFor = CALM_HOLD;
+            settled = true;
         }
 
         const markRect = () => {
@@ -189,7 +188,7 @@ export default function Life({ className }: { className?: string }) {
             } else {
                 let moving = false;
                 for (const px of mark) {
-                    if (t < px.delay || t < px.back) { moving ||= t < px.back; continue; }
+                    if (t < px.back) { moving = true; continue; }
                     const hx = m.x0 + (px.x + 0.5) * m.p, hy = m.y0 + (px.y + 0.5) * m.p;
                     const damp = 2 * Math.sqrt(MARK_SPRING);
                     let ax = -px.ox * MARK_SPRING - px.vx * damp, ay = -px.oy * MARK_SPRING - px.vy * damp;
@@ -221,7 +220,7 @@ export default function Life({ className }: { className?: string }) {
                 settled = !moving;
                 calmFor = settled ? calmFor + dt : 0;
             }
-            if (t > crispAt && calmFor > CALM_HOLD) crisp = Math.min(1, crisp + dt / CRISP_FADE);
+            if (calmFor > CALM_HOLD) crisp = Math.min(1, crisp + dt / CRISP_FADE);
             else if (calmFor === 0) crisp = Math.max(0, crisp - dt / CRISP_DROP);
         };
 
@@ -290,7 +289,7 @@ export default function Life({ className }: { className?: string }) {
 
         const seed = () => {
             cur.fill(0); heat.fill(0); age.fill(0); trail.fill(0);
-            const n = Math.max(10, Math.round((cols * rows) / 260));
+            const n = 2 * Math.max(10, Math.round((cols * rows) / 260));
             for (let k = 0; k < n; k++) inject();
         };
 
@@ -425,7 +424,8 @@ export default function Life({ className }: { className?: string }) {
             ctx.drawImage(bg, 0, 0);
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-            // The mark: pixels (sweeping in, or shoved about) cross-faded with the crisp logo.
+            // The vector stays in the DOM, so it is visible before fonts, JS,
+            // or the canvas are ready. Draw only the displaced pixels here.
             const m = markRect();
             if (m && mark.length) {
                 const t = time - markStart;
@@ -433,17 +433,13 @@ export default function Life({ className }: { className?: string }) {
                     const gap = m.p * 0.12;
                     ctx.fillStyle = LOGO_RED;
                     for (const px of mark) {
-                        const from = Math.max(px.delay, px.back);
+                        const from = px.back;
                         if (t < from) continue;
                         ctx.globalAlpha = Math.min(1, (t - from) * 5) * (1 - crisp);
                         ctx.fillRect(m.x0 + px.x * m.p + px.ox + gap / 2, m.y0 + px.y * m.p + px.oy + gap / 2, m.p - gap, m.p - gap);
                     }
                 }
-                if (crisp > 0) {
-                    ctx.globalAlpha = crisp;
-                    const h = m.y1 - m.y0, w = h * (logo.naturalWidth / logo.naturalHeight);
-                    ctx.drawImage(logo, (m.x0 + m.x1 - w) / 2, m.y0, w, h);
-                }
+                if (vector && vector.style.opacity !== String(crisp)) vector.style.opacity = String(crisp);
                 ctx.globalAlpha = 1;
             }
 
@@ -506,6 +502,16 @@ export default function Life({ className }: { className?: string }) {
             draw();
         };
 
+        const onMotionChange = () => {
+            reduced = motion.matches;
+            if (reduced) {
+                stop();
+                pointer.active = false;
+                if (logo.complete && logo.naturalWidth) buildMark();
+                if (W > 0) still();
+            } else start();
+        };
+
         const local = (e: PointerEvent) => {
             const r = canvas.getBoundingClientRect();
             const x = e.clientX - r.left, y = e.clientY - r.top;
@@ -514,13 +520,14 @@ export default function Life({ className }: { className?: string }) {
         const onMove = (e: PointerEvent) => {
             const p = local(e);
             pointer.x = p.x; pointer.y = p.y;
-            const active = p.inside && e.pointerType !== "touch";
+            const active = p.inside && !reduced && e.pointerType !== "touch";
             if (active && !pointer.active) { pointer.px = p.x; pointer.py = p.y; }
             pointer.active = active;
         };
         const onDown = (e: PointerEvent) => {
             const p = local(e);
             if (!p.inside || reduced) return;
+            if ((e.target as Element).closest?.("a, button, input, select, textarea")) return;
             if (onMark(p.x, p.y)) burst(p.x, p.y); else fire(p.x, p.y);
         };
         const onLeave = () => { pointer.active = false; };
@@ -540,6 +547,7 @@ export default function Life({ className }: { className?: string }) {
             paintGrid();
             if (!running) { if (reduced) still(); else draw(); }
         });
+        motion.addEventListener("change", onMotionChange);
         logo.src = LOGO_SRC;
         logo.decode().then(() => {
             if (disposed) return;
@@ -562,6 +570,8 @@ export default function Life({ className }: { className?: string }) {
 
         return () => {
             disposed = true;
+            if (vector) vector.style.opacity = "";
+            motion.removeEventListener("change", onMotionChange);
             offTheme();
             stop();
             ro.disconnect();
@@ -578,7 +588,7 @@ export default function Life({ className }: { className?: string }) {
         <canvas
             ref={ref}
             aria-hidden
-            className={`absolute inset-0 h-full w-full opacity-0 transition-opacity duration-[1600ms] ease-out data-[ready=true]:opacity-100 ${className ?? ""}`}
+            className={`absolute inset-0 h-full w-full opacity-0 data-[ready=true]:opacity-100 ${className ?? ""}`}
         />
     );
 }

@@ -1,35 +1,18 @@
-"use client";
-
-import { motion } from "framer-motion";
 import AsciiHover from "./AsciiHover";
 
-const ease = [0.16, 1, 0.3, 1] as const;
-
-// Full-bleed photo banner that opens out from a small rounded frame to the
-// full width as the page arrives, then holds still. The page title sits on
-// its lower edge.
+// Full-bleed photo banner, rendered as static markup: the photo and the title
+// are there on first paint. The page title sits on its lower edge, clear of
+// the device's safe areas. The photo's ASCII hover is the only motion.
 export default function Banner({ src, alt, title }: { src: string; alt: string; title: string }) {
     return (
-        <motion.section
-            initial={{ clipPath: "inset(18% 28% 18% 28% round 18px)" }}
-            animate={{ clipPath: "inset(0% 0% 0% 0% round 0px)" }}
-            transition={{ duration: 1.3, ease, delay: 0.15 }}
-            className="relative h-[72svh] min-h-[440px] overflow-hidden"
-        >
-            <motion.div initial={{ scale: 1.18 }} animate={{ scale: 1 }} transition={{ duration: 1.6, ease, delay: 0.15 }} className="absolute inset-0">
-                <AsciiHover src={src} alt={alt} className="h-full w-full" imgClassName="object-[60%_40%]" />
-            </motion.div>
+        <section className="relative h-[72svh] min-h-[440px] overflow-hidden">
+            <AsciiHover src={src} alt={alt} className="absolute inset-0 h-full w-full" imgClassName="object-[60%_40%]" />
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-night via-night/20 to-night/40" />
             {/* Keeps the nav legible over the photo. */}
             <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-night/85 to-transparent" />
-            <motion.h1
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease, delay: 0.7 }}
-                className="absolute bottom-6 left-5 text-[clamp(3.5rem,10vw,9rem)] font-medium leading-[0.85] tracking-[-0.055em] text-fg md:bottom-10 md:left-6"
-            >
+            <h1 className="absolute bottom-[max(1.5rem,env(safe-area-inset-bottom))] left-[max(1.25rem,env(safe-area-inset-left))] right-[max(1.25rem,env(safe-area-inset-right))] text-[clamp(3.5rem,10vw,9rem)] font-medium leading-[1.05] tracking-[-0.055em] text-fg md:bottom-[max(2.5rem,env(safe-area-inset-bottom))] md:left-[max(1.5rem,env(safe-area-inset-left))] md:right-[max(1.5rem,env(safe-area-inset-right))]">
                 {title}
-            </motion.h1>
-        </motion.section>
+            </h1>
+        </section>
     );
 }
