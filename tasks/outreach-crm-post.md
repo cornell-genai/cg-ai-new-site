@@ -41,6 +41,15 @@ in `src/lib/work.ts`, illustrated only with the CRM's demo workspace. No persona
   `/projects/outreach-crm`; in Chrome all six images load, no console errors, no horizontal
   overflow at narrow width, card shows on `/projects`.
 
+- 2026-10-25: merged as PR #8 (resolved a conflict with PR #5, which also appended posts).
+- 2026-10-25: Morgan asked for a section on the meeting brief. Added "The meeting brief" between
+  the agent and agentlink sections, sourced from the `prep_call` recipe
+  (`packages/agent-prompts/src/recipes/prep-call.ts`): the five parts as a `rows` block, the
+  grounding rule, and filing on the Documents tab. The agentlink paragraph now points to it and
+  says the trigger is an automation that has to be turned on (commit 06a43fa, 746c199).
+  Branch `outreach-crm-meeting-brief`. Verified: tsc, lint, build; section renders and shows in
+  the page contents.
+
 ## Open questions
 
 - The drafts screenshot's own intro text mentions "LinkedIn Auto-send". Left as is; retake or crop
