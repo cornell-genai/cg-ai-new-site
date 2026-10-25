@@ -1,0 +1,83 @@
+{
+  "benchmark": "pi-memory local routing and search",
+  "sourceRevision": "14e712e377a9196085cf31681276e379f7978e3f",
+  "benchmarkSourceBlob": "8455fb00dfe84bfcc1bf4cda2e252dad1c10f370",
+  "measuredAt": "2026-10-24T23:11:16.406366+00:00",
+  "machine": {
+    "cpu": "Apple M5",
+    "architecture": "arm64",
+    "runtime": "Bun 1.3.13"
+  },
+  "iterationsPerSize": 80,
+  "query": "Repeated exact identifier lookup for the final synthetic record",
+  "records": "Synthetic records, with topic count ceil(sqrt(record count)); no standing preferences",
+  "scope": "local routing/search plus real read-only Git focus resolution and complete-cue admission; no provider/network calls or tool round-trip timing",
+  "rows": [
+    {
+      "count": 16,
+      "ledgerBytes": 12148,
+      "routingBytes": 248,
+      "routingTokens": 62,
+      "routing": {
+        "medianMs": 0.10966700000005858,
+        "p95Ms": 0.14679099999989376
+      },
+      "search": {
+        "medianMs": 0.3193340000000262,
+        "p95Ms": 0.6864579999999023
+      },
+      "focusedRecall": {
+        "medianMs": 18.896749999999997,
+        "p95Ms": 21.092375000000004
+      },
+      "completeCuePage": {
+        "medianMs": 0.4217080000000806,
+        "p95Ms": 0.5697920000000067
+      }
+    },
+    {
+      "count": 128,
+      "ledgerBytes": 95138,
+      "routingBytes": 478,
+      "routingTokens": 120,
+      "routing": {
+        "medianMs": 0.32549999999991996,
+        "p95Ms": 0.44012500000008004
+      },
+      "search": {
+        "medianMs": 1.2346659999998337,
+        "p95Ms": 1.6697500000000218
+      },
+      "focusedRecall": {
+        "medianMs": 19.11575000000039,
+        "p95Ms": 20.769792000000052
+      },
+      "completeCuePage": {
+        "medianMs": 1.481333999999606,
+        "p95Ms": 2.64587500000016
+      }
+    },
+    {
+      "count": 1024,
+      "ledgerBytes": 760411,
+      "routingBytes": 1058,
+      "routingTokens": 265,
+      "routing": {
+        "medianMs": 1.916374999999789,
+        "p95Ms": 2.3532500000001164
+      },
+      "search": {
+        "medianMs": 9.409082999999555,
+        "p95Ms": 13.822583000000122
+      },
+      "focusedRecall": {
+        "medianMs": 21.80183399999987,
+        "p95Ms": 23.989459000000352
+      },
+      "completeCuePage": {
+        "medianMs": 9.697541999999885,
+        "p95Ms": 11.704834000000119
+      }
+    }
+  ]
+}
