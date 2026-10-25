@@ -35,7 +35,7 @@ export default function Nav() {
             )}
         >
             <nav className="flex h-16 items-center justify-between px-5 md:px-6">
-                <Link href="/" aria-label="Cornell GenAI home" data-swarm-avoid>
+                <Link href="/" aria-label="Cornell Generative AI home" data-swarm-avoid>
                     <Lockup />
                 </Link>
                 <div data-swarm-avoid className="hidden items-center gap-7 md:flex">

@@ -21,14 +21,18 @@ Client marks for the home page circles are in `public/logos/mark-*`.
 
 ## Pieces
 
-- `Swarm`: the homepage. Schools of ASCII agents on a character grid flee the cursor, leave red
-  wakes, and ripple on click; 81 of them assemble the mark in the lockup (`[data-swarm-mark]`).
+- `Life`: the homepage. Conway's Game of Life on an ASCII character grid; the cursor seeds cells and
+  clicks fire gliders. The club logo assembles pixel by pixel in the lockup (`[data-swarm-mark]`),
+  then resolves into the crisp vector. It plays along: the cursor shoves its pixels aside, pixels
+  knocked off its edge become live cells, and clicking it bursts it and fires gliders. (`Swarm`, the earlier schooling-fish hero, is no longer used.)
   Anything marked `[data-swarm-avoid]` (nav, copy) is swum around. Canvas 2D, fixed timestep.
 - `PageTransition`: a dark-red sheet rises over the page, then the new page rises over it. It
   catches `<a>` clicks in the capture phase, so plain `<Link>`s need no wrapper.
 - `Scramble`: section labels that decode from ASCII noise on hover.
-- `TeamPhoto` / `AsciiHover`: ASCII layers over the team and campus photos that react to the cursor.
+- `AsciiHover`: an ASCII layer over the campus photo (project banners) that reacts to the cursor.
+- `OutlineLife`: the home page team photo (a transparent cut-out) with a faint Game of Life in a thin band around the group's outline; the cursor seeds red cells in it.
 - `Glow`: the warm dot field in the footer. It can also spell out text (`text` prop).
-- `Mark`: the red square with a pixel spark; also `src/app/icon.svg`.
+- `Mark`: the club logo, filling its box. `public/brand/logo.svg` is the single source (traced from
+  the old site's raster `cgaiweb.svg`); `src/app/icon.svg` is the favicon version.
 
 Everything pauses offscreen and respects `prefers-reduced-motion`.

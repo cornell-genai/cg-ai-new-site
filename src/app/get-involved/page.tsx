@@ -6,6 +6,22 @@ import { CONTACT_EMAIL } from "@/lib/data";
 
 export const metadata: Metadata = { title: "Get involved" };
 
+// For prospective members, carried over from the old site's Apply page. Dates,
+// apply links and coffee chats only matter while recruiting is open, so they
+// live in the mailing-list copy above instead.
+const ROLES = [
+    {
+        title: "Developer",
+        body: "Build AI systems with our industry partners and for students at Cornell. Developers work in small teams on one client project each semester.",
+        lookingFor: ["Technical depth in software or ML", "A record of shipping projects", "A problem-solving mindset"],
+    },
+    {
+        title: "Business and operations",
+        body: "A broad role. Depending on your strengths, you might work on outreach and partnerships, operations and events, marketing, recruiting, or sponsorship and finance. We want people who will take ownership of something and build it.",
+        lookingFor: ["Organization and follow-through", "Outreach and partnership building", "Product and sales instincts"],
+    },
+];
+
 const WAYS = [
     {
         title: "Sponsor us",
@@ -15,7 +31,7 @@ const WAYS = [
     },
     {
         title: "Partner on a project",
-        body: "Bring us a problem AI could help solve. Each semester, we partner with a few organizations, and a team of our engineers and researchers works with you to deliver a working system by the end of the term.",
+        body: "Bring us a problem AI could help solve. Each semester, we partner with a few organizations. A team of our engineers and researchers, each selected through a technical interview, works with you to deliver a working system by the end of the term.",
         cta: "Propose a project",
         subject: "Project collaboration",
     },
@@ -48,6 +64,30 @@ export default function GetInvolvedPage() {
                     </section>
                 ))}
             </div>
+
+            <section className="mt-20 border-t border-bone/12 pt-20">
+                <h2 className="text-[clamp(1.6rem,2.6vw,2.2rem)] font-semibold tracking-[-0.035em] text-fg">Join as a member</h2>
+                <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-bone/65">
+                    We recruit at the start of each semester for two roles.
+                </p>
+                <div className="mt-10 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-10">
+                    {ROLES.map((r) => (
+                        <div key={r.title}>
+                            <h3 className="text-[20px] font-semibold tracking-[-0.02em] text-fg">{r.title}</h3>
+                            <p className="mt-3 text-[16px] leading-relaxed text-bone/65">{r.body}</p>
+                            <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.1em] text-bone/45">What we look for</p>
+                            <ul className="mt-3 space-y-2 text-[15px] text-bone/75">
+                                {r.lookingFor.map((item) => (
+                                    <li key={item} className="flex items-center gap-3">
+                                        <span aria-hidden className="size-1.5 shrink-0 bg-red" />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            </section>
 
             <p className="mt-20 text-[15px] text-bone/45">
                 Questions or ideas? <a href={`mailto:${CONTACT_EMAIL}`} className="text-bone/80 underline decoration-bone/25 underline-offset-4 hover:text-fg">{CONTACT_EMAIL}</a>
