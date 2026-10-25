@@ -25,7 +25,7 @@ const board: Member[] = [
     { name: "Merek Kaden Soriano", role: "Head of Business", image: "/team/merek.webp", linkedIn: "https://www.linkedin.com/in/merek-soriano-0ba570291/" },
     { name: "Charlie Xue", role: "Head Engineer" },
     { name: "Saiakhil Chilaka", role: "Head Engineer" },
-    { name: "JD Krasnik", role: "Head of Research" },
+    { name: "JD Krasnick", role: "Head of Research" },
 ].map((m) => ({ ...m, team: "Board" as const }));
 
 const members: Member[] = [
