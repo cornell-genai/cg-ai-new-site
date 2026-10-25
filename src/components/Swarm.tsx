@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { MARK } from "./Mark";
 import { onTheme, type Theme } from "@/lib/theme";
 
 // A school of ASCII agents on a character grid.
@@ -17,6 +16,20 @@ import { onTheme, type Theme } from "@/lib/theme";
 // should be, and marks text with [data-swarm-avoid] so the school swims
 // around it. Rendering is Canvas 2D: one fillText per agent, bucketed by
 // colour so each bucket is a single fillStyle.
+
+// The old pixel-spark mark, 9×9. Unused: the home page runs Life, which now
+// builds the club logo instead (see Mark.tsx).
+const MARK = [
+    ".........",
+    "....#....",
+    "....#....",
+    "...#.#...",
+    ".##...##.",
+    "...#.#...",
+    "....#....",
+    "....#....",
+    ".........",
+];
 
 const STEP = 1 / 60;
 type RGB = [number, number, number];

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { MARK } from "./Mark";
+import { LOGO_RED, LOGO_SRC } from "./Mark";
 import { onTheme, type Theme } from "@/lib/theme";
 
 // Conway's Game of Life on the same ASCII character grid as the Swarm.
@@ -20,6 +20,15 @@ import { onTheme, type Theme } from "@/lib/theme";
 // Same hooks as the Swarm: [data-swarm-mark] is where the brand mark is
 // drawn, [data-swarm-avoid] text is a dead zone that life never enters, and
 // the cell size is published as --swarm-cell.
+//
+// The mark is the club logo, filling the [data-swarm-mark] slot (its size, in
+// whole cells, is set by the hero). It is read from the logo file into a grid
+// of MARK_RES pixels per cell, swept in pixel by pixel, then
+// the pixels cross-fade into the crisp vector. It plays along with the board:
+// the cursor shoves its pixels aside (they spring home), pixels knocked past
+// its edge land on the board as hot live cells and regrow in the logo, and a
+// click on it bursts the logo and fires gliders from its corners. Whenever it
+// is disturbed it drops back to pixels; once calm it resolves to the vector.
 
 const STEP = 1 / 60;
 const GEN = 1 / 12;
@@ -32,6 +41,14 @@ const PALETTES: Record<Theme, { bg: string; grid: string; ink: RGB; red: RGB; li
 const LEVELS = 6;
 const ERODE_AGE = 90;   // generations before a settled cell starts to erode
 const ERODE = 0.004;    // per-generation chance an old cell dies anyway
+const MARK_RES = 6;     // logo pixels per cell: fine enough to draw the brain's traces
+const CRISP_FADE = 0.35; // seconds for the vector logo to fade in over the pixels
+const CRISP_DROP = 0.1; // seconds to fall back to pixels when the logo is disturbed
+const CALM_HOLD = 0.12; // seconds the pixels must sit still before the vector returns
+const MARK_SPRING = 70; // pull home (stiffness, 1/s²); damping is set for no overshoot
+const MARK_PUSH_R = 3.5; // cursor reach on the logo, in cells
+const MARK_SHED = 0.08; // per-step chance a pixel knocked past the edge drops onto the board
+const MARK_REGROW = [0.5, 1]; // seconds before a shed pixel reappears, min / max
 
 type Rect = { x0: number; y0: number; x1: number; y1: number };
 type Pattern = string[];
@@ -62,7 +79,16 @@ export default function Life({ className }: { className?: string }) {
         let age = new Uint16Array(0);
         let trail = new Float32Array(0);
         let wall = new Uint8Array(0); // text and mark cells: always dead, never drawn over
-        let mark: { c: number; r: number; light: boolean; delay: number }[] = [];
+        // Mark pixels: home in logo-grid units; offset and velocity in px;
+        // `delay` (first appearance) and `back` (regrowth after shedding) are seconds after markStart.
+        type MarkPixel = { x: number; y: number; delay: number; ox: number; oy: number; vx: number; vy: number; back: number };
+        let mark: MarkPixel[] = [];
+        // The slot, in cells: top-left corner and size.
+        let markAt: { c: number; r: number; w: number; h: number } | null = null;
+        let markBuiltFor = "";
+        let markStart = 0, crispAt = Infinity;
+        let crisp = 0, calmFor = 0, settled = true;
+        const logo = new Image();
         let time = 0, genAcc = 0, seedIn = 2, activity = 0;
         const pointer = { x: -1e4, y: -1e4, px: -1e4, py: -1e4, active: false };
 
@@ -103,16 +129,123 @@ export default function Life({ className }: { className?: string }) {
             for (const el of document.querySelectorAll("[data-swarm-avoid]")) block(rel(el, cs * 0.5));
 
             const markEl = root.querySelector("[data-swarm-mark]");
-            mark = [];
+            markAt = null;
             if (markEl) {
                 const m = rel(markEl, 0);
-                const c0 = Math.round(m.x0 / cs), r0 = Math.round(m.y0 / cs);
-                MARK.forEach((row, y) =>
-                    [...row].forEach((ch, x) => mark.push({ c: c0 + x, r: r0 + y, light: ch === "#", delay: 0.4 + (x + y) * 0.05 + Math.random() * 0.25 })),
-                );
-                block({ x0: c0 * cs, y0: r0 * cs, x1: (c0 + 9) * cs, y1: (r0 + 9) * cs });
+                markAt = {
+                    c: Math.round(m.x0 / cs), r: Math.round(m.y0 / cs),
+                    w: Math.max(1, Math.round((m.x1 - m.x0) / cs)), h: Math.max(1, Math.round((m.y1 - m.y0) / cs)),
+                };
+                block({ x0: markAt.c * cs, y0: markAt.r * cs, x1: (markAt.c + markAt.w) * cs, y1: (markAt.r + markAt.h) * cs });
+                if (logo.complete && logo.naturalWidth && markBuiltFor !== `${markAt.w}x${markAt.h}`) buildMark();
             }
             for (let i = 0; i < wall.length; i++) if (wall[i]) { cur[i] = 0; heat[i] = 0; trail[i] = 0; }
+        };
+
+        // Reads the logo into a grid of MARK_RES pixels per slot cell (only the
+        // logo's own pixels) and times a diagonal sweep at the old mark's pace.
+        // Rebuilt whenever the slot's size in cells changes.
+        function buildMark() {
+            if (!markAt) return;
+            markBuiltFor = `${markAt.w}x${markAt.h}`;
+            const gw = markAt.w * MARK_RES, gh = markAt.h * MARK_RES;
+            const g = document.createElement("canvas");
+            g.width = gw; g.height = gh;
+            const gc = g.getContext("2d", { willReadFrequently: true })!;
+            const w = gh * (logo.naturalWidth / logo.naturalHeight);
+            gc.drawImage(logo, (gw - w) / 2, 0, w, gh);
+            const alpha = gc.getImageData(0, 0, gw, gh).data;
+            mark = [];
+            for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
+                if (alpha[(y * gw + x) * 4 + 3] < 128) continue;
+                const delay = 0.4 + ((x + y) / MARK_RES) * 0.05 + Math.random() * 0.25;
+                mark.push({ x, y, delay, ox: 0, oy: 0, vx: 0, vy: 0, back: 0 });
+            }
+            // With reduced motion the mark is simply there, crisp.
+            markStart = reduced ? -Infinity : time;
+            crispAt = Math.max(...mark.map((p) => p.delay)) + 0.1;
+            crisp = reduced ? 1 : 0;
+            calmFor = 0;
+            settled = false;
+        }
+
+        const markRect = () => {
+            if (!markAt) return null;
+            const x0 = markAt.c * cs, y0 = markAt.r * cs;
+            return { x0, y0, x1: x0 + markAt.w * cs, y1: y0 + markAt.h * cs, p: cs / MARK_RES };
+        };
+
+        // Logo pixels: the cursor shoves them, a spring pulls them home, and any
+        // knocked past the logo's edge may drop onto the board as a hot live cell.
+        // Drives `crisp`: pixels while disturbed, the vector once calm.
+        const stepMark = (dt: number) => {
+            const m = markRect();
+            if (!m || !mark.length) return;
+            const t = time - markStart;
+            const R = cs * MARK_PUSH_R;
+            const near = pointer.active && pointer.x > m.x0 - R && pointer.x < m.x1 + R && pointer.y > m.y0 - R && pointer.y < m.y1 + R;
+            if (settled && !near) {
+                calmFor += dt;
+            } else {
+                let moving = false;
+                for (const px of mark) {
+                    if (t < px.delay || t < px.back) { moving ||= t < px.back; continue; }
+                    const hx = m.x0 + (px.x + 0.5) * m.p, hy = m.y0 + (px.y + 0.5) * m.p;
+                    const damp = 2 * Math.sqrt(MARK_SPRING);
+                    let ax = -px.ox * MARK_SPRING - px.vx * damp, ay = -px.oy * MARK_SPRING - px.vy * damp;
+                    if (near) {
+                        const dx = hx + px.ox - pointer.x, dy = hy + px.oy - pointer.y;
+                        const d = Math.hypot(dx, dy);
+                        if (d < R && d > 0.01) {
+                            const k = (1 - d / R) ** 2 * 2600;
+                            ax += (dx / d) * k; ay += (dy / d) * k;
+                        }
+                    }
+                    px.vx += ax * dt; px.vy += ay * dt;
+                    px.ox += px.vx * dt; px.oy += px.vy * dt;
+                    const x = hx + px.ox, y = hy + px.oy;
+                    const outside = x < m.x0 || x > m.x1 || y < m.y0 || y > m.y1;
+                    if (outside && Math.random() < MARK_SHED) {
+                        const c = Math.floor(x / cs), r = Math.floor(y / cs);
+                        if (c >= 0 && r >= 0 && c < cols && r < rows && !wall[r * cols + c]) {
+                            const i = r * cols + c;
+                            cur[i] = 1; age[i] = 0; heat[i] = 1;
+                        }
+                        px.ox = px.oy = px.vx = px.vy = 0;
+                        px.back = t + MARK_REGROW[0] + Math.random() * (MARK_REGROW[1] - MARK_REGROW[0]);
+                        moving = true;
+                        continue;
+                    }
+                    if (Math.abs(px.ox) + Math.abs(px.oy) > 0.5 || Math.abs(px.vx) + Math.abs(px.vy) > 4) moving = true;
+                }
+                settled = !moving;
+                calmFor = settled ? calmFor + dt : 0;
+            }
+            if (t > crispAt && calmFor > CALM_HOLD) crisp = Math.min(1, crisp + dt / CRISP_FADE);
+            else if (calmFor === 0) crisp = Math.max(0, crisp - dt / CRISP_DROP);
+        };
+
+        // A click on the logo blows its pixels outward from the click and fires
+        // gliders from its four corners (the logo itself is a wall, so they start outside).
+        const burst = (x: number, y: number) => {
+            const m = markRect();
+            if (!m || !markAt) return;
+            for (const px of mark) {
+                const dx = m.x0 + (px.x + 0.5) * m.p - x, dy = m.y0 + (px.y + 0.5) * m.p - y;
+                const d = Math.hypot(dx, dy) || 1;
+                const kick = 260 + Math.random() * 380;
+                px.vx += (dx / d) * kick; px.vy += (dy / d) * kick;
+            }
+            settled = false;
+            const c0 = markAt.c, r0 = markAt.r, c1 = c0 + markAt.w, r1 = r0 + markAt.h;
+            place(GLIDER, c1 + 1, r1 + 1, false, false, 1);
+            place(GLIDER, c0 - 4, r1 + 1, true, false, 1);
+            place(GLIDER, c1 + 1, r0 - 4, false, true, 1);
+            place(GLIDER, c0 - 4, r0 - 4, true, true, 1);
+        };
+        const onMark = (x: number, y: number) => {
+            const m = markRect();
+            return !!m && x >= m.x0 && x <= m.x1 && y >= m.y0 && y <= m.y1;
         };
 
         const wrap = (c: number, r: number) => ((r % rows) + rows) % rows * cols + ((c % cols) + cols) % cols;
@@ -276,6 +409,7 @@ export default function Life({ className }: { className?: string }) {
         const step = (dt: number) => {
             time += dt;
             brush();
+            stepMark(dt);
             genAcc += dt;
             if (genAcc >= GEN) { genAcc -= GEN; generation(); }
             const fade = Math.exp(-dt * 2.4);
@@ -291,15 +425,27 @@ export default function Life({ className }: { className?: string }) {
             ctx.drawImage(bg, 0, 0);
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-            // The mark assembles pixel by pixel in a diagonal sweep.
-            const gap = Math.max(1, cs * 0.06);
-            for (const p of mark) {
-                if (time < p.delay) continue;
-                ctx.globalAlpha = Math.min(1, (time - p.delay) * 5);
-                ctx.fillStyle = p.light ? pal.light : `rgb(${pal.red})`;
-                ctx.fillRect(p.c * cs + gap / 2, p.r * cs + gap / 2, cs - gap, cs - gap);
+            // The mark: pixels (sweeping in, or shoved about) cross-faded with the crisp logo.
+            const m = markRect();
+            if (m && mark.length) {
+                const t = time - markStart;
+                if (crisp < 1) {
+                    const gap = m.p * 0.12;
+                    ctx.fillStyle = LOGO_RED;
+                    for (const px of mark) {
+                        const from = Math.max(px.delay, px.back);
+                        if (t < from) continue;
+                        ctx.globalAlpha = Math.min(1, (t - from) * 5) * (1 - crisp);
+                        ctx.fillRect(m.x0 + px.x * m.p + px.ox + gap / 2, m.y0 + px.y * m.p + px.oy + gap / 2, m.p - gap, m.p - gap);
+                    }
+                }
+                if (crisp > 0) {
+                    ctx.globalAlpha = crisp;
+                    const h = m.y1 - m.y0, w = h * (logo.naturalWidth / logo.naturalHeight);
+                    ctx.drawImage(logo, (m.x0 + m.x1 - w) / 2, m.y0, w, h);
+                }
+                ctx.globalAlpha = 1;
             }
-            ctx.globalAlpha = 1;
 
             ctx.font = `600 ${Math.round(cs * 1.02)}px ${font}`;
             ctx.textAlign = "center";
@@ -374,7 +520,8 @@ export default function Life({ className }: { className?: string }) {
         };
         const onDown = (e: PointerEvent) => {
             const p = local(e);
-            if (p.inside && !reduced) fire(p.x, p.y);
+            if (!p.inside || reduced) return;
+            if (onMark(p.x, p.y)) burst(p.x, p.y); else fire(p.x, p.y);
         };
         const onLeave = () => { pointer.active = false; };
 
@@ -393,6 +540,12 @@ export default function Life({ className }: { className?: string }) {
             paintGrid();
             if (!running) { if (reduced) still(); else draw(); }
         });
+        logo.src = LOGO_SRC;
+        logo.decode().then(() => {
+            if (disposed) return;
+            buildMark();
+            if (W > 0 && !running) draw();
+        }, () => { /* no logo, no mark: the board still runs */ });
         document.fonts.load(`600 16px ${font}`).finally(() => {
             if (disposed) return;
             resize();

@@ -8,6 +8,8 @@ export const GITHUB_URL = "https://github.com/cornell-genai";
  * set, the form opens a pre-filled email to CONTACT_EMAIL instead.
  */
 export const NEWSLETTER_URL = "";
+/** Member count shown on the home page. Set by hand: the roster below isn't complete. */
+export const MEMBER_COUNT = "40+";
 
 export type Team = "Board" | "Members" | "Business" | "Alumni";
 
@@ -23,33 +25,33 @@ const board: Member[] = [
     { name: "Morgan Nelson Stuart", role: "President", image: "/team/morgan.webp", linkedIn: "https://www.linkedin.com/in/morgan-nstuart/" },
     { name: "Asad Abbas Rizvi", role: "Vice President", image: "/team/asad.webp", linkedIn: "https://www.linkedin.com/in/asad-rizvi-02a1782a2" },
     { name: "Merek Kaden Soriano", role: "Head of Business", image: "/team/merek.webp", linkedIn: "https://www.linkedin.com/in/merek-soriano-0ba570291/" },
-    { name: "Charlie Xue", role: "Head Engineer" },
-    { name: "Saiakhil Chilaka", role: "Head Engineer" },
-    { name: "JD Krasnick", role: "Head of Research" },
+    { name: "Charlie Xue", role: "Head Engineer", image: "/team/charlie.webp" },
+    { name: "Saiakhil Chilaka", role: "Head Engineer", image: "/team/saiakhil.webp" },
+    { name: "JD Krasnick", role: "Head of Research", image: "/team/jd.webp" },
 ].map((m) => ({ ...m, team: "Board" as const }));
 
 const members: Member[] = [
-    { name: "Surya Chandrakasan" },
-    { name: "Pratyush Saxena" },
+    { name: "Surya Chandrakasan", image: "/team/surya.webp" },
+    { name: "Pratyush Saxena", image: "/team/pratyush.webp" },
     { name: "Anmol Karan", image: "/team/anmol.webp" },
-    { name: "Yashnil Saha" },
-    { name: "Trishia Khandelwal" },
-    { name: "Bhavan Sai Balusu" },
+    { name: "Yashnil Saha", image: "/team/yashnil.webp" },
+    { name: "Trishia Khandelwal", image: "/team/trishia.webp" },
+    { name: "Bhavan Sai Balusu", image: "/team/bhavan.webp" },
     { name: "Arshdeep Kaur", image: "/team/arshdeep.webp", linkedIn: "https://www.linkedin.com/in/arshdeepkaur13/" },
     { name: "Daniel Sachs", role: "Founding Member", image: "/team/daniel.webp", linkedIn: "https://www.linkedin.com/in/daniel-m-sachs/" },
-    { name: "Krish Jana" },
-    { name: "Mihir Joshi" },
-    { name: "Aritro Ganguly" },
-    { name: "Ashwin Aggarwal" },
-    { name: "Sarah Li" },
-    { name: "Andrew Visconti" },
+    { name: "Krish Jana", image: "/team/krish.webp" },
+    { name: "Mihir Joshi", image: "/team/mihir.webp" },
+    { name: "Aritro Ganguly", image: "/team/aritro.webp" },
+    { name: "Ashwin Aggarwal", image: "/team/ashwin.webp" },
+    { name: "Sarah Li", image: "/team/sarah.webp" },
+    { name: "Andrew Visconti", image: "/team/andrew.webp" },
     { name: "Aiden Chung" },
     { name: "Ryan Ginsburg" },
     { name: "Chris Jia" },
     { name: "Oduna Akonzee" },
     { name: "Hendry Xu" },
     { name: "Avinash Senthil" },
-    { name: "Saanvi Movva" },
+    { name: "Saanvi Movva", image: "/team/saanvi.webp" },
     { name: "Idhant Gode" },
     { name: "Caden Ruan" },
     { name: "Andy Do" },
@@ -67,9 +69,13 @@ const business: Member[] = [
 ].map((m) => ({ ...m, team: "Business" as const }));
 
 const alumni: Member[] = [
-    { name: "Erik Pedersen", image: "/team/erik.webp", linkedIn: "https://www.linkedin.com/in/erikzhangpedersen/" },
+    { name: "Erik Pedersen", role: "Ex Vice President", image: "/team/erik.webp", linkedIn: "https://www.linkedin.com/in/erikzhangpedersen/" },
     { name: "Alex Kozik", image: "/team/alex.webp", linkedIn: "https://www.linkedin.com/in/alex-kozik/" },
-    { name: "Jacob Phelan", role: "YC Founder", linkedIn: "https://www.linkedin.com/in/jacob-phelan-9359222a5" },
+    { name: "Jacob Phelan", role: "YC Founder", image: "/team/jacob.webp", linkedIn: "https://www.linkedin.com/in/jacob-phelan-9359222a5" },
+    { name: "Thurushi Kiyara Rajapakse", image: "/team/thurushi.webp", linkedIn: "https://www.linkedin.com/in/thurushi-rajapakse" },
+    { name: "Christina Maria Joseph", image: "/team/christina.webp", linkedIn: "https://www.linkedin.com/in/christinamjoseph" },
+    { name: "Brandon Xu", image: "/team/brandon.webp", linkedIn: "https://www.linkedin.com/in/brandon-xu-284748322/" },
+    { name: "Mateo del Rio Lanse", image: "/team/mateo.webp", linkedIn: "https://www.linkedin.com/in/mdelriolanse" },
 ].map((m) => ({ ...m, team: "Alumni" as const }));
 
 export const MEMBERS: Member[] = [...board, ...members, ...business, ...alumni];

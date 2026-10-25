@@ -42,14 +42,12 @@ export function ProjectIcons() {
 // logo, on a background that suits it. Clients we've written up link to the
 // write-up; the rest link to their own site.
 const CLIENTS: { name: string; bg: string; src: string; size: string; href: string }[] = [
-    { name: "Cisco", bg: "#ffffff", src: "/logos/mark-cisco.png", size: "0.6em", href: "https://www.cisco.com" },
     { name: "Investcorp", bg: "#ffffff", src: "/logos/mark-investcorp.png", size: "0.82em", href: "/projects/investcorp/" },
     { name: "QuickFi", bg: "#ffffff", src: "/logos/mark-quickfi.svg", size: "0.6em", href: "/projects/quickfi/" },
     { name: "Charter", bg: "#ffffff", src: "/logos/mark-charter.png", size: "0.42em", href: "https://corporate.charter.com" },
-    { name: "Vero", bg: "#0e0e0e", src: "/logos/mark-vero.png", size: "0.48em", href: "https://www.vero-technologies.com" },
     { name: "Bridge", bg: "#ffffff", src: "/logos/mark-bridge.svg", size: "0.56em", href: "/projects/bridge/" },
-    { name: "Gradial", bg: "#f6c9d4", src: "/logos/mark-gradial.svg", size: "0.38em", href: "https://www.gradial.com" },
     { name: "NYSFP", bg: "#ffffff", src: "/logos/mark-nysfp.png", size: "0.56em", href: "https://nysfoodprocessors.org" },
+    { name: "Marketing + Media Alliance", bg: "#000000", src: "/logos/mark-mma.png", size: "0.9em", href: "https://mma.org" },
 ];
 
 export function ClientStack() {
