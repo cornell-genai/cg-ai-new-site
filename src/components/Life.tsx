@@ -18,17 +18,15 @@ import { onTheme, type Theme } from "@/lib/theme";
 //     dropped in somewhere to keep it going.
 //
 // Same hooks as the Swarm: [data-swarm-mark] is where the brand mark is
-// drawn, [data-swarm-avoid] text is a dead zone that life never enters, and
-// the cell size is published as --swarm-cell.
+// drawn, it and [data-swarm-avoid] text are dead zones that life never
+// enters, and the cell size is published as --swarm-cell.
 //
-// The mark is the club logo, filling the [data-swarm-mark] slot (its size, in
-// whole cells, is set by the hero). The SVG is visible in the DOM from first
-// paint. A grid of MARK_RES pixels per cell takes over only during interaction.
-// It plays along with the board:
-// the cursor shoves its pixels aside (they spring home), pixels knocked past
-// its edge land on the board as hot live cells and regrow in the logo, and a
-// click on it bursts the logo and fires gliders from its corners. Whenever it
-// is disturbed it drops back to pixels; once calm it resolves to the vector.
+// The mark is the club logo in the [data-swarm-mark] slot, drawn as MARK_RES
+// square pixels per cell, the board's own pixel style. The SVG in the DOM is
+// only a stand-in until those pixels are drawn. The mark plays along with the
+// board: the cursor shoves its pixels aside (they spring home), pixels knocked
+// past its edge land on the board as hot live cells and regrow in the logo,
+// and a click on it bursts the logo and fires gliders from its corners.
 
 const STEP = 1 / 60;
 const GEN = 1 / 12;
@@ -41,10 +39,8 @@ const PALETTES: Record<Theme, { bg: string; grid: string; ink: RGB; red: RGB; li
 const LEVELS = 6;
 const ERODE_AGE = 90;   // generations before a settled cell starts to erode
 const ERODE = 0.004;    // per-generation chance an old cell dies anyway
-const MARK_RES = 6;     // logo pixels per cell: fine enough to draw the brain's traces
-const CRISP_FADE = 0.15; // seconds for the vector logo to settle after interaction
-const CRISP_DROP = 0.1; // seconds to fall back to pixels when the logo is disturbed
-const CALM_HOLD = 0.12; // seconds the pixels must sit still before the vector returns
+const MARK_RES = 4;     // logo pixels per cell: still pixel-y, and the brain's traces read
+const MARK_OVERSAMPLE = 8; // samples per logo pixel, each way, averaged for its coverage
 const MARK_SPRING = 70; // pull home (stiffness, 1/s²); damping is set for no overshoot
 const MARK_PUSH_R = 3.5; // cursor reach on the logo, in cells
 const MARK_SHED = 0.08; // per-step chance a pixel knocked past the edge drops onto the board
@@ -85,11 +81,11 @@ export default function Life({ className }: { className?: string }) {
         // `back` is the regrowth time after shedding, in seconds after markStart.
         type MarkPixel = { x: number; y: number; ox: number; oy: number; vx: number; vy: number; back: number };
         let mark: MarkPixel[] = [];
-        // The slot, in cells: top-left corner and size.
-        let markAt: { c: number; r: number; w: number; h: number } | null = null;
+        // The slot in px, and its size in logo pixels.
+        let markAt: (Rect & { gw: number; gh: number }) | null = null;
         let markBuiltFor = "";
         let markStart = 0;
-        let crisp = 0, calmFor = 0, settled = true;
+        let settled = true;
         const logo = new Image();
         let time = 0, genAcc = 0, seedIn = 2, activity = 0;
         const pointer = { x: -1e4, y: -1e4, px: -1e4, py: -1e4, active: false };
@@ -133,102 +129,105 @@ export default function Life({ className }: { className?: string }) {
             const markEl = root.querySelector("[data-swarm-mark]");
             markAt = null;
             if (markEl && markEl.getClientRects().length > 0) {
-                const m = rel(markEl, 0);
+                const e = markEl.getBoundingClientRect();
+                const p = cs / MARK_RES;
                 markAt = {
-                    c: Math.round(m.x0 / cs), r: Math.round(m.y0 / cs),
-                    w: Math.max(1, Math.round((m.x1 - m.x0) / cs)), h: Math.max(1, Math.round((m.y1 - m.y0) / cs)),
+                    x0: e.left - r.left, y0: e.top - r.top, x1: e.right - r.left, y1: e.bottom - r.top,
+                    gw: Math.max(1, Math.round(e.width / p)), gh: Math.max(1, Math.round(e.height / p)),
                 };
-                block({ x0: markAt.c * cs, y0: markAt.r * cs, x1: (markAt.c + markAt.w) * cs, y1: (markAt.r + markAt.h) * cs });
-                if (logo.complete && logo.naturalWidth && markBuiltFor !== `${markAt.w}x${markAt.h}`) buildMark();
+                block(markAt);
+                if (logo.complete && logo.naturalWidth && markBuiltFor !== `${markAt.gw}x${markAt.gh}`) buildMark();
             }
             for (let i = 0; i < wall.length; i++) if (wall[i]) { cur[i] = 0; heat[i] = 0; trail[i] = 0; }
         };
 
         // Read the logo into pixels for pointer interaction, not an entrance.
-        // Rebuilt whenever the slot's size in cells changes.
+        // Rebuilt whenever the slot's size in logo pixels changes.
         function buildMark() {
             if (!markAt) return;
-            markBuiltFor = `${markAt.w}x${markAt.h}`;
-            const gw = markAt.w * MARK_RES, gh = markAt.h * MARK_RES;
+            const { gw, gh } = markAt;
+            markBuiltFor = `${gw}x${gh}`;
+            // Drawn large and averaged per logo pixel: a single small drawImage aliases the brain's traces away.
+            const S = MARK_OVERSAMPLE, sw = gw * S, sh = gh * S;
             const g = document.createElement("canvas");
-            g.width = gw; g.height = gh;
+            g.width = sw; g.height = sh;
             const gc = g.getContext("2d", { willReadFrequently: true })!;
-            const w = gh * (logo.naturalWidth / logo.naturalHeight);
-            gc.drawImage(logo, (gw - w) / 2, 0, w, gh);
-            const alpha = gc.getImageData(0, 0, gw, gh).data;
+            const w = sh * (logo.naturalWidth / logo.naturalHeight);
+            gc.drawImage(logo, (sw - w) / 2, 0, w, sh);
+            const alpha = gc.getImageData(0, 0, sw, sh).data;
+            const on = new Uint8Array(gw * gh);
+            for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
+                let sum = 0;
+                for (let v = 0; v < S; v++) for (let u = 0; u < S; u++) sum += alpha[((y * S + v) * sw + x * S + u) * 4 + 3];
+                on[y * gw + x] = sum / (S * S) >= 128 ? 1 : 0;
+            }
+            // Drop pixels with no edge neighbour and fill holes walled in on all four sides: the stray specks are what make it read as noise.
+            const at = (x: number, y: number) => (x >= 0 && y >= 0 && x < gw && y < gh ? on[y * gw + x] : 0);
             mark = [];
             for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
-                if (alpha[(y * gw + x) * 4 + 3] < 128) continue;
+                const n = at(x - 1, y) + at(x + 1, y) + at(x, y - 1) + at(x, y + 1);
+                if (on[y * gw + x] ? n === 0 : n < 4) continue;
                 mark.push({ x, y, ox: 0, oy: 0, vx: 0, vy: 0, back: 0 });
             }
             // Start fully present. Pixel motion belongs to interaction, not loading.
             markStart = time;
-            crisp = 1;
-            calmFor = CALM_HOLD;
             settled = true;
         }
 
         const markRect = () => {
             if (!markAt) return null;
-            const x0 = markAt.c * cs, y0 = markAt.r * cs;
-            return { x0, y0, x1: x0 + markAt.w * cs, y1: y0 + markAt.h * cs, p: cs / MARK_RES };
+            const p = Math.min((markAt.x1 - markAt.x0) / markAt.gw, (markAt.y1 - markAt.y0) / markAt.gh);
+            return { ...markAt, p };
         };
 
         // Logo pixels: the cursor shoves them, a spring pulls them home, and any
         // knocked past the logo's edge may drop onto the board as a hot live cell.
-        // Drives `crisp`: pixels while disturbed, the vector once calm.
         const stepMark = (dt: number) => {
             const m = markRect();
             if (!m || !mark.length) return;
             const t = time - markStart;
             const R = cs * MARK_PUSH_R;
-            const near = pointer.active && pointer.x > m.x0 - R && pointer.x < m.x1 + R && pointer.y > m.y0 - R && pointer.y < m.y1 + R;
-            if (settled && !near) {
-                calmFor += dt;
-            } else {
-                let moving = false;
-                for (const px of mark) {
-                    if (t < px.back) { moving = true; continue; }
-                    const hx = m.x0 + (px.x + 0.5) * m.p, hy = m.y0 + (px.y + 0.5) * m.p;
-                    const damp = 2 * Math.sqrt(MARK_SPRING);
-                    let ax = -px.ox * MARK_SPRING - px.vx * damp, ay = -px.oy * MARK_SPRING - px.vy * damp;
-                    if (near) {
-                        const dx = hx + px.ox - pointer.x, dy = hy + px.oy - pointer.y;
-                        const d = Math.hypot(dx, dy);
-                        if (d < R && d > 0.01) {
-                            const k = (1 - d / R) ** 2 * 2600;
-                            ax += (dx / d) * k; ay += (dy / d) * k;
-                        }
+            const near = pointer.active && onMark(pointer.x, pointer.y);
+            if (settled && !near) return;
+            let moving = false;
+            for (const px of mark) {
+                if (t < px.back) { moving = true; continue; }
+                const hx = m.x0 + (px.x + 0.5) * m.p, hy = m.y0 + (px.y + 0.5) * m.p;
+                const damp = 2 * Math.sqrt(MARK_SPRING);
+                let ax = -px.ox * MARK_SPRING - px.vx * damp, ay = -px.oy * MARK_SPRING - px.vy * damp;
+                if (near) {
+                    const dx = hx + px.ox - pointer.x, dy = hy + px.oy - pointer.y;
+                    const d = Math.hypot(dx, dy);
+                    if (d < R && d > 0.01) {
+                        const k = (1 - d / R) ** 2 * 2600;
+                        ax += (dx / d) * k; ay += (dy / d) * k;
                     }
-                    px.vx += ax * dt; px.vy += ay * dt;
-                    px.ox += px.vx * dt; px.oy += px.vy * dt;
-                    const x = hx + px.ox, y = hy + px.oy;
-                    const outside = x < m.x0 || x > m.x1 || y < m.y0 || y > m.y1;
-                    if (outside && Math.random() < MARK_SHED) {
-                        const c = Math.floor(x / cs), r = Math.floor(y / cs);
-                        if (c >= 0 && r >= 0 && c < cols && r < rows && !wall[r * cols + c]) {
-                            const i = r * cols + c;
-                            cur[i] = 1; age[i] = 0; heat[i] = 1;
-                        }
-                        px.ox = px.oy = px.vx = px.vy = 0;
-                        px.back = t + MARK_REGROW[0] + Math.random() * (MARK_REGROW[1] - MARK_REGROW[0]);
-                        moving = true;
-                        continue;
-                    }
-                    if (Math.abs(px.ox) + Math.abs(px.oy) > 0.5 || Math.abs(px.vx) + Math.abs(px.vy) > 4) moving = true;
                 }
-                settled = !moving;
-                calmFor = settled ? calmFor + dt : 0;
+                px.vx += ax * dt; px.vy += ay * dt;
+                px.ox += px.vx * dt; px.oy += px.vy * dt;
+                const x = hx + px.ox, y = hy + px.oy;
+                const outside = x < m.x0 || x > m.x1 || y < m.y0 || y > m.y1;
+                if (outside && Math.random() < MARK_SHED) {
+                    const c = Math.floor(x / cs), r = Math.floor(y / cs);
+                    if (c >= 0 && r >= 0 && c < cols && r < rows && !wall[r * cols + c]) {
+                        const i = r * cols + c;
+                        cur[i] = 1; age[i] = 0; heat[i] = 1;
+                    }
+                    px.ox = px.oy = px.vx = px.vy = 0;
+                    px.back = t + MARK_REGROW[0] + Math.random() * (MARK_REGROW[1] - MARK_REGROW[0]);
+                    moving = true;
+                    continue;
+                }
+                if (Math.abs(px.ox) + Math.abs(px.oy) > 0.5 || Math.abs(px.vx) + Math.abs(px.vy) > 4) moving = true;
             }
-            if (calmFor > CALM_HOLD) crisp = Math.min(1, crisp + dt / CRISP_FADE);
-            else if (calmFor === 0) crisp = Math.max(0, crisp - dt / CRISP_DROP);
+            settled = !moving;
         };
 
         // A click on the logo blows its pixels outward from the click and fires
         // gliders from its four corners (the logo itself is a wall, so they start outside).
         const burst = (x: number, y: number) => {
             const m = markRect();
-            if (!m || !markAt) return;
+            if (!m) return;
             for (const px of mark) {
                 const dx = m.x0 + (px.x + 0.5) * m.p - x, dy = m.y0 + (px.y + 0.5) * m.p - y;
                 const d = Math.hypot(dx, dy) || 1;
@@ -236,7 +235,7 @@ export default function Life({ className }: { className?: string }) {
                 px.vx += (dx / d) * kick; px.vy += (dy / d) * kick;
             }
             settled = false;
-            const c0 = markAt.c, r0 = markAt.r, c1 = c0 + markAt.w, r1 = r0 + markAt.h;
+            const c0 = Math.floor(m.x0 / cs), r0 = Math.floor(m.y0 / cs), c1 = Math.ceil(m.x1 / cs), r1 = Math.ceil(m.y1 / cs);
             place(GLIDER, c1 + 1, r1 + 1, false, false, 1);
             place(GLIDER, c0 - 4, r1 + 1, true, false, 1);
             place(GLIDER, c1 + 1, r0 - 4, false, true, 1);
@@ -289,7 +288,7 @@ export default function Life({ className }: { className?: string }) {
 
         const seed = () => {
             cur.fill(0); heat.fill(0); age.fill(0); trail.fill(0);
-            const n = 2 * Math.max(10, Math.round((cols * rows) / 260));
+            const n = Math.max(10, Math.round((cols * rows) / 260));
             for (let k = 0; k < n; k++) inject();
         };
 
@@ -424,25 +423,6 @@ export default function Life({ className }: { className?: string }) {
             ctx.drawImage(bg, 0, 0);
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-            // The vector stays in the DOM, so it is visible before fonts, JS,
-            // or the canvas are ready. Draw only the displaced pixels here.
-            const m = markRect();
-            if (m && mark.length) {
-                const t = time - markStart;
-                if (crisp < 1) {
-                    const gap = m.p * 0.12;
-                    ctx.fillStyle = LOGO_RED;
-                    for (const px of mark) {
-                        const from = px.back;
-                        if (t < from) continue;
-                        ctx.globalAlpha = Math.min(1, (t - from) * 5) * (1 - crisp);
-                        ctx.fillRect(m.x0 + px.x * m.p + px.ox + gap / 2, m.y0 + px.y * m.p + px.oy + gap / 2, m.p - gap, m.p - gap);
-                    }
-                }
-                if (vector && vector.style.opacity !== String(crisp)) vector.style.opacity = String(crisp);
-                ctx.globalAlpha = 1;
-            }
-
             ctx.font = `600 ${Math.round(cs * 1.02)}px ${font}`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
@@ -472,6 +452,24 @@ export default function Life({ className }: { className?: string }) {
                 if (!buckets[b].length) continue;
                 ctx.fillStyle = styles[b < LEVELS ? 0 : 1][b % LEVELS];
                 for (const k of buckets[b]) ctx.fillText(glyphs[k], pos[k * 2], pos[k * 2 + 1]);
+            }
+
+            // The pixel logo. The vector in the DOM covers the gap before fonts,
+            // JS, or the canvas are ready, and is hidden once the pixels are drawn.
+            const m = markRect();
+            if (m && mark.length) {
+                const t = time - markStart;
+                // Solid pixels on a whole-device-pixel pitch, so neighbours meet without seams.
+                const snap = (v: number) => Math.round(v * dpr) / dpr;
+                const pitch = Math.max(1, Math.round(m.p * dpr)) / dpr;
+                ctx.fillStyle = LOGO_RED;
+                for (const px of mark) {
+                    if (t < px.back) continue;
+                    ctx.globalAlpha = Math.min(1, (t - px.back) * 5);
+                    ctx.fillRect(snap(m.x0 + px.ox) + px.x * pitch, snap(m.y0 + px.oy) + px.y * pitch, pitch, pitch);
+                }
+                ctx.globalAlpha = 1;
+                if (vector && canvas.dataset.ready && vector.style.opacity !== "0") vector.style.opacity = "0";
             }
         };
 
@@ -557,8 +555,8 @@ export default function Life({ className }: { className?: string }) {
         document.fonts.load(`600 16px ${font}`).finally(() => {
             if (disposed) return;
             resize();
-            if (reduced) still(); else draw();
             canvas.dataset.ready = "true";
+            if (reduced) still(); else draw();
             ro.observe(canvas);
             io.observe(canvas);
             document.addEventListener("visibilitychange", onVis);

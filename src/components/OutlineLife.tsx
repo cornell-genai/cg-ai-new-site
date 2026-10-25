@@ -9,18 +9,15 @@ import { onTheme, type Theme } from "@/lib/theme";
 //   - The band is read from the photo's alpha: grid cells outside the subject
 //     but within BAND cells of it. Nothing ever lives on the subject itself,
 //     and the canvas sits behind the photo, so faces stay clean.
-//   - The band runs along the top and sides only; the photo's bottom edge
-//     (where legs are cut off by the frame) is left alone.
+//   - The band runs only above the subject, within the photo's width.
 //   - B3/S23, a few generations a second. The band is thin, so patterns burn
 //     out fast; small soups are dropped in to keep a quiet shimmer going.
 //   - The cursor seeds hot (red) cells where it crosses the band.
 //   - Pauses offscreen; with reduced motion (followed live) it draws one still frame.
-//   - The side overhang shrinks to the room left in the viewport, so on narrow
-//     screens the band never widens the page; the photo is never cut.
 
 const GEN = 1 / 8;          // seconds per generation
 const BAND = 4;             // band width, in cells
-const PAD = BAND + 1;       // canvas overhang around the photo (top and sides), in cells
+const PAD = BAND + 1;       // canvas overhang above the photo, in cells
 const SUBJECT_ALPHA = 0.35; // a cell is "subject" when its average alpha passes this
 const SEED_DENSITY = 0.3;   // live share of band cells at start
 const DROP_EVERY = 0.2;     // seconds between small soups dropped into the band
@@ -64,30 +61,24 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
             );
         };
 
-        // Grid over the photo plus PAD cells above and up to PAD cells to each
-        // side (fewer where the viewport edge is closer). Band cells are found
-        // by a breadth-first distance from the subject's cells. Returns false
-        // when nothing changed, so the board is not reseeded needlessly.
+        // Grid over the photo plus PAD cells above. Band cells are found by a
+        // breadth-first distance from the subject's cells. Returns false when
+        // nothing changed, so the board is not reseeded needlessly.
         const build = () => {
             const w = img.clientWidth, h = img.clientHeight;
             if (!w || !h || !img.naturalWidth) return false;
             cs = w < 640 ? 7 : 10;
             dpr = Math.min(window.devicePixelRatio || 1, 2);
-            const box = img.getBoundingClientRect();
-            const vw = document.documentElement.clientWidth;
-            const padL = Math.max(0, Math.min(PAD, Math.floor(box.left / cs)));
-            // box.left + w, not box.right: the canvas is sized from the rounded clientWidth.
-            const padR = Math.max(0, Math.min(PAD, Math.floor((vw - box.left - w) / cs)));
-            const key = `${w}x${h}@${cs},${dpr},${padL},${padR}`;
+            const key = `${w}x${h}@${cs},${dpr}`;
             if (key === builtFor) return false;
             builtFor = key;
             const padPx = PAD * cs;
             // The canvas covers exactly photo + overhang; the last column may be
             // a partial cell, which simply clips at the canvas edge.
-            const cw = w + (padL + padR) * cs, ch = h + padPx;
+            const cw = w, ch = h + padPx;
             cols = Math.ceil(cw / cs);
             rows = Math.ceil(ch / cs);
-            canvas.style.left = `${-padL * cs}px`;
+            canvas.style.left = "0";
             canvas.style.top = `${-padPx}px`;
             canvas.style.width = `${cw}px`;
             canvas.style.height = `${ch}px`;
@@ -98,7 +89,7 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
             const probe = document.createElement("canvas");
             probe.width = cols; probe.height = rows;
             const pc = probe.getContext("2d", { willReadFrequently: true })!;
-            pc.drawImage(img, padL, PAD, w / cs, h / cs);
+            pc.drawImage(img, 0, PAD, w / cs, h / cs);
             const alpha = pc.getImageData(0, 0, cols, rows).data;
 
             const N = cols * rows;
@@ -115,11 +106,14 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
                     if (dist[j] === -1) { dist[j] = dist[i] + 1; queue.push(j); }
                 }
             }
-            const bottomRow = Math.floor((padPx + h) / cs) - 1; // keep clear of the photo's bottom edge
+            // Only above the people: a column's band ends at its topmost subject cell,
+            // so nothing grows beside or between them.
+            const top = new Int16Array(cols).fill(-1);
+            for (let i = 0; i < N; i++) if (dist[i] === 0 && top[i % cols] === -1) top[i % cols] = (i / cols) | 0;
             band = new Uint8Array(N);
             bandCells = [];
             for (let i = 0; i < N; i++) {
-                if (dist[i] > 0 && (i / cols | 0) < bottomRow - 1) { band[i] = 1; bandCells.push(i); }
+                if (dist[i] > 0 && (i / cols | 0) < top[i % cols]) { band[i] = 1; bandCells.push(i); }
             }
             cur = new Uint8Array(N); nxt = new Uint8Array(N);
             age = new Uint16Array(N); heat = new Float32Array(N); trail = new Float32Array(N);
@@ -269,8 +263,6 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
             if (disposed) return;
             ro.observe(img);
             io.observe(canvas);
-            // The side room can change without the photo resizing.
-            window.addEventListener("resize", rebuild);
             document.addEventListener("visibilitychange", onVis);
             window.addEventListener("pointermove", onMove, { passive: true });
             document.documentElement.addEventListener("pointerleave", onLeave);
@@ -283,7 +275,6 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
             stop();
             ro.disconnect();
             io.disconnect();
-            window.removeEventListener("resize", rebuild);
             document.removeEventListener("visibilitychange", onVis);
             window.removeEventListener("pointermove", onMove);
             document.documentElement.removeEventListener("pointerleave", onLeave);
