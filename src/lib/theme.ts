@@ -1,17 +1,32 @@
-// Light / dark theme. The theme lives on <html data-theme>, set before first
-// paint by THEME_SCRIPT (saved choice, or ?theme=light|dark in the URL; light by default).
-// CSS tokens flip on that attribute; canvas pieces read it via onTheme().
-
+// The theme is set before paint. A saved choice or ?theme=light|dark wins;
+// the default is light. Canvas pieces subscribe to the same HTML attribute.
 export type Theme = "dark" | "light";
-
 const KEY = "theme";
 
-export const THEME_SCRIPT = `(function(){try{var q=new URLSearchParams(location.search).get("theme");var t=q==="light"||q==="dark"?q:localStorage.getItem("${KEY}");if(q)localStorage.setItem("${KEY}",q);document.documentElement.dataset.theme=t==="dark"?"dark":"light"}catch(e){document.documentElement.dataset.theme="light"}})()`;
+// This meta is created outside React's managed head. Route navigation must not
+// replace a chosen theme-color with an OS-based viewport default.
+export const THEME_SCRIPT = `(() => {
+    let t = "light";
+    try {
+        const q = new URLSearchParams(location.search).get("theme");
+        const valid = q === "light" || q === "dark";
+        t = (valid ? q : localStorage.getItem("${KEY}")) === "dark" ? "dark" : "light";
+        if (valid) localStorage.setItem("${KEY}", q);
+    } catch {}
+    document.documentElement.dataset.theme = t;
+    const meta = document.createElement("meta");
+    meta.name = "theme-color";
+    meta.dataset.siteThemeColor = "";
+    meta.content = t === "dark" ? "#121212" : "#f7f7f5";
+    document.head.appendChild(meta);
+})()`;
 
 export const getTheme = (): Theme => (document.documentElement.dataset.theme === "dark" ? "dark" : "light");
 
 export function setTheme(t: Theme) {
     document.documentElement.dataset.theme = t;
+    const meta = document.querySelector<HTMLMetaElement>("meta[data-site-theme-color]");
+    if (meta) meta.content = t === "dark" ? "#121212" : "#f7f7f5";
     try { localStorage.setItem(KEY, t); } catch {}
 }
 

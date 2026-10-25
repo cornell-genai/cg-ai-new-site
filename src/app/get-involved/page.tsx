@@ -17,7 +17,7 @@ const ROLES = [
     },
     {
         title: "Business and operations",
-        body: "A broad role. Depending on your strengths, you might work on outreach and partnerships, operations and events, marketing, recruiting, or sponsorship and finance. We want people who will take ownership of something and build it.",
+        body: "A broad role. Depending on your strengths, you might work on outreach and partnerships, operations and events, marketing, recruiting, or sponsorship and finance.",
         lookingFor: ["Organization and follow-through", "Outreach and partnership building", "Product and sales instincts"],
     },
 ];
@@ -50,16 +50,16 @@ export default function GetInvolvedPage() {
                 <div className="md:pt-14"><Newsletter /></div>
             </section>
 
-            <div className="mt-20 grid grid-cols-1 gap-12 border-t border-bone/12 pt-20 md:grid-cols-2 md:gap-10">
+            <div className="mt-20 grid grid-cols-1 gap-12 border-t border-bone/12 pt-20 md:grid-cols-2 md:gap-x-10 md:gap-y-0">
                 {WAYS.map((w) => (
-                    <section key={w.title}>
+                    <section key={w.title} className="md:row-span-3 md:grid md:grid-rows-subgrid">
                         <h2 className="text-[clamp(1.6rem,2.6vw,2.2rem)] font-semibold tracking-[-0.035em] text-fg">{w.title}</h2>
                         <p className="mt-4 text-[17px] leading-relaxed text-bone/65">{w.body}</p>
                         <a
                             href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(w.subject)}`}
-                            className="group mt-6 inline-flex items-center gap-2 border-b border-red pb-1 text-[16px] font-medium text-fg transition-colors hover:text-red"
+                            className="group mt-6 inline-flex min-h-11 items-center gap-2 self-start justify-self-start text-[16px] font-medium text-fg transition-colors hover:text-red"
                         >
-                            {w.cta} <span className="transition-transform duration-300 group-hover:translate-x-0.5">→</span>
+                            <span className="underline decoration-red underline-offset-[0.3em]">{w.cta}</span><span aria-hidden>→</span>
                         </a>
                     </section>
                 ))}
@@ -70,12 +70,12 @@ export default function GetInvolvedPage() {
                 <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-bone/65">
                     We recruit at the start of each semester for two roles.
                 </p>
-                <div className="mt-10 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-10">
+                <div className="mt-10 grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-x-10 md:gap-y-0">
                     {ROLES.map((r) => (
-                        <div key={r.title}>
+                        <div key={r.title} className="md:row-span-4 md:grid md:grid-rows-subgrid">
                             <h3 className="text-[20px] font-semibold tracking-[-0.02em] text-fg">{r.title}</h3>
                             <p className="mt-3 text-[16px] leading-relaxed text-bone/65">{r.body}</p>
-                            <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.1em] text-bone/45">What we look for</p>
+                            <p className="mt-6 font-mono text-[12px] uppercase tracking-[0.1em] text-bone-2">What we look for</p>
                             <ul className="mt-3 space-y-2 text-[15px] text-bone/75">
                                 {r.lookingFor.map((item) => (
                                     <li key={item} className="flex items-center gap-3">
@@ -89,9 +89,6 @@ export default function GetInvolvedPage() {
                 </div>
             </section>
 
-            <p className="mt-20 text-[15px] text-bone/45">
-                Questions or ideas? <a href={`mailto:${CONTACT_EMAIL}`} className="text-bone/80 underline decoration-bone/25 underline-offset-4 hover:text-fg">{CONTACT_EMAIL}</a>
-            </p>
         </SubPage>
     );
 }

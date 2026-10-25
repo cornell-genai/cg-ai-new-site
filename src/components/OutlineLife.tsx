@@ -14,7 +14,9 @@ import { onTheme, type Theme } from "@/lib/theme";
 //   - B3/S23, a few generations a second. The band is thin, so patterns burn
 //     out fast; small soups are dropped in to keep a quiet shimmer going.
 //   - The cursor seeds hot (red) cells where it crosses the band.
-//   - Pauses offscreen; with reduced motion it draws one still frame.
+//   - Pauses offscreen; with reduced motion (followed live) it draws one still frame.
+//   - The side overhang shrinks to the room left in the viewport, so on narrow
+//     screens the band never widens the page; the photo is never cut.
 
 const GEN = 1 / 8;          // seconds per generation
 const BAND = 4;             // band width, in cells
@@ -42,7 +44,8 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+        let reduced = motion.matches;
         const font = getComputedStyle(document.body).getPropertyValue("--font-geist-mono").trim() || "monospace";
 
         let cs = 10, cols = 0, rows = 0, dpr = 1;
@@ -52,6 +55,7 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
         let bandCells: number[] = [];
         let styles: string[][] = [];
         let genAcc = 0, dropAcc = 0, last = 0, raf = 0, running = false, visible = false;
+        let builtFor = "";
         const pointer = { x: -1e4, y: -1e4, active: false };
 
         const setPalette = (t: Theme) => {
@@ -60,28 +64,41 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
             );
         };
 
-        // Grid over the photo plus PAD cells above and to each side. Band cells
-        // are found by a breadth-first distance from the subject's cells.
+        // Grid over the photo plus PAD cells above and up to PAD cells to each
+        // side (fewer where the viewport edge is closer). Band cells are found
+        // by a breadth-first distance from the subject's cells. Returns false
+        // when nothing changed, so the board is not reseeded needlessly.
         const build = () => {
             const w = img.clientWidth, h = img.clientHeight;
-            if (!w || !h || !img.naturalWidth) return;
+            if (!w || !h || !img.naturalWidth) return false;
             cs = w < 640 ? 7 : 10;
             dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const box = img.getBoundingClientRect();
+            const vw = document.documentElement.clientWidth;
+            const padL = Math.max(0, Math.min(PAD, Math.floor(box.left / cs)));
+            // box.left + w, not box.right: the canvas is sized from the rounded clientWidth.
+            const padR = Math.max(0, Math.min(PAD, Math.floor((vw - box.left - w) / cs)));
+            const key = `${w}x${h}@${cs},${dpr},${padL},${padR}`;
+            if (key === builtFor) return false;
+            builtFor = key;
             const padPx = PAD * cs;
-            cols = Math.ceil((w + 2 * padPx) / cs);
-            rows = Math.ceil((h + padPx) / cs);
-            canvas.style.left = `${-padPx}px`;
+            // The canvas covers exactly photo + overhang; the last column may be
+            // a partial cell, which simply clips at the canvas edge.
+            const cw = w + (padL + padR) * cs, ch = h + padPx;
+            cols = Math.ceil(cw / cs);
+            rows = Math.ceil(ch / cs);
+            canvas.style.left = `${-padL * cs}px`;
             canvas.style.top = `${-padPx}px`;
-            canvas.style.width = `${cols * cs}px`;
-            canvas.style.height = `${rows * cs}px`;
-            canvas.width = Math.round(cols * cs * dpr);
-            canvas.height = Math.round(rows * cs * dpr);
+            canvas.style.width = `${cw}px`;
+            canvas.style.height = `${ch}px`;
+            canvas.width = Math.round(cw * dpr);
+            canvas.height = Math.round(ch * dpr);
 
             // The photo's alpha, one sample per cell.
             const probe = document.createElement("canvas");
             probe.width = cols; probe.height = rows;
             const pc = probe.getContext("2d", { willReadFrequently: true })!;
-            pc.drawImage(img, padPx / cs, padPx / cs, w / cs, h / cs);
+            pc.drawImage(img, padL, PAD, w / cs, h / cs);
             const alpha = pc.getImageData(0, 0, cols, rows).data;
 
             const N = cols * rows;
@@ -107,6 +124,7 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
             cur = new Uint8Array(N); nxt = new Uint8Array(N);
             age = new Uint16Array(N); heat = new Float32Array(N); trail = new Float32Array(N);
             for (const i of bandCells) if (Math.random() < SEED_DENSITY) cur[i] = 1;
+            return true;
         };
 
         const generation = () => {
@@ -221,9 +239,18 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
         const stop = () => { running = false; cancelAnimationFrame(raf); };
 
         const rebuild = () => {
-            build();
-            if (!running) draw();
+            if (build() && !running) draw();
             start();
+        };
+        // Live prefers-reduced-motion: freeze on a clean still frame, or resume.
+        const onMotionChange = () => {
+            reduced = motion.matches;
+            if (!reduced) return start();
+            stop();
+            pointer.active = false;
+            trail.fill(0);
+            heat.fill(0);
+            if (cols) draw();
         };
         const onMove = (e: PointerEvent) => {
             pointer.x = e.clientX; pointer.y = e.clientY;
@@ -232,6 +259,7 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
         const onLeave = () => { pointer.active = false; };
 
         const offTheme = onTheme((t) => { setPalette(t); if (!running && cols) draw(); });
+        motion.addEventListener("change", onMotionChange);
         const ro = new ResizeObserver(rebuild);
         const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) start(); else stop(); });
         const onVis = () => (document.hidden ? stop() : start());
@@ -241,6 +269,8 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
             if (disposed) return;
             ro.observe(img);
             io.observe(canvas);
+            // The side room can change without the photo resizing.
+            window.addEventListener("resize", rebuild);
             document.addEventListener("visibilitychange", onVis);
             window.addEventListener("pointermove", onMove, { passive: true });
             document.documentElement.addEventListener("pointerleave", onLeave);
@@ -249,9 +279,11 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
         return () => {
             disposed = true;
             offTheme();
+            motion.removeEventListener("change", onMotionChange);
             stop();
             ro.disconnect();
             io.disconnect();
+            window.removeEventListener("resize", rebuild);
             document.removeEventListener("visibilitychange", onVis);
             window.removeEventListener("pointermove", onMove);
             document.documentElement.removeEventListener("pointerleave", onLeave);
@@ -261,7 +293,7 @@ export default function OutlineLife({ src, alt, className }: { src: string; alt:
     return (
         <div className={`relative isolate ${className ?? ""}`}>
             <canvas ref={canvasRef} aria-hidden className="pointer-events-none absolute -z-10" />
-            <img ref={imgRef} src={src} alt={alt} className="relative block w-full" />
+            <img ref={imgRef} src={src} alt={alt} width="1448" height="711" loading="lazy" className="relative block h-auto w-full" />
         </div>
     );
 }
