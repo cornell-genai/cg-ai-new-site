@@ -29,8 +29,8 @@ export type Post = {
     banner: string;
     /** The partner's colour, used for diagrams and rules. Must read on dark. */
     accent: string;
-    /** Where the work stands, in a few words. */
-    status: string;
+    /** Where the work stands, when useful to show. */
+    status?: string;
     stack: string[];
     body: Block[];
 };
@@ -264,6 +264,58 @@ export const POSTS: Post[] = [
         ],
     },
     {
+        slug: "evidence-weighting",
+        banner: "/work/evidence-weighting/banner.webp",
+        accent: "#e5483f",
+        status: "Exploratory research",
+        stack: ["Python", "Jev", "Matplotlib"],
+        title: "Evidence weighting in model probabilities",
+        partner: "Research",
+        when: "Fall 2026",
+        tag: "research",
+        dek: "Models can identify individual reports correctly yet give their combined evidence probabilities that fall on the wrong side of a decision threshold. Synthetic reports make the mismatch measurable against an exact Bayesian reference.",
+        team: ["Charlie Xue"],
+        body: [
+            "A model's reported probability may determine whether a case receives further review. A system using a 0.95 cutoff needs the probability to reflect the strength of the evidence, even when the likely YES/NO answer is already clear. This project tests that relationship using fictional reports with known reliability and an exact Bayesian reference.",
+            { h: "Two ways to cross the wrong threshold" },
+            "Consider a fictional food inspection. Each inspector reports whether a batch is contaminated (YES) or clean (NO). The prompts specify equally likely outcomes and reports that are independent given the batch's true state. Each inspector has the same known chance of being correct in either direction.",
+            "The experiments contain examples where mean reported probabilities and the specified probabilities fall on opposite sides of a 0.95 cutoff, in both directions.",
+            {
+                rows: [
+                    { label: "Too little confidence", body: "48 of 64 reports favor YES at 55% reliability. The specified probability is 0.998, but Jev's Noul readout gives a mean of 0.762. The reference clears the cutoff while the mean reported score does not." },
+                    { label: "Too much confidence", body: "12 of 16 reports favor YES at 52% reliability. The specified probability is 0.655, while Llama-3.3-70B and Haiku 4.5 report means of 0.953 and 0.986. Both mean scores clear the cutoff while the reference does not." },
+                ],
+                caption: "Reported scores are means for each condition. The cutoff illustrates the different decisions those scores would produce, not the frequency of threshold errors across individual responses.",
+            },
+            { h: "Why the amount of evidence matters" },
+            "Three YES reports out of four and 48 out of 64 both give a positive share of 75%. At 55% reliability, the smaller set implies a probability of 0.599 and the larger set implies 0.998. A score that mainly tracks the positive share misses the difference between a few weak observations and many independent ones.",
+            "For n reports, of which k favor YES, each with reliability r, the specified posterior log odds are (2k − n) × log(r / (1 − r)). Log odds are log(P(YES) / P(NO)). Each positive report adds the same amount of evidence, and each negative report subtracts it.",
+            "The experiments vary report count from 4 to 64, reliability across 52%, 55%, and 70%, and the share favoring YES. Fictional food inspections, product reviews, and scanner reports test the same probability rule under different wording. Prompts either list the individual reports or supply the YES and NO counts directly.",
+            { h: "How reported probabilities scale" },
+            "The analysis fits reported log odds against the specified log odds with an intercept. A slope below one means the reported log odds change too little with the evidence. A slope above one means they change too much. One is the reference rate of change, but a matching slope alone does not establish accurate individual probabilities.",
+            "For listed reports at 52% reliability, Jev's Noul readout has a slope of 0.60, with a 95% interval of 0.52 to 0.70. Under a short numeric-answer prompt, Llama-3.3-70B, Mistral-Small-3.2, and Haiku 4.5 have slopes around 2.0 to 2.8. Gemma-3-27B and DeepSeek-V3.2 have intervals that include one.",
+            {
+                figure: "/work/evidence-weighting/evidence.png",
+                alt: "Panel A compares six models' probability-scaling slopes with the reference slope of one. Panel B shows P(YES) as the number of reports increases, with 75% favoring YES and reliability fixed at 52%.",
+                caption: "Listed reports at 52% reliability, using valid replies and 95% bootstrap intervals. Panel A shows scaling slopes. Panel B increases report count while holding the positive share at 75%. Jev uses its Noul readout. The other models state numerical probabilities.",
+            },
+            { h: "Reading reports and combining them" },
+            "Separate questions ask whether each report favors YES. Jev identifies 33,039 of 33,048 reports correctly, or 99.97%. Accurate answers to these individual questions do not ensure that its direct probability gives the combined evidence the right weight.",
+            "For the 48-of-64 example, code can count Jev's individual readings and combine them using the supplied reliability and Bayesian rule. That calculation recovers 0.998. The model identifies the observations, while an explicit calculation handles their aggregation.",
+            "Giving Jev the counts directly raises its slope but leaves an error, so miscounting does not fully explain the result. The separate checks test observable behavior without showing how the model formed its direct probability.",
+            { h: "The readout is part of the decision" },
+            "Jev's Noul field returns a probability directly. Posing the same YES/NO question as a two-option Choice gives a different pattern. At 52% reliability in the listed format, Choice has a slope of 2.08, with a 95% interval of 1.93 to 2.22. It changes too strongly with the evidence while Noul changes too little.",
+            "A threshold-based system therefore needs evaluation of the readout and prompt it will actually use. Component accuracy or a correct final label cannot substitute for testing the probabilities that drive the action.",
+            "External aggregation worked here because reliability and independence were supplied. Real reports may repeat a source, influence one another, or have unknown reliability. Applying the same calculation requires accounting for those dependencies, rather than counting repeated claims as independent evidence.",
+
+            { links: [
+                { label: "Code and experiments", href: "https://github.com/cx18121/evidence-weighting/tree/27e955340c82069d15e2e45e603a1df4a3db3225" },
+                { label: "Evidence-count results", href: "https://github.com/cx18121/evidence-weighting/blob/27e955340c82069d15e2e45e603a1df4a3db3225/experiments/evidence_count/results/summary.md" },
+                { label: "Example prompts", href: "https://github.com/cx18121/evidence-weighting/blob/27e955340c82069d15e2e45e603a1df4a3db3225/experiments/evidence_count/results/examples.md" },
+            ] },
+        ],
+    },
+    {
         slug: "for-cornell",
         banner: "/work/for-cornell/banner.webp",
         accent: "#e5483f",
@@ -310,6 +362,59 @@ export const POSTS: Post[] = [
                 { label: "cu25 on GitHub", href: "https://github.com/Archdiner/25live-mcp", note: "pip install, then cu25 login" },
                 { label: "Reckon Review on GitHub", href: "https://github.com/Archdiner/reckon-review" },
                 { label: "Install Reckon Review", href: "https://github.com/apps/reckon-review/installations/new", note: "free during the beta" },
+            ] },
+        ],
+    },
+    {
+        slug: "pi-memory",
+        banner: "/work/pi-memory/banner.webp",
+        accent: "#e5483f",
+        stack: ["TypeScript", "Pi", "MiniSearch", "Markdown"],
+        title: "Reducing the overhead of agent memory",
+        partner: "Agent infrastructure",
+        when: "Summer – Fall 2026",
+        tag: "open source",
+        dek: "A redesign of pi-memory moves learning into the working session, replaces automatic content injection with a topic index, and returns complete memories directly from search.",
+        team: ["Charlie Xue"],
+        body: [
+            "Persistent memory adds work to a coding agent's loop. Records have to be selected, put into context, and updated when a decision changes. Each step can add a model request or repeat information the agent already has. This fork of [Jay Zeng's pi-memory](https://github.com/jayzeng/pi-memory/tree/39e6b998a2279c8fad4a2c6c64e26828c1d6023e) redesigns that loop for [Pi](https://github.com/earendil-works/pi), with learning handled by the working agent and recall built around complete, scoped records.",
+            { h: "A topic index instead of automatic content injection" },
+            "The original pi-memory extension (version 0.4.2) puts scratchpad items, daily logs, and a size-capped section of long-term memory into the system prompt. That makes recent material immediately available, but the character budgets decide which parts survive. A relevant decision can sit outside the retained portion, while unrelated daily activity still occupies context.",
+            "The fork separates discovery from reading. Each request receives the complete topic inventory for global memory and the focused project, plus explicit standing preferences. Other record bodies and scratchpad contents stay out until requested. Prompt content therefore follows the topic catalog and standing preferences rather than the full text of every stored record.",
+            "This also changes how a memory reaches the model. A clipped excerpt might contain ‘use a disposable database’ while leaving out ‘for integration tests in this project.’ Retrieval returns a complete record with its conditions. Larger records continue across whole paragraphs or code fences, so the agent can tell when it has more to read.",
+            "Explicit recall depends on the agent recognizing that a past decision matters. The topic inventory supplies discovery cues, and global preferences remain distinct from project-specific decisions. Task focus selects the repository being worked on, which can differ from the checkout where the session started.",
+            { h: "Learn in the working session" },
+            "The original extension can generate a model-written summary on quit. The fork removes that lifecycle inference pass. The working agent saves a settled decision while the relevant conversation is available, carrying its conditions and rationale into the record.",
+            "Source checking happens inside the write tool. A save supplies the current-session source reference and an exact quote, and the extension checks them against Pi's session tree. If the agent already understands the exchange, it can save directly instead of making another tool call to retrieve the same evidence. When context is missing, an evidence tool can read the necessary earlier exchange.",
+            "That separation keeps provenance without requiring the model to reconstruct the conversation for every write. Optional evidence views also omit earlier successful inspection payloads, preventing one inspection from expanding into another copy of a previous inspection. The source remains available through the session rather than becoming a transcript the model repeatedly consumes.",
+            { h: "Return a usable memory from search" },
+            "An earlier version of the fork returned excerpts centered on matching lines. The agent could find a relevant hit and still need a separate read to recover the complete decision. The current search response includes the full record when there is one strongest lexical candidate and the record fits the available context.",
+            {
+                flow: [
+                    { label: "Query", note: "describe the remembered decision relevant to the task" },
+                    { label: "Search", note: "rank records in global and focused-project memory" },
+                    { label: "Complete record", note: "return it directly when one candidate is strongest and fits" },
+                ],
+                caption: "A unique result can supply the memory in one tool call. Tied or oversized candidates still require a separate selection or read.",
+            },
+            "The fast path saves a tool round trip without forcing an arbitrary choice between equally strong matches. Ties remain short descriptions for the agent to select from, and other matches stay accessible. Once the agent has the complete applicable record, it can stop retrieving.",
+            "Search uses local MiniSearch ranking with identifier matching, exact phrases, prefixes, and typo tolerance. The query describes the decision the agent needs, rather than copying the whole conversation into retrieval. This keeps search independent of an embedding service or ranking model, at the cost of weaker matching when the query paraphrases a record without sharing its vocabulary. Topic browsing is the fallback.",
+            { h: "Reuse the index without serving stale records" },
+            "The earlier implementation rebuilt its MiniSearch index on every query. The current version reuses derived indexes keyed by the complete source contents. Each lookup still reads and validates the current ledger. A change to the indexed content produces a different key, so updates become visible without relying on a file timestamp to invalidate cached search state.",
+            "A local benchmark on an Apple M5 with Bun 1.3.13 used 1,024 synthetic records across 32 topics. It measured 80 repeated identifier searches, including ledger reading and validation, with a p95 lookup time of 13.8 ms. The topic index stays small because record bodies are retrieved separately. These measurements cover local retrieval, before any model or tool round trip.",
+            {
+                stats: [
+                    { value: "760 KB", label: "ledger containing 1,024 synthetic records" },
+                    { value: "1.06 KB", label: "topic index for the same 32-topic store" },
+                    { value: "9.4 ms", label: "median local lookup across 80 repeated searches" },
+                ],
+            },
+
+            { links: [
+                { label: "Memory extension and design notes", href: "https://github.com/cx18121/pi-personal/tree/5508fc63a0c4fcb4fc92de2e0b0bdd641aa731e7/vendor/pi-memory" },
+                { label: "Tool implementation", href: "https://github.com/cx18121/pi-personal/blob/5508fc63a0c4fcb4fc92de2e0b0bdd641aa731e7/vendor/pi-memory/src/operations.ts" },
+                { label: "Benchmark implementation", href: "https://github.com/cx18121/pi-personal/blob/5508fc63a0c4fcb4fc92de2e0b0bdd641aa731e7/vendor/pi-memory/test/performance.ts" },
+                { label: "Original pi-memory extension", href: "https://github.com/jayzeng/pi-memory/tree/39e6b998a2279c8fad4a2c6c64e26828c1d6023e", note: "Jay Zeng's original project" },
             ] },
         ],
     },
