@@ -50,6 +50,7 @@ const members: Member[] = [
     { name: "Chris Jia", linkedIn: "https://www.linkedin.com/in/chris-jia1/" },
     { name: "Oduna Akonzee", image: "/team/oduna.webp", linkedIn: "https://www.linkedin.com/in/oduna-akonzee-4b93782a3/" },
     { name: "Hendry Xu", image: "/team/hendry.webp", linkedIn: "https://www.linkedin.com/in/hendryxu/" },
+    { name: "Avinash Senthil", linkedIn: "https://www.linkedin.com/in/avinash-senthil-a81375299/" },
     { name: "Saanvi Movva", image: "/team/saanvi.webp" },
     { name: "Idhant Gode", linkedIn: "https://www.linkedin.com/in/idhant-gode/" },
     { name: "Caden Ruan", image: "/team/caden.webp", linkedIn: "https://www.linkedin.com/in/cadenruan3/" },
