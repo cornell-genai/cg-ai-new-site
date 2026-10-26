@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { LOGO_RED, LOGO_SRC } from "./Mark";
+import { LOGO_RED } from "./Mark";
+import { PIXEL_LOGO } from "./pixelLogo";
 import { onTheme, type Theme } from "@/lib/theme";
 
 // Conway's Game of Life on the same ASCII character grid as the Swarm.
@@ -21,8 +22,8 @@ import { onTheme, type Theme } from "@/lib/theme";
 // drawn, it and [data-swarm-avoid] text are dead zones that life never
 // enters, and the cell size is published as --swarm-cell.
 //
-// The mark is the club logo in the [data-swarm-mark] slot, drawn as MARK_RES
-// square pixels per cell, the board's own pixel style. The SVG in the DOM is
+// The mark is the club logo in the [data-swarm-mark] slot, as pixel art
+// (pixelLogo.ts) in the board's own square-pixel style. The SVG in the DOM is
 // only a stand-in until those pixels are drawn. The mark plays along with the
 // board: the cursor shoves its pixels aside (they spring home), pixels knocked
 // past its edge land on the board as hot live cells and regrow in the logo,
@@ -39,8 +40,6 @@ const PALETTES: Record<Theme, { bg: string; grid: string; ink: RGB; red: RGB; li
 const LEVELS = 6;
 const ERODE_AGE = 90;   // generations before a settled cell starts to erode
 const ERODE = 0.004;    // per-generation chance an old cell dies anyway
-const MARK_RES = 4;     // logo pixels per cell: still pixel-y, and the brain's traces read
-const MARK_OVERSAMPLE = 8; // samples per logo pixel, each way, averaged for its coverage
 const MARK_SPRING = 70; // pull home (stiffness, 1/s²); damping is set for no overshoot
 const MARK_PUSH_R = 3.5; // cursor reach on the logo, in cells
 const MARK_SHED = 0.08; // per-step chance a pixel knocked past the edge drops onto the board
@@ -81,12 +80,11 @@ export default function Life({ className }: { className?: string }) {
         // `back` is the regrowth time after shedding, in seconds after markStart.
         type MarkPixel = { x: number; y: number; ox: number; oy: number; vx: number; vy: number; back: number };
         let mark: MarkPixel[] = [];
-        // The slot in px, and its size in logo pixels.
-        let markAt: (Rect & { gw: number; gh: number }) | null = null;
-        let markBuiltFor = "";
+        // The mark's area in px (the slot, plus any overhang); its size in logo pixels, their size `p` in px,
+        // and where the pixels start (centred on the slot).
+        let markAt: (Rect & { gw: number; gh: number; p: number; left: number; top: number }) | null = null;
         let markStart = 0;
         let settled = true;
-        const logo = new Image();
         let time = 0, genAcc = 0, seedIn = 2, activity = 0;
         const pointer = { x: -1e4, y: -1e4, px: -1e4, py: -1e4, active: false };
 
@@ -130,60 +128,36 @@ export default function Life({ className }: { className?: string }) {
             markAt = null;
             if (markEl && markEl.getClientRects().length > 0) {
                 const e = markEl.getBoundingClientRect();
-                const p = cs / MARK_RES;
+                // Logo pixels as near the slot's size as whole device pixels allow, so every one is crisp and the
+                // same size. Centred, so rounding up overhangs the slot a little on each side, and the overhang is walled too.
+                const gw = PIXEL_LOGO[0].length, gh = PIXEL_LOGO.length;
+                const p = Math.max(1, Math.round(Math.min(e.width / gw, e.height / gh) * dpr)) / dpr;
+                const left = e.left - r.left + (e.width - gw * p) / 2, top = e.top - r.top + (e.height - gh * p) / 2;
                 markAt = {
-                    x0: e.left - r.left, y0: e.top - r.top, x1: e.right - r.left, y1: e.bottom - r.top,
-                    gw: Math.max(1, Math.round(e.width / p)), gh: Math.max(1, Math.round(e.height / p)),
+                    x0: Math.min(e.left - r.left, left), y0: Math.min(e.top - r.top, top),
+                    x1: Math.max(e.right - r.left, left + gw * p), y1: Math.max(e.bottom - r.top, top + gh * p),
+                    gw, gh, p, left, top,
                 };
                 block(markAt);
-                if (logo.complete && logo.naturalWidth && markBuiltFor !== `${markAt.gw}x${markAt.gh}`) buildMark();
             }
             for (let i = 0; i < wall.length; i++) if (wall[i]) { cur[i] = 0; heat[i] = 0; trail[i] = 0; }
         };
 
-        // Read the logo into pixels for pointer interaction, not an entrance.
-        // Rebuilt whenever the slot's size in logo pixels changes.
+        // Every logo pixel, at home: for pointer interaction, not an entrance.
         function buildMark() {
-            if (!markAt) return;
-            const { gw, gh } = markAt;
-            markBuiltFor = `${gw}x${gh}`;
-            // Drawn large and averaged per logo pixel: a single small drawImage aliases the brain's traces away.
-            const S = MARK_OVERSAMPLE, sw = gw * S, sh = gh * S;
-            const g = document.createElement("canvas");
-            g.width = sw; g.height = sh;
-            const gc = g.getContext("2d", { willReadFrequently: true })!;
-            const w = sh * (logo.naturalWidth / logo.naturalHeight);
-            gc.drawImage(logo, (sw - w) / 2, 0, w, sh);
-            const alpha = gc.getImageData(0, 0, sw, sh).data;
-            const on = new Uint8Array(gw * gh);
-            for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
-                let sum = 0;
-                for (let v = 0; v < S; v++) for (let u = 0; u < S; u++) sum += alpha[((y * S + v) * sw + x * S + u) * 4 + 3];
-                on[y * gw + x] = sum / (S * S) >= 128 ? 1 : 0;
-            }
-            // Drop pixels with no edge neighbour and fill holes walled in on all four sides: the stray specks are what make it read as noise.
-            const at = (x: number, y: number) => (x >= 0 && y >= 0 && x < gw && y < gh ? on[y * gw + x] : 0);
             mark = [];
-            for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) {
-                const n = at(x - 1, y) + at(x + 1, y) + at(x, y - 1) + at(x, y + 1);
-                if (on[y * gw + x] ? n === 0 : n < 4) continue;
-                mark.push({ x, y, ox: 0, oy: 0, vx: 0, vy: 0, back: 0 });
-            }
+            PIXEL_LOGO.forEach((row, y) => {
+                for (let x = 0; x < row.length; x++) if (row[x] === "#") mark.push({ x, y, ox: 0, oy: 0, vx: 0, vy: 0, back: 0 });
+            });
             // Start fully present. Pixel motion belongs to interaction, not loading.
             markStart = time;
             settled = true;
         }
 
-        const markRect = () => {
-            if (!markAt) return null;
-            const p = Math.min((markAt.x1 - markAt.x0) / markAt.gw, (markAt.y1 - markAt.y0) / markAt.gh);
-            return { ...markAt, p };
-        };
-
         // Logo pixels: the cursor shoves them, a spring pulls them home, and any
         // knocked past the logo's edge may drop onto the board as a hot live cell.
         const stepMark = (dt: number) => {
-            const m = markRect();
+            const m = markAt;
             if (!m || !mark.length) return;
             const t = time - markStart;
             const R = cs * MARK_PUSH_R;
@@ -192,15 +166,17 @@ export default function Life({ className }: { className?: string }) {
             let moving = false;
             for (const px of mark) {
                 if (t < px.back) { moving = true; continue; }
-                const hx = m.x0 + (px.x + 0.5) * m.p, hy = m.y0 + (px.y + 0.5) * m.p;
+                const hx = m.left + (px.x + 0.5) * m.p, hy = m.top + (px.y + 0.5) * m.p;
                 const damp = 2 * Math.sqrt(MARK_SPRING);
                 let ax = -px.ox * MARK_SPRING - px.vx * damp, ay = -px.oy * MARK_SPRING - px.vy * damp;
+                let pushed = false;
                 if (near) {
                     const dx = hx + px.ox - pointer.x, dy = hy + px.oy - pointer.y;
                     const d = Math.hypot(dx, dy);
                     if (d < R && d > 0.01) {
                         const k = (1 - d / R) ** 2 * 2600;
                         ax += (dx / d) * k; ay += (dy / d) * k;
+                        pushed = true;
                     }
                 }
                 px.vx += ax * dt; px.vy += ay * dt;
@@ -219,6 +195,9 @@ export default function Life({ className }: { className?: string }) {
                     continue;
                 }
                 if (Math.abs(px.ox) + Math.abs(px.oy) > 0.5 || Math.abs(px.vx) + Math.abs(px.vy) > 4) moving = true;
+                // Close and slow: put it exactly home. The spring only approaches home, and the
+                // sub-pixel leftover snaps to a whole device pixel when drawn, which reads as a broken edge.
+                else if (!pushed) px.ox = px.oy = px.vx = px.vy = 0;
             }
             settled = !moving;
         };
@@ -226,10 +205,10 @@ export default function Life({ className }: { className?: string }) {
         // A click on the logo blows its pixels outward from the click and fires
         // gliders from its four corners (the logo itself is a wall, so they start outside).
         const burst = (x: number, y: number) => {
-            const m = markRect();
+            const m = markAt;
             if (!m) return;
             for (const px of mark) {
-                const dx = m.x0 + (px.x + 0.5) * m.p - x, dy = m.y0 + (px.y + 0.5) * m.p - y;
+                const dx = m.left + (px.x + 0.5) * m.p - x, dy = m.top + (px.y + 0.5) * m.p - y;
                 const d = Math.hypot(dx, dy) || 1;
                 const kick = 260 + Math.random() * 380;
                 px.vx += (dx / d) * kick; px.vy += (dy / d) * kick;
@@ -242,7 +221,7 @@ export default function Life({ className }: { className?: string }) {
             place(GLIDER, c0 - 4, r0 - 4, true, true, 1);
         };
         const onMark = (x: number, y: number) => {
-            const m = markRect();
+            const m = markAt;
             return !!m && x >= m.x0 && x <= m.x1 && y >= m.y0 && y <= m.y1;
         };
 
@@ -456,17 +435,16 @@ export default function Life({ className }: { className?: string }) {
 
             // The pixel logo. The vector in the DOM covers the gap before fonts,
             // JS, or the canvas are ready, and is hidden once the pixels are drawn.
-            const m = markRect();
+            const m = markAt;
             if (m && mark.length) {
                 const t = time - markStart;
-                // Solid pixels on a whole-device-pixel pitch, so neighbours meet without seams.
+                // Solid pixels on a whole-device-pixel pitch (see measure), so neighbours meet without seams.
                 const snap = (v: number) => Math.round(v * dpr) / dpr;
-                const pitch = Math.max(1, Math.round(m.p * dpr)) / dpr;
                 ctx.fillStyle = LOGO_RED;
                 for (const px of mark) {
                     if (t < px.back) continue;
                     ctx.globalAlpha = Math.min(1, (t - px.back) * 5);
-                    ctx.fillRect(snap(m.x0 + px.ox) + px.x * pitch, snap(m.y0 + px.oy) + px.y * pitch, pitch, pitch);
+                    ctx.fillRect(snap(m.left + px.ox) + px.x * m.p, snap(m.top + px.oy) + px.y * m.p, m.p, m.p);
                 }
                 ctx.globalAlpha = 1;
                 if (vector && canvas.dataset.ready && vector.style.opacity !== "0") vector.style.opacity = "0";
@@ -505,7 +483,7 @@ export default function Life({ className }: { className?: string }) {
             if (reduced) {
                 stop();
                 pointer.active = false;
-                if (logo.complete && logo.naturalWidth) buildMark();
+                buildMark();
                 if (W > 0) still();
             } else start();
         };
@@ -546,12 +524,7 @@ export default function Life({ className }: { className?: string }) {
             if (!running) { if (reduced) still(); else draw(); }
         });
         motion.addEventListener("change", onMotionChange);
-        logo.src = LOGO_SRC;
-        logo.decode().then(() => {
-            if (disposed) return;
-            buildMark();
-            if (W > 0 && !running) draw();
-        }, () => { /* no logo, no mark: the board still runs */ });
+        buildMark();
         document.fonts.load(`600 16px ${font}`).finally(() => {
             if (disposed) return;
             resize();
