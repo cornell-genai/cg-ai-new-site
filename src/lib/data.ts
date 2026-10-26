@@ -28,6 +28,7 @@ const board: Member[] = [
     { name: "Charlie Xue", role: "Head Engineer", image: "/team/charlie.webp", linkedIn: "https://www.linkedin.com/in/charles-xue/" },
     { name: "Saiakhil Chilaka", role: "Head Engineer", image: "/team/saiakhil.webp", linkedIn: "https://www.linkedin.com/in/akhilchilaka/" },
     { name: "JD Krasnick", role: "Head of Research", image: "/team/jd.webp", linkedIn: "https://www.linkedin.com/in/jdkrasnick/" },
+    { name: "Daniel Sachs", role: "Founder / Executive Council", image: "/team/daniel.webp", linkedIn: "https://www.linkedin.com/in/daniel-m-sachs/" },
 ].map((m) => ({ ...m, team: "Board" as const }));
 
 const members: Member[] = [
@@ -38,7 +39,6 @@ const members: Member[] = [
     { name: "Trishia Khandelwal", image: "/team/trishia.webp", linkedIn: "https://www.linkedin.com/in/trishia-khandelwal-3a0b20288/" },
     { name: "Bhavan Sai Balusu", image: "/team/bhavan.webp", linkedIn: "https://www.linkedin.com/in/bsb223/" },
     { name: "Arshdeep Kaur", image: "/team/arshdeep.webp", linkedIn: "https://www.linkedin.com/in/arshdeepkaur13/" },
-    { name: "Daniel Sachs", role: "Founding Member", image: "/team/daniel.webp", linkedIn: "https://www.linkedin.com/in/daniel-m-sachs/" },
     { name: "Krish Jana", image: "/team/krish.webp", linkedIn: "https://www.linkedin.com/in/krish-jana/" },
     { name: "Mihir Joshi", image: "/team/mihir.webp", linkedIn: "https://www.linkedin.com/in/mihir-joshi-583247382/" },
     { name: "Aritro Ganguly", image: "/team/aritro.webp", linkedIn: "https://www.linkedin.com/in/aritro-ganguly/" },
