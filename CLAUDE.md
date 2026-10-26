@@ -1,3 +1,5 @@
 # Notes for Claude
 
-- No Claude attribution anywhere in this repo: no Co-Authored-By or session trailers in commits, no "Generated with Claude Code" in PRs, issues or comments.
+The rules for coding agents live in AGENTS.md so every tool reads the same file.
+
+@AGENTS.md
