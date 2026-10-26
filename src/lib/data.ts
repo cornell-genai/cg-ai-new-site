@@ -50,7 +50,6 @@ const members: Member[] = [
     { name: "Chris Jia", linkedIn: "https://www.linkedin.com/in/chris-jia1/" },
     { name: "Oduna Akonzee", image: "/team/oduna.webp", linkedIn: "https://www.linkedin.com/in/oduna-akonzee-4b93782a3/" },
     { name: "Hendry Xu", image: "/team/hendry.webp", linkedIn: "https://www.linkedin.com/in/hendryxu/" },
-    { name: "Avinash Senthil", image: "/team/avinash.webp", linkedIn: "https://www.linkedin.com/in/avinash-senthil-a81375299/" },
     { name: "Saanvi Movva", image: "/team/saanvi.webp" },
     { name: "Idhant Gode", linkedIn: "https://www.linkedin.com/in/idhant-gode/" },
     { name: "Caden Ruan", image: "/team/caden.webp", linkedIn: "https://www.linkedin.com/in/cadenruan3/" },
@@ -63,7 +62,7 @@ const members: Member[] = [
 ].map((m) => ({ ...m, team: "Members" as const }));
 
 const business: Member[] = [
-    { name: "Mohammad Mustafa Shoukat", image: "/team/mohammad.webp", linkedIn: "https://www.linkedin.com/in/mohammad-mustafa-shoukat-534b0020b/" },
+    { name: "Mohammad Mustafa Shoukat", linkedIn: "https://www.linkedin.com/in/mohammad-mustafa-shoukat-534b0020b/" },
     { name: "Kaelin Braverman", image: "/team/kaelin.webp", linkedIn: "https://www.linkedin.com/in/kaelin-braverman/" },
     { name: "Breanna Eng", image: "/team/breanna.webp", linkedIn: "https://www.linkedin.com/in/breannaeng/" },
 ].map((m) => ({ ...m, team: "Business" as const }));
