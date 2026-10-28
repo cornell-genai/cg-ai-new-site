@@ -28,7 +28,8 @@ Rewrite every branch on origin with `git filter-branch`, then force-push.
 
 ## Progress log
 
-- 2026-10-26: Audited history and mapped the Claude commits to pushers. Rewrote 13 branches in a scratch bare clone. Verified: 0 agent identities and 0 attribution trailers left; commit counts and tip trees identical on every branch; all 132 trees on `main` identical commit by commit. Added `AGENTS.md`. Waiting on the go-ahead to force-push.
+- 2026-10-26: Audited history and mapped the Claude commits to pushers. Rewrote 13 branches in a scratch bare clone. Verified: 0 agent identities and 0 attribution trailers left; commit counts and tip trees identical on every branch; all 132 trees on `main` identical commit by commit. Added `AGENTS.md`.
+- 2026-10-26: Morgan approved. Force-pushed 12 branches with per-branch leases (`feature/mateos-version` had no Claude commits and was left alone). GitHub commits API: 0 commits on `main` by `claude`, 77 by Archdiner. The `/contributors` endpoint still served the cached list right after the push.
 
 ## Open questions
 
