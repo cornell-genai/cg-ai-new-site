@@ -50,6 +50,22 @@ in `src/lib/work.ts`, illustrated only with the CRM's demo workspace. No persona
   Branch `outreach-crm-meeting-brief`. Verified: tsc, lint, build; section renders and shows in
   the page contents.
 
+- 2026-10-28: Morgan asked for more distinct covers on outreach-crm and pi-memory. Both reused the
+  horizontal dotted-rule background of `cu25 reckon` and QuickFi. Kept the wordmarks, palette and
+  diamond dots; new backgrounds: outreach is a contact network, with red paths reaching out to
+  checked contacts, and pi-memory is a memory lattice of record blocks, with a topic index on the
+  left and dotted recall paths into the hit records. Same 1600×842 WebP at the same paths, so no
+  code change. Rendered with a throwaway PIL script (Futura Medium, seeded), kept out of the repo.
+- 2026-10-28: Morgan asked for options. Showed three motifs per cover (outreach: network, signal,
+  pipeline; pi-memory: lattice, index cards, session timeline), then three takes on the chosen
+  "signal" and "index cards" motifs. Final picks, installed at the same paths:
+  - outreach: dashed rings radiate from the "o"; red dotted lines run out to answered contacts
+    (checked squares), ink lines to ones still waiting, grey squares for the rest.
+  - pi-memory: large tilted index cards (dotted outline, title line, ragged text lines); two red
+    query squares, one above the word and one below, each returning its own set of cards, the
+    strongest in red and the rest in ink. Morgan asked for the second web after seeing one.
+  Same throwaway PIL scripts, same scratchpad; not in the repo.
+
 ## Open questions
 
 - The drafts screenshot's own intro text mentions "LinkedIn Auto-send". Left as is; retake or crop
