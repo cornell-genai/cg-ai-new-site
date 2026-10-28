@@ -17,12 +17,23 @@ export type Block =
     | { people: { name: string; did: string }[] }
     | { links: { label: string; href: string; note?: string }[] };
 
+export type Kind = "research" | "client" | "product" | "member";
+
+// The Projects page has one section per kind, in this order. `label` names a
+// single post of that kind, on its page and in "Keep reading".
+export const KINDS: Record<Kind, { title: string; label: string; blurb: string }> = {
+    client: { title: "Client work", label: "Client work", blurb: "Systems built with partner organizations, each by a team of members over one or more semesters." },
+    research: { title: "Research", label: "Research", blurb: "Open questions in AI that members study on their own or in small groups." },
+    product: { title: "Products", label: "Product", blurb: "Software members build and run for their own users." },
+    member: { title: "Member projects", label: "Member project", blurb: "Tools members build on their own, outside club engagements." },
+};
+
 export type Post = {
     slug: string;
     title: string;
     partner: string;
     when: string;
-    tag: string;
+    kind: Kind;
     dek: string;
     team: string[];
     /** A wide (about 1.9:1) banner in public/work/<slug>/. */
@@ -45,7 +56,7 @@ export const POSTS: Post[] = [
         title: "Credit-risk monitoring and treasury analytics for Investcorp",
         partner: "Investcorp",
         when: "Spring 2026",
-        tag: "client",
+        kind: "client",
         dek: "An ESG materiality classifier sorts portfolio news by credit impact. A treasury agent extracts rate quotes and response times from bank emails for natural-language queries.",
         team: ["Mateo del Rio Lanse", "Surya Chandrakasan", "Bhavan Sai Balusu", "Yashnil Saha", "Thurushi Kiyara Rajapakse", "Morgan Nelson Stuart", "Sarah Li", "JD Krasnick", "Dhruv Mandalik", "Aleks Dzudzevic", "Eddie Hu", "Andrew Visconti"],
         body: [
@@ -108,7 +119,7 @@ export const POSTS: Post[] = [
         title: "ForeSight: calibrated opponent modeling in Pokémon",
         partner: "Research",
         when: "Fall 2026",
-        tag: "research",
+        kind: "research",
         dek: "ForeSight fine-tunes Laya (421M parameters) to forecast opponent actions in Pokémon and uses the probabilities in depth-two expectimax search.",
         team: ["Saiakhil Chilaka"],
         body: [
@@ -155,7 +166,7 @@ export const POSTS: Post[] = [
         title: "Financial document extraction for Bridge",
         partner: "Bridge",
         when: "Fall 2025",
-        tag: "client",
+        kind: "client",
         dek: "A document extraction pipeline prefills Bridge's loan applications with source references and confidence scores for borrower review.",
         team: ["Asad Abbas Rizvi", "Arshdeep Kaur", "Yashnil Saha", "Tanner Brendan Blake"],
         body: [
@@ -214,7 +225,7 @@ export const POSTS: Post[] = [
         title: "Insurance validation and vendor due diligence for QuickFi",
         partner: "QuickFi",
         when: "Spring 2025 – Spring 2026",
-        tag: "client",
+        kind: "client",
         dek: "Two agents automate commercial insurance certificate validation and vendor due diligence for QuickFi's equipment finance platform.",
         team: ["Merek Kaden Soriano", "David Lee", "Erik Pedersen", "Brandon Xu", "Alex Kozik", "Nicole Luo", "Audrey Lewellen", "Morgan Nelson Stuart", "Zach Riiff", "Arshdeep Kaur", "Jonathan Zhang", "Mateo del Rio Lanse", "Eddie Hu"],
         body: [
@@ -272,7 +283,7 @@ export const POSTS: Post[] = [
         title: "Evidence weighting in model probabilities",
         partner: "Research",
         when: "Fall 2026",
-        tag: "research",
+        kind: "research",
         dek: "Models can identify individual reports correctly yet give their combined evidence probabilities that fall on the wrong side of a decision threshold. Synthetic reports make the mismatch measurable against an exact Bayesian reference.",
         team: ["Charlie Xue"],
         body: [
@@ -324,7 +335,7 @@ export const POSTS: Post[] = [
         title: "cu25 and Reckon Review",
         partner: "For the Cornell community",
         when: "Summer – Fall 2026",
-        tag: "open source",
+        kind: "member",
         dek: "cu25 is a CLI and MCP server for Cornell room reservations. Reckon Review is a GitHub App that checks reviewers' understanding of a pull request before it can merge.",
         team: ["Asad Abbas Rizvi"],
         body: [
@@ -369,11 +380,12 @@ export const POSTS: Post[] = [
         slug: "pi-memory",
         banner: "/work/pi-memory/banner.webp",
         accent: "#e5483f",
+        status: "Open source",
         stack: ["TypeScript", "Pi", "MiniSearch", "Markdown"],
         title: "Reducing the overhead of agent memory",
         partner: "Agent infrastructure",
         when: "Summer – Fall 2026",
-        tag: "open source",
+        kind: "member",
         dek: "A redesign of pi-memory moves learning into the working session, replaces automatic content injection with a topic index, and returns complete memories directly from search.",
         team: ["Charlie Xue"],
         body: [
@@ -422,12 +434,12 @@ export const POSTS: Post[] = [
         slug: "outreach-crm",
         banner: "/work/outreach-crm/banner.webp",
         accent: "#e0574c",
-        status: "In private pilot",
+        status: "Open to the public",
         stack: ["TypeScript", "Next.js", "Postgres", "Vercel AI SDK", "Claude", "MCP", "Claude Code"],
         title: "Outreach CRM: a networking pipeline your own AI agent can work in",
         partner: "Independent project",
         when: "Summer – Fall 2026",
-        tag: "product",
+        kind: "product",
         dek: "A spreadsheet-style CRM for students doing networking outreach. AI drafts each message from what the CRM knows about you and the recipient. You review and send it, and any MCP agent can work the pipeline with you.",
         team: ["Morgan Nelson Stuart"],
         body: [
@@ -489,8 +501,14 @@ export const POSTS: Post[] = [
             "Handing the AI work to the user's own agent changed what the product had to be. The CRM's job became keeping accurate records and writing good prompts. Searching, reading and drafting at scale happen in an agent the user already runs, and the CRM doesn't pay for them.",
             "Limiting drafts to facts on file made them shorter and safer to send. A short message that's accurate is better than a longer one with a detail the model guessed.",
             { links: [
+                { label: "Use Outreach CRM", href: "https://crm.stuart-labs.com", note: "open to the public" },
                 { label: "agentlink on GitHub", href: "https://github.com/XxMorganxX/agentlink", note: "the open-source Mac agent" },
             ] },
         ],
     },
 ];
+
+/** Posts grouped by kind, in page order. Kinds with no posts are left out. */
+export const SECTIONS = (Object.keys(KINDS) as Kind[])
+    .map((kind) => ({ kind, ...KINDS[kind], posts: POSTS.filter((p) => p.kind === kind) }))
+    .filter((s) => s.posts.length > 0);

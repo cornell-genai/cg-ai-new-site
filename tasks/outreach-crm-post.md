@@ -49,7 +49,9 @@ in `src/lib/work.ts`, illustrated only with the CRM's demo workspace. No persona
   says the trigger is an automation that has to be turned on (commit 06a43fa, 746c199).
   Branch `outreach-crm-meeting-brief`. Verified: tsc, lint, build; section renders and shows in
   the page contents.
-
+- 2026-10-26: reversed "leave out the production URL". The CRM is open to the public, so the post
+  links to https://crm.stuart-labs.com and the status reads "Open to the public". Logged in
+  `tasks/projects-by-type.md`.
 - 2026-10-28: Morgan asked for more distinct covers on outreach-crm and pi-memory. Both reused the
   horizontal dotted-rule background of `cu25 reckon` and QuickFi. Kept the wordmarks, palette and
   diamond dots; new backgrounds: outreach is a contact network, with red paths reaching out to

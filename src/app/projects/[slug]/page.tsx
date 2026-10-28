@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
 import Plate from "@/components/work/Plate";
 import Blocks, { slugify } from "@/components/work/Blocks";
-import { POSTS } from "@/lib/work";
+import { KINDS, POSTS, SECTIONS } from "@/lib/work";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -22,13 +22,15 @@ const label = "font-mono text-[12px] uppercase tracking-[0.1em]";
 
 export default async function PostPage({ params }: Params) {
     const { slug } = await params;
-    const i = POSTS.findIndex((p) => p.slug === slug);
+    // "Keep reading" follows the Projects page order, section by section.
+    const ordered = SECTIONS.flatMap((s) => s.posts);
+    const i = ordered.findIndex((p) => p.slug === slug);
     if (i < 0) notFound();
-    const post = POSTS[i];
-    const next = [POSTS[(i + 1) % POSTS.length], POSTS[(i + 2) % POSTS.length]];
+    const post = ordered[i];
+    const next = [ordered[(i + 1) % ordered.length], ordered[(i + 2) % ordered.length]];
     const sections = post.body.flatMap((b) => (typeof b === "object" && "h" in b ? [b.h] : []));
     const facts = [
-        { k: post.tag === "client" ? "Partner" : "Type", v: post.tag === "client" ? post.partner : post.tag },
+        { k: post.kind === "client" ? "Partner" : "Type", v: post.kind === "client" ? post.partner : KINDS[post.kind].label },
         { k: "Timeline", v: post.when },
         ...(post.status ? [{ k: "Status", v: post.status }] : []),
     ];
@@ -110,7 +112,7 @@ export default async function PostPage({ params }: Params) {
                             <Link key={p.slug} href={`/projects/${p.slug}/`} className="group block">
                                 <Plate src={p.banner} />
                                 <p className={`${label} mt-5 text-bone-2`}>
-                                    <span className="text-bone/75">{p.tag}</span> · {p.when}
+                                    <span className="text-bone/75">{KINDS[p.kind].label}</span> · {p.when}
                                 </p>
                                 <p className="mt-2 text-balance text-[22px] font-medium leading-tight tracking-[-0.02em] text-fg decoration-bone/30 decoration-1 underline-offset-[0.18em] group-hover:underline">{p.title}</p>
                             </Link>
